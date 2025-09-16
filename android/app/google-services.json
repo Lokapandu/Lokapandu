@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "815598506761",
+    "project_id": "lokapandu-29bc5",
+    "storage_bucket": "lokapandu-29bc5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:815598506761:android:729d574d737b796730b9d8",
+        "android_client_info": {
+          "package_name": "id.lokapandu.lokapandu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFJMg0OEAj2WHVQ43sfzoR4SHrOOrBUto"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
