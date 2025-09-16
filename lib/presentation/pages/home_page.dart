@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/presentation/widgets/example_widget.dart';
 import 'package:provider/provider.dart';
-import 'package:lokapandu/presentation/provider/counter_provider.dart';
+import 'package:lokapandu/presentation/provider/counter_notifier.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.title});
@@ -13,25 +14,13 @@ class HomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Consumer<CounterProvider>(
-              builder: (context, counterProvider, child) {
-                return Text(
-                  '${counterProvider.counter}',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      body: Center(child: ExampleWidget()),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Provider.of<CounterProvider>(context, listen: false).incrementCounter();
+          Provider.of<CounterNotifier>(
+            context,
+            listen: false,
+          ).incrementCounter();
         },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
