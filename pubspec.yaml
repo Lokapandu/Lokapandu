@@ -22,6 +22,7 @@ dependencies:
   flutter_svg: ^2.2.1
   lottie: ^3.3.2
   cached_network_image: ^3.4.1
+  iconify_design: ^1.0.1
 
 
 dev_dependencies:
@@ -38,4 +39,3 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/animations/
