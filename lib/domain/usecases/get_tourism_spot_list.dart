@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:lokapandu/common/failure.dart';
-import 'package:lokapandu/domain/entities/tourism_spot.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 
 class GetTourismSpotList {
@@ -8,7 +8,7 @@ class GetTourismSpotList {
 
   GetTourismSpotList(this.repository);
 
-  Future<Either<Failure, List<TourismSpot>>> execute() async {
+  Future<Either<Failure, List<TourismSpotEntity>>> execute() async {
     return await repository.getTourismSpots();
   }
 }

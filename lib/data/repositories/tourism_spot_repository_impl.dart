@@ -1,27 +1,78 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 
 import 'package:dartz/dartz.dart';
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:lokapandu/brick/repositories/repository.dart';
 import 'package:lokapandu/common/failure.dart';
-import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
-import 'package:lokapandu/data/models/tourism_spot/ts_model/tourism_spot_model.dart';
-import 'package:lokapandu/domain/entities/tourism_spot.dart';
+import 'package:lokapandu/brick/models/tourism_spot.model.dart' as model;
+import 'package:lokapandu/brick/models/tourism_image.model.dart' as image_model;
+import 'package:lokapandu/data/mappers/tourism_spot_mapper.dart';
+import 'package:lokapandu/data/mappers/tourism_image_mapper.dart';
+
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 
 class TourismSpotRepositoryImpl implements TourismSpotRepository {
-  final TourismSpotRemoteDataSource remoteDataSource;
-  TourismSpotRepositoryImpl({required this.remoteDataSource});
-
-  // TODO: make network bound resource
   @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
+  Future<Either<Failure, List<TourismSpotEntity>>> getTourismSpots() async {
     try {
-      final result = await remoteDataSource.getTourismSpots();
-      return Right(result.map((model) => model.toEntity()).toList());
-    } on ServerException {
-      return Left(ServerFailure(''));
-    } on SocketException {
-      return Left(ConnectionFailure(''));
+      // Fetch tourism spots
+      final spotsResult = await Repository().getAll<model.TourismSpot>();
+
+      // Handle null result
+      if (spotsResult == null) {
+        return Left(ServerFailure('No data available'));
+      }
+
+      // Handle empty result
+      if (spotsResult.isEmpty) {
+        return Right([]);
+      }
+
+      // Fetch all tourism images
+      final imagesResult = await Repository()
+          .getAll<image_model.TourismImage>();
+
+      // Group images by tourism spot ID
+      final Map<int, List<TourismImageEntity>> imagesMap = {};
+      if (imagesResult != null) {
+        for (final image in imagesResult) {
+          final spotId = image.tourismSpotId;
+          if (!imagesMap.containsKey(spotId)) {
+            imagesMap[spotId] = [];
+          }
+          try {
+            imagesMap[spotId]!.add(image.toEntity());
+          } catch (e) {
+            print('Error converting tourism image ${image.id}: $e');
+          }
+        }
+      }
+
+      // Map spots to entities with their associated images
+      final entities = <TourismSpotEntity>[];
+      for (final spot in spotsResult) {
+        try {
+          final spotImages = imagesMap[spot.id] ?? [];
+          entities.add(spot.toEntity(images: spotImages));
+        } catch (e) {
+          // Log individual spot conversion errors but continue processing
+          print('Error converting tourism spot ${spot.id}: $e');
+        }
+      }
+
+      return Right(entities);
+    } on ServerException catch (e) {
+      developer.log(e.toString(), name: "Tourism Spot Repository");
+      return Left(ServerFailure('Server error: ${e.toString()}'));
+    } on SocketException catch (e) {
+      developer.log(e.toString(), name: "Tourism Spot Repository");
+      return Left(ConnectionFailure('Connection error: ${e.toString()}'));
+    } catch (e) {
+      developer.log(e.toString(), name: "Tourism Spot Repository");
+      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
     }
   }
 }

@@ -1,32 +1,27 @@
 import 'package:get_it/get_it.dart';
-import 'package:lokapandu/data/datasources/services/supabase_service.dart';
-import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
 import 'package:lokapandu/data/repositories/tourism_spot_repository_impl.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
 import 'package:lokapandu/presentation/provider/counter_notifier.dart';
+import 'package:lokapandu/presentation/provider/tourism_spot_notifier.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final locator = GetIt.instance;
 
-void init() {
-  // provider
-  locator.registerFactory(
+Future<void> initDependencies() async {
+  locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
+
+  locator.registerSingleton<TourismSpotRepository>(TourismSpotRepositoryImpl());
+
+  locator.registerLazySingleton<GetTourismSpotList>(
+    () => GetTourismSpotList(locator<TourismSpotRepository>()),
+  );
+
+  locator.registerFactory<CounterNotifier>(
     () => CounterNotifier(),
-  ); // TODO: this code only example, to be delete soon
-
-  // use case
-  locator.registerLazySingleton(() => GetTourismSpotList(locator()));
-
-  // repository
-  locator.registerLazySingleton<TourismSpotRepository>(
-    () => TourismSpotRepositoryImpl(remoteDataSource: locator()),
   );
 
-  // data sources
-  locator.registerLazySingleton<TourismSpotRemoteDataSource>(
-    () => TourismSpotRemoteDataSourceImpl(supabaseService: locator()),
+  locator.registerFactory<TourismSpotNotifier>(
+    () => TourismSpotNotifier(locator<GetTourismSpotList>()),
   );
-
-  // services
-  locator.registerLazySingleton<SupabaseService>(() => SupabaseService());
 }
