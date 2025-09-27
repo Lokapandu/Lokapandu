@@ -27,20 +27,26 @@ class ShimmerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Shimmer.fromColors(
-      baseColor: Colors.grey[300]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: theme.colorScheme.surfaceContainerHigh,
+      highlightColor: theme.colorScheme.surface,
       child: Card(
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
         elevation: 3.0,
+        color: theme.colorScheme.surfaceContainer,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: Container(width: double.infinity, color: Colors.white),
+              child: Container(
+                width: double.infinity,
+                color: theme.colorScheme.surfaceContainerHigh,
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
@@ -50,10 +56,20 @@ class ShimmerCard extends StatelessWidget {
                   Container(
                     width: double.infinity,
                     height: 16,
-                    color: Colors.white,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
                   const SizedBox(height: 8),
-                  Container(width: 120, height: 12, color: Colors.white),
+                  Container(
+                    width: 120,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
                 ],
               ),
             ),

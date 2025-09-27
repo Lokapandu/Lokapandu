@@ -5,7 +5,7 @@ import 'dart:developer' as developer;
 import 'package:dartz/dartz.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:lokapandu/brick/repositories/repository.dart';
-import 'package:lokapandu/common/failure.dart';
+import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/brick/models/tourism_spot.model.dart' as model;
 import 'package:lokapandu/brick/models/tourism_image.model.dart' as image_model;
 import 'package:lokapandu/data/mappers/tourism_spot_mapper.dart';

@@ -14,6 +14,8 @@ class TourCategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return SizedBox(
       height: 40,
       child: ListView.builder(
@@ -29,20 +31,26 @@ class TourCategoryChips extends StatelessWidget {
               label: Text(category),
               selected: isSelected,
               onSelected: (selected) => onCategorySelected(category),
-              backgroundColor: Colors.white,
-              selectedColor: const Color(0xFF008080).withValues(alpha: 0.1),
-              labelStyle: TextStyle(
-                color: isSelected ? const Color(0xFF008080) : Colors.black54,
+              backgroundColor: theme.colorScheme.surfaceContainer,
+              selectedColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+              checkmarkColor: theme.colorScheme.primary,
+              labelStyle: theme.textTheme.labelMedium?.copyWith(
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
                 side: BorderSide(
                   color: isSelected
-                      ? const Color(0xFF008080)
-                      : Colors.grey.shade300,
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.outline,
+                  width: 1,
                 ),
               ),
+              elevation: 0,
+              pressElevation: 1,
             ),
           );
         },

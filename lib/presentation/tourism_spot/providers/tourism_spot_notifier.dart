@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/common/failure.dart';
+import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
 

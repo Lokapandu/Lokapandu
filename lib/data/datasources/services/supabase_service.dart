@@ -2,7 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
-import 'package:lokapandu/common/exceptions.dart';
+import 'package:lokapandu/common/errors/exceptions.dart';
 
 // Service class that handles all Supabase database operations
 class SupabaseService implements SupabaseServiceInterface {

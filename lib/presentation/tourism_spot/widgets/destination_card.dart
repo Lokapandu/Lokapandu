@@ -14,6 +14,7 @@ class DestinationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final primaryImage = tourismSpot.images.isNotEmpty
         ? tourismSpot.images.first.imageUrl
         : '';
@@ -24,9 +25,13 @@ class DestinationCard extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
+          side: BorderSide(
+            color: Theme.of(context).colorScheme.outline, // warna border
+            width: 1, // ketebalan border
+          ),
         ),
-        elevation: 3.0,
-        shadowColor: Colors.black.withValues(alpha: 0.1),
+        elevation: 0,
+        color: theme.colorScheme.surfaceContainer,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -41,36 +46,36 @@ class DestinationCard extends StatelessWidget {
                                 ? CachedNetworkImage(
                                     imageUrl: primaryImage,
                                     fit: BoxFit.cover,
-                                    placeholder: (context, url) => const Center(
+                                    placeholder: (context, url) => Center(
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.0,
-                                        color: Color(0xFF008080),
+                                        color: theme.colorScheme.primary,
                                       ),
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                        const Icon(
-                                          Icons.broken_image,
-                                          size: 50,
-                                          color: Colors.grey,
-                                        ),
+                                    errorWidget: (context, url, error) => Icon(
+                                      Icons.broken_image,
+                                      size: 50,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   )
                                 : Image.asset(
                                     primaryImage,
                                     fit: BoxFit.cover,
                                     errorBuilder: (context, error, stackTrace) {
-                                      return const Icon(
+                                      return Icon(
                                         Icons.broken_image,
                                         size: 50,
-                                        color: Colors.grey,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                       );
                                     },
                                   ))
                           : Container(
-                              color: Colors.grey[300],
-                              child: const Icon(
+                              color: theme.colorScheme.surfaceContainerHigh,
+                              child: Icon(
                                 Icons.image_not_supported,
                                 size: 50,
-                                color: Colors.grey,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                     ),
@@ -80,10 +85,22 @@ class DestinationCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: theme.colorScheme.surface.withValues(
+                            alpha: 0.9,
+                          ),
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: theme.colorScheme.outline.withValues(
+                              alpha: 0.3,
+                            ),
+                            width: 1,
+                          ),
                         ),
-                        child: const Icon(Icons.bookmark_border, size: 20),
+                        child: Icon(
+                          Icons.bookmark_border,
+                          size: 20,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ],
@@ -97,9 +114,9 @@ class DestinationCard extends StatelessWidget {
                 children: [
                   Text(
                     tourismSpot.name,
-                    style: const TextStyle(
+                    style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      color: theme.colorScheme.onSurface,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -109,16 +126,15 @@ class DestinationCard extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: Colors.grey[600],
+                        color: theme.colorScheme.primary,
                         size: 14,
                       ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
                           '${tourismSpot.city}, ${tourismSpot.province}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 12,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

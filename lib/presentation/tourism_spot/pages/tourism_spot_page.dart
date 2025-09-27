@@ -36,6 +36,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -62,24 +63,24 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   if (notifier.isLoading) {
                     return const TourismSpotShimmerLoading();
                   }
-      
+
                   if (notifier.hasError) {
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.error_outline,
                             size: 64,
-                            color: Colors.red,
+                            color: theme.colorScheme.error,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             notifier.errorMessage!,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
-                              color: Colors.red,
+                              color: theme.colorScheme.error,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -95,13 +96,17 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       ),
                     );
                   }
-      
+
                   if (!notifier.hasData) {
                     return const Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.location_off, size: 64, color: Colors.grey),
+                          Icon(
+                            Icons.location_off,
+                            size: 64,
+                            color: Colors.grey,
+                          ),
                           SizedBox(height: 16),
                           Text(
                             'Tidak ada wisata ditemukan',
@@ -111,22 +116,23 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       ),
                     );
                   }
-      
+
                   final filteredSpots = _selectedCategory == 'Semua'
                       ? notifier.tourismSpots
                       : notifier.tourismSpots
                             .where((spot) => spot.category == _selectedCategory)
                             .toList();
-      
+
                   return GridView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
                     itemCount: filteredSpots.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                      childAspectRatio: 0.75,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.9,
+                        ),
                     itemBuilder: (context, index) {
                       return DestinationCard(
                         tourismSpot: filteredSpots[index],
@@ -145,39 +151,47 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
     );
   }
 
-//TODO: Add search and filter
+  //TODO: Add search and filter, make this widget reusable
   Widget _buildSearchAndFilter() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Cari wisata',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: EdgeInsets.zero,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide(color: Colors.grey),
+                hintText: 'Cari destinasi wisata...',
+                hintStyle: Theme.of(context).textTheme.bodyMedium,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                  borderSide: BorderSide(color: Colors.grey),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(40),
+                ),
+                filled: true,
+                fillColor: Theme.of(context).colorScheme.surfaceContainer,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
                 ),
               ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
           const SizedBox(width: 12),
           Container(
-            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF008080),
-              borderRadius: BorderRadius.circular(16),
+              color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(50),
             ),
-            child: const Icon(Icons.filter_list, color: Colors.white),
+            child: IconButton(
+              icon: Icon(
+                Icons.tune,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+              onPressed: () {},
+            ),
           ),
         ],
       ),
