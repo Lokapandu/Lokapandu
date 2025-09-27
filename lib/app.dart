@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/presentation/pages/home_page.dart';
+import 'package:lokapandu/features/auth/screens/splash_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -7,11 +7,10 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Lokapandu',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomePage(title: 'Flutter Demo Home Page'),
+      home: const SplashScreen(),
     );
   }
 }
