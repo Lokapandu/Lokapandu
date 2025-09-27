@@ -5,7 +5,7 @@ import 'package:brick_supabase/brick_supabase.dart';
 @ConnectOfflineFirstWithSupabase(
   supabaseConfig: SupabaseSerializable(tableName: 'tourism_spots'),
 )
-class TourismSpot extends OfflineFirstWithSupabaseModel {
+class TourismSpotModel extends OfflineFirstWithSupabaseModel {
   @Supabase(unique: true)
   @Sqlite(index: true, unique: true)
   final int id;
@@ -24,7 +24,7 @@ class TourismSpot extends OfflineFirstWithSupabaseModel {
   final String facilities;
   final DateTime createdAt;
 
-  TourismSpot({
+  TourismSpotModel({
     required this.id,
     required this.name,
     required this.description,

@@ -16,10 +16,10 @@ import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 
 class TourismSpotRepositoryImpl implements TourismSpotRepository {
   @override
-  Future<Either<Failure, List<TourismSpotEntity>>> getTourismSpots() async {
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
     try {
       // Fetch tourism spots
-      final spotsResult = await Repository().getAll<model.TourismSpot>();
+      final spotsResult = await Repository().getAll<model.TourismSpotModel>();
 
       // Handle null result
       if (spotsResult == null) {
@@ -33,10 +33,10 @@ class TourismSpotRepositoryImpl implements TourismSpotRepository {
 
       // Fetch all tourism images
       final imagesResult = await Repository()
-          .getAll<image_model.TourismImage>();
+          .getAll<image_model.TourismImageModel>();
 
       // Group images by tourism spot ID
-      final Map<int, List<TourismImageEntity>> imagesMap = {};
+      final Map<int, List<TourismImage>> imagesMap = {};
       if (imagesResult != null) {
         for (final image in imagesResult) {
           final spotId = image.tourismSpotId;
@@ -52,7 +52,7 @@ class TourismSpotRepositoryImpl implements TourismSpotRepository {
       }
 
       // Map spots to entities with their associated images
-      final entities = <TourismSpotEntity>[];
+      final entities = <TourismSpot>[];
       for (final spot in spotsResult) {
         try {
           final spotImages = imagesMap[spot.id] ?? [];

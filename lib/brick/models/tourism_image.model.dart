@@ -6,13 +6,13 @@ import 'package:lokapandu/brick/models/tourism_spot.model.dart';
 @ConnectOfflineFirstWithSupabase(
   supabaseConfig: SupabaseSerializable(tableName: 'tourism_images'),
 )
-class TourismImage extends OfflineFirstWithSupabaseModel {
+class TourismImageModel extends OfflineFirstWithSupabaseModel {
   @Supabase(unique: true)
   @Sqlite(index: true, unique: true)
   final int id;
 
   @Supabase(foreignKey: 'tourism_spot_id')
-  final TourismSpot tourismSpot;
+  final TourismSpotModel tourismSpot;
 
   @Sqlite(ignore: true)
   int get tourismSpotId => tourismSpot.id;
@@ -21,7 +21,7 @@ class TourismImage extends OfflineFirstWithSupabaseModel {
   final String imageUrl;
   final DateTime createdAt;
 
-  TourismImage({
+  TourismImageModel({
     required this.id,
     required this.tourismSpot,
     required this.label,

@@ -1,14 +1,14 @@
 // GENERATED CODE DO NOT EDIT
 part of '../brick.g.dart';
 
-Future<TourismImage> _$TourismImageFromSupabase(
+Future<TourismImageModel> _$TourismImageModelFromSupabase(
   Map<String, dynamic> data, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return TourismImage(
+  return TourismImageModel(
     id: data['id'] as int,
-    tourismSpot: await TourismSpotAdapter().fromSupabase(
+    tourismSpot: await TourismSpotModelAdapter().fromSupabase(
       data['tourism_spot'],
       provider: provider,
       repository: repository,
@@ -19,14 +19,14 @@ Future<TourismImage> _$TourismImageFromSupabase(
   );
 }
 
-Future<Map<String, dynamic>> _$TourismImageToSupabase(
-  TourismImage instance, {
+Future<Map<String, dynamic>> _$TourismImageModelToSupabase(
+  TourismImageModel instance, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return {
     'id': instance.id,
-    'tourism_spot': await TourismSpotAdapter().toSupabase(
+    'tourism_spot': await TourismSpotModelAdapter().toSupabase(
       instance.tourismSpot,
       provider: provider,
       repository: repository,
@@ -38,17 +38,17 @@ Future<Map<String, dynamic>> _$TourismImageToSupabase(
   };
 }
 
-Future<TourismImage> _$TourismImageFromSqlite(
+Future<TourismImageModel> _$TourismImageModelFromSqlite(
   Map<String, dynamic> data, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return TourismImage(
+  return TourismImageModel(
     id: data['id'] as int,
-    tourismSpot: (await repository!.getAssociation<TourismSpot>(
+    tourismSpot: (await repository!.getAssociation<TourismSpotModel>(
       Query.where(
         'primaryKey',
-        data['tourism_spot_TourismSpot_brick_id'] as int,
+        data['tourism_spot_TourismSpotModel_brick_id'] as int,
         limit1: true,
       ),
     ))!.first,
@@ -58,16 +58,16 @@ Future<TourismImage> _$TourismImageFromSqlite(
   )..primaryKey = data['_brick_id'] as int;
 }
 
-Future<Map<String, dynamic>> _$TourismImageToSqlite(
-  TourismImage instance, {
+Future<Map<String, dynamic>> _$TourismImageModelToSqlite(
+  TourismImageModel instance, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return {
     'id': instance.id,
-    'tourism_spot_TourismSpot_brick_id':
+    'tourism_spot_TourismSpotModel_brick_id':
         instance.tourismSpot.primaryKey ??
-        await provider.upsert<TourismSpot>(
+        await provider.upsert<TourismSpotModel>(
           instance.tourismSpot,
           repository: repository,
         ),
@@ -77,10 +77,10 @@ Future<Map<String, dynamic>> _$TourismImageToSqlite(
   };
 }
 
-/// Construct a [TourismImage]
-class TourismImageAdapter
-    extends OfflineFirstWithSupabaseAdapter<TourismImage> {
-  TourismImageAdapter();
+/// Construct a [TourismImageModel]
+class TourismImageModelAdapter
+    extends OfflineFirstWithSupabaseAdapter<TourismImageModel> {
+  TourismImageModelAdapter();
 
   @override
   final supabaseTableName = 'tourism_images';
@@ -95,7 +95,7 @@ class TourismImageAdapter
     'tourismSpot': const RuntimeSupabaseColumnDefinition(
       association: true,
       columnName: 'tourism_spot',
-      associationType: TourismSpot,
+      associationType: TourismSpotModel,
       associationIsNullable: false,
       foreignKey: 'tourism_spot_id',
     ),
@@ -136,9 +136,9 @@ class TourismImageAdapter
     ),
     'tourismSpot': const RuntimeSqliteColumnDefinition(
       association: true,
-      columnName: 'tourism_spot_TourismSpot_brick_id',
+      columnName: 'tourism_spot_TourismSpotModel_brick_id',
       iterable: false,
-      type: TourismSpot,
+      type: TourismSpotModel,
     ),
     'label': const RuntimeSqliteColumnDefinition(
       association: false,
@@ -161,12 +161,12 @@ class TourismImageAdapter
   };
   @override
   Future<int?> primaryKeyByUniqueColumns(
-    TourismImage instance,
+    TourismImageModel instance,
     DatabaseExecutor executor,
   ) async {
     final results = await executor.rawQuery(
       '''
-        SELECT * FROM `TourismImage` WHERE id = ? LIMIT 1''',
+        SELECT * FROM `TourismImageModel` WHERE id = ? LIMIT 1''',
       [instance.id],
     );
 
@@ -179,44 +179,44 @@ class TourismImageAdapter
   }
 
   @override
-  final String tableName = 'TourismImage';
+  final String tableName = 'TourismImageModel';
 
   @override
-  Future<TourismImage> fromSupabase(
+  Future<TourismImageModel> fromSupabase(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageFromSupabase(
+  }) async => await _$TourismImageModelFromSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSupabase(
-    TourismImage input, {
+    TourismImageModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageToSupabase(
+  }) async => await _$TourismImageModelToSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
-  Future<TourismImage> fromSqlite(
+  Future<TourismImageModel> fromSqlite(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageFromSqlite(
+  }) async => await _$TourismImageModelFromSqlite(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSqlite(
-    TourismImage input, {
+    TourismImageModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageToSqlite(
+  }) async => await _$TourismImageModelToSqlite(
     input,
     provider: provider,
     repository: repository,

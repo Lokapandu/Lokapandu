@@ -3,5 +3,5 @@ import 'package:lokapandu/common/failure.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 
 abstract class TourismSpotRepository {
-  Future<Either<Failure, List<TourismSpotEntity>>> getTourismSpots();
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots();
 }

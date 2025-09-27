@@ -1,12 +1,12 @@
 // GENERATED CODE DO NOT EDIT
 part of '../brick.g.dart';
 
-Future<TourismSpot> _$TourismSpotFromSupabase(
+Future<TourismSpotModel> _$TourismSpotModelFromSupabase(
   Map<String, dynamic> data, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return TourismSpot(
+  return TourismSpotModel(
     id: data['id'] as int,
     name: data['name'] as String,
     description: data['description'] as String,
@@ -24,8 +24,8 @@ Future<TourismSpot> _$TourismSpotFromSupabase(
   );
 }
 
-Future<Map<String, dynamic>> _$TourismSpotToSupabase(
-  TourismSpot instance, {
+Future<Map<String, dynamic>> _$TourismSpotModelToSupabase(
+  TourismSpotModel instance, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
@@ -47,12 +47,12 @@ Future<Map<String, dynamic>> _$TourismSpotToSupabase(
   };
 }
 
-Future<TourismSpot> _$TourismSpotFromSqlite(
+Future<TourismSpotModel> _$TourismSpotModelFromSqlite(
   Map<String, dynamic> data, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return TourismSpot(
+  return TourismSpotModel(
     id: data['id'] as int,
     name: data['name'] as String,
     description: data['description'] as String,
@@ -70,8 +70,8 @@ Future<TourismSpot> _$TourismSpotFromSqlite(
   )..primaryKey = data['_brick_id'] as int;
 }
 
-Future<Map<String, dynamic>> _$TourismSpotToSqlite(
-  TourismSpot instance, {
+Future<Map<String, dynamic>> _$TourismSpotModelToSqlite(
+  TourismSpotModel instance, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
@@ -93,9 +93,10 @@ Future<Map<String, dynamic>> _$TourismSpotToSqlite(
   };
 }
 
-/// Construct a [TourismSpot]
-class TourismSpotAdapter extends OfflineFirstWithSupabaseAdapter<TourismSpot> {
-  TourismSpotAdapter();
+/// Construct a [TourismSpotModel]
+class TourismSpotModelAdapter
+    extends OfflineFirstWithSupabaseAdapter<TourismSpotModel> {
+  TourismSpotModelAdapter();
 
   @override
   final supabaseTableName = 'tourism_spots';
@@ -259,12 +260,12 @@ class TourismSpotAdapter extends OfflineFirstWithSupabaseAdapter<TourismSpot> {
   };
   @override
   Future<int?> primaryKeyByUniqueColumns(
-    TourismSpot instance,
+    TourismSpotModel instance,
     DatabaseExecutor executor,
   ) async {
     final results = await executor.rawQuery(
       '''
-        SELECT * FROM `TourismSpot` WHERE id = ? LIMIT 1''',
+        SELECT * FROM `TourismSpotModel` WHERE id = ? LIMIT 1''',
       [instance.id],
     );
 
@@ -277,44 +278,44 @@ class TourismSpotAdapter extends OfflineFirstWithSupabaseAdapter<TourismSpot> {
   }
 
   @override
-  final String tableName = 'TourismSpot';
+  final String tableName = 'TourismSpotModel';
 
   @override
-  Future<TourismSpot> fromSupabase(
+  Future<TourismSpotModel> fromSupabase(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismSpotFromSupabase(
+  }) async => await _$TourismSpotModelFromSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSupabase(
-    TourismSpot input, {
+    TourismSpotModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismSpotToSupabase(
+  }) async => await _$TourismSpotModelToSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
-  Future<TourismSpot> fromSqlite(
+  Future<TourismSpotModel> fromSqlite(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismSpotFromSqlite(
+  }) async => await _$TourismSpotModelFromSqlite(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSqlite(
-    TourismSpot input, {
+    TourismSpotModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismSpotToSqlite(
+  }) async => await _$TourismSpotModelToSqlite(
     input,
     provider: provider,
     repository: repository,

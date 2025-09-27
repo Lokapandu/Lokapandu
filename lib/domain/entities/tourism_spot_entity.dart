@@ -4,8 +4,8 @@ import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
 part 'tourism_spot_entity.freezed.dart';
 
 @freezed
-abstract class TourismSpotEntity with _$TourismSpotEntity {
-  const factory TourismSpotEntity({
+abstract class TourismSpot with _$TourismSpot {
+  const factory TourismSpot({
     required int id,
     required String name,
     required String description,
@@ -18,8 +18,8 @@ abstract class TourismSpotEntity with _$TourismSpotEntity {
     required String openTime,
     required String closeTime,
     required String mapsLink,
-    required List<TourismImageEntity> images,
+    required List<TourismImage> images,
     required String facilities,
     required DateTime createdAt,
-  }) = _TourismSpotEntity;
+  }) = _TourismSpot;
 }

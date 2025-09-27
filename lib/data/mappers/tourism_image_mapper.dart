@@ -2,8 +2,8 @@ import 'package:lokapandu/brick/models/tourism_image.model.dart';
 import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
 import 'tourism_spot_mapper.dart';
 
-extension TourismImageEntityMapper on TourismImageEntity {
-  TourismImage toModel() => TourismImage(
+extension TourismImageEntityMapper on TourismImage {
+  TourismImageModel toModel() => TourismImageModel(
         id: id,
         tourismSpot: tourismSpot.toModel(),
         imageUrl: imageUrl,
@@ -12,8 +12,8 @@ extension TourismImageEntityMapper on TourismImageEntity {
       );
 }
 
-extension TourismImageModelMapper on TourismImage {
-  TourismImageEntity toEntity() => TourismImageEntity(
+extension TourismImageModelMapper on TourismImageModel {
+  TourismImage toEntity() => TourismImage(
         id: id,
         tourismSpot: tourismSpot.toEntity(),
         imageUrl: imageUrl,
@@ -22,12 +22,12 @@ extension TourismImageModelMapper on TourismImage {
       );
 }
 
-extension TourismImageModelListMapper on List<TourismImage> {
-  List<TourismImageEntity> toEntityList() => 
+extension TourismImageModelListMapper on List<TourismImageModel> {  
+  List<TourismImage> toEntityList() => 
       map((image) => image.toEntity()).toList();
 }
 
-extension TourismImageEntityListMapper on List<TourismImageEntity> {
-  List<TourismImage> toModelList() => 
+extension TourismImageEntityListMapper on List<TourismImage> {
+  List<TourismImageModel> toModelList() => 
       map((entity) => entity.toModel()).toList();
 }

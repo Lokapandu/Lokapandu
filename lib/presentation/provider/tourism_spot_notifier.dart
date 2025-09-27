@@ -8,11 +8,11 @@ class TourismSpotNotifier extends ChangeNotifier {
 
   TourismSpotNotifier(this._getTourismSpotList);
 
-  List<TourismSpotEntity> _tourismSpots = [];
+  List<TourismSpot> _tourismSpots = [];
   bool _isLoading = false;
   String? _errorMessage;
 
-  List<TourismSpotEntity> get tourismSpots => _tourismSpots;
+  List<TourismSpot> get tourismSpots => _tourismSpots;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get hasError => _errorMessage != null;

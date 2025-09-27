@@ -4,21 +4,23 @@ import 'package:brick_sqlite/db.dart';
 part '20250925114028.migration.dart';
 part '20250925121330.migration.dart';
 part '20250925130134.migration.dart';
+part '20250927024655.migration.dart';
 
 /// All intelligently-generated migrations from all `@Migratable` classes on disk
 final migrations = <Migration>{
   const Migration20250925114028(),
   const Migration20250925121330(),
   const Migration20250925130134(),
+  const Migration20250927024655(),
 };
 
 /// A consumable database structure including the latest generated migration.
 final schema = Schema(
-  20250925130134,
+  20250927024655,
   generatorVersion: 1,
   tables: <SchemaTable>{
     SchemaTable(
-      'TourismImage',
+      'TourismImageModel',
       columns: <SchemaColumn>{
         SchemaColumn(
           '_brick_id',
@@ -29,10 +31,10 @@ final schema = Schema(
         ),
         SchemaColumn('id', Column.integer, unique: true),
         SchemaColumn(
-          'tourism_spot_TourismSpot_brick_id',
+          'tourism_spot_TourismSpotModel_brick_id',
           Column.integer,
           isForeignKey: true,
-          foreignTableName: 'TourismSpot',
+          foreignTableName: 'TourismSpotModel',
           onDeleteCascade: false,
           onDeleteSetDefault: false,
         ),
@@ -45,7 +47,7 @@ final schema = Schema(
       },
     ),
     SchemaTable(
-      'TourismSpot',
+      'TourismSpotModel',
       columns: <SchemaColumn>{
         SchemaColumn(
           '_brick_id',
