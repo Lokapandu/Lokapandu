@@ -1,17 +1,17 @@
-import 'package:lokapandu/data/datasources/services/supabase_service.dart';
-import 'package:lokapandu/data/models/tourism_spot/ts_model/tourism_spot_model.dart';
+import 'package:lokapandu/data/models/tourism_spot_model.dart';
+import 'package:lokapandu/data/models/tourism_image_model.dart';
 
+// Abstract interface that defines contract for remote data source operations
 abstract class TourismSpotRemoteDataSource {
+  // Method to fetch all tourism spots from remote data source
   Future<List<TourismSpotModel>> getTourismSpots();
-}
 
-class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
-  final SupabaseService supabaseService;
+  // Method to fetch a specific tourism spot by its ID, returns null if not found
+  Future<TourismSpotModel?> getTourismSpotById(int id);
 
-  TourismSpotRemoteDataSourceImpl({required this.supabaseService});
+  // Method to fetch all tourism images associated with a specific tourism spot
+  Future<List<TourismImageModel>> getTourismImagesBySpotId(int spotId);
 
-  @override
-  Future<List<TourismSpotModel>> getTourismSpots() async {
-    return supabaseService.getTourismSpots();
-  }
+  // Method to fetch all tourism images from remote data source
+  Future<List<TourismImageModel>> getAllTourismImages();
 }

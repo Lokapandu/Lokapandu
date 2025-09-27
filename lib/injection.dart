@@ -1,32 +1,76 @@
 import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:lokapandu/data/datasources/services/supabase_service.dart';
+import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
-import 'package:lokapandu/data/repositories/tourism_spot_repository_impl.dart';
+import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source_impl.dart';
+import 'package:lokapandu/data/repositories/tourism_spot_repository_supabase_impl.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
-import 'package:lokapandu/presentation/provider/counter_notifier.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 
 final locator = GetIt.instance;
 
-void init() {
-  // provider
-  locator.registerFactory(
-    () => CounterNotifier(),
-  ); // TODO: this code only example, to be delete soon
+/// Initializes all dependencies following Clean Architecture principles.
+///
+/// Dependencies are organized by layers:
+/// 1. External Services (Supabase, Firebase)
+/// 2. Data Layer (Services, Data Sources, Repositories)
+/// 3. Domain Layer (Use Cases)
+/// 4. Presentation Layer (Providers/Notifiers)
+///
+/// Registration types:
+/// - registerSingleton: Single instance created immediately
+/// - registerLazySingleton: Single instance created when first requested
+/// - registerFactory: New instance created each time requested
+Future<void> initDependencies() async {
+  // ========================================
+  // EXTERNAL SERVICES
+  // ========================================
 
-  // use case
-  locator.registerLazySingleton(() => GetTourismSpotList(locator()));
+  /// Supabase client - singleton as it manages connection state
+  locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
 
-  // repository
-  locator.registerLazySingleton<TourismSpotRepository>(
-    () => TourismSpotRepositoryImpl(remoteDataSource: locator()),
+  // ========================================
+  // DATA LAYER
+  // ========================================
+
+  /// Services - Business logic services that handle external APIs
+  locator.registerLazySingleton<SupabaseServiceInterface>(
+    () => SupabaseService(),
   );
 
-  // data sources
+  /// Data Sources - Handle data retrieval from external sources
   locator.registerLazySingleton<TourismSpotRemoteDataSource>(
-    () => TourismSpotRemoteDataSourceImpl(supabaseService: locator()),
+    () => TourismSpotRemoteDataSourceImpl(
+      supabaseService: locator<SupabaseServiceInterface>(),
+    ),
   );
 
-  // services
-  locator.registerLazySingleton<SupabaseService>(() => SupabaseService());
+  /// Repositories - Implement domain contracts and coordinate data sources
+  locator.registerLazySingleton<TourismSpotRepository>(
+    () => TourismSpotRepositorySupabaseImpl(
+      remoteDataSource: locator<TourismSpotRemoteDataSource>(),
+    ),
+  );
+
+  // ========================================
+  // DOMAIN LAYER
+  // ========================================
+
+  /// Use Cases - Contain business logic and orchestrate data flow
+  locator.registerLazySingleton<GetTourismSpotList>(
+    () => GetTourismSpotList(locator<TourismSpotRepository>()),
+  );
+
+  // ========================================
+  // PRESENTATION LAYER
+  // ========================================
+
+  /// Providers/Notifiers - Manage UI state and user interactions
+  /// Using factory registration for stateful providers to ensure fresh state
+  locator.registerFactory<TourismSpotNotifier>(
+    () => TourismSpotNotifier(locator<GetTourismSpotList>()),
+  );
 }

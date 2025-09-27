@@ -12,7 +12,7 @@ dependencies:
   provider: ^6.1.5+1
   supabase_flutter: ^2.10.1
   envied: ^1.2.1
-  build_runner: ^2.7.1
+  
   firebase_core: ^4.1.0
   firebase_ai: ^3.2.0
   freezed_annotation: ^3.1.0
@@ -24,17 +24,35 @@ dependencies:
   cached_network_image: ^3.4.1
   iconify_design: ^1.0.1
   intl: ^0.20.2
+  shimmer: ^3.0.0
+  google_fonts: ^6.3.2
 
   
 
+
+  brick_offline_first_with_supabase: ^2.1.0
+  brick_sqlite: ^4.1.0
+  brick_supabase: ^2.1.0
+  brick_core: ^2.0.0
+  brick_offline_first: ^4.0.1
+  sqflite_common: ^2.5.6
+  sqflite: ^2.4.2
+
+  #downgrade
+  build_runner: ^2.5.4
+  
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  envied_generator: ^1.2.1
-  freezed: ^3.2.3
-  json_serializable: ^6.11.1
+  brick_offline_first_with_supabase_build: ^2.0.0
+
+  # downgrade
+  envied_generator: ^1.1.1
+  freezed: ^3.0.6
+  json_serializable: ^6.9.5
 
 
 flutter:

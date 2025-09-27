@@ -1,1 +1,0 @@
-File ini akan dihapus setelah ada kepastian dalam pengembangan database 
