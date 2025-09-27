@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
+import 'package:lokapandu/features/plan/screens/plan_screen.dart';
 import 'package:lokapandu/features/settings/screens/settings_screen.dart';
 import 'package:lokapandu/features/tour/screens/tour_screen.dart';
 import '../widgets/home_header.dart';
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _pages = <Widget>[
     _buildHomeContent(),
     const TourScreen(),
-    const SettingsScreen(),
+    const PlanScreen(),
     const SettingsScreen(),
   ];
 

@@ -2,35 +2,45 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart'; // <-- Tambahkan import
 import '../models/tour_model.dart';
-import '../detail_screen/tour_detail_screen.dart'; 
+import '../detail_screen/tour_detail_screen.dart';
 
 class TourPreviewScreen extends StatelessWidget {
   final Tour tour;
   const TourPreviewScreen({super.key, required this.tour});
+
+  // Helper untuk mengecek URL
+  bool _isNetworkUrl(String url) {
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent, // AppBar transparan
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Detail Wisata',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Detail Wisata', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           // Latar Belakang Gambar
-          Positioned.fill(child: Image.asset(tour.imageUrl, fit: BoxFit.cover)),
-
+          Positioned.fill(
+            // 1. BUNGKUS GAMBAR DENGAN HERO WIDGET
+            child: Hero(
+              // 2. GUNAKAN TAG YANG SAMA PERSIS DENGAN DI TOURGRIDCARD
+              tag: '${tour.name}_${tour.hashCode}',
+              child: _buildBackgroundImage(), // Panggil helper gambar
+            ),
+          ),
+          
           // Kartu Kaca Buram di Bawah
           Align(
             alignment: Alignment.bottomCenter,
@@ -56,64 +66,35 @@ class TourPreviewScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Judul & Lokasi
-                      Text(
-                        tour.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text(tour.name, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(
-                            Icons.location_on,
-                            color: Colors.white70,
-                            size: 16,
-                          ),
+                          const Icon(Icons.location_on, color: Colors.white70, size: 16),
                           const SizedBox(width: 8),
-                          Text(
-                            tour.location,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
+                          Text(tour.location, style: const TextStyle(color: Colors.white70, fontSize: 14)),
                         ],
                       ),
                       const SizedBox(height: 16),
                       // Galeri Thumbnail
-                      _buildGalleryThumbnails(),
+                      _buildGalleryThumbnails(tour.galleryImageUrls),
                       const SizedBox(height: 24),
                       // Tombol Lihat Detail
                       ElevatedButton(
                         onPressed: () {
-                          // Navigasi ke halaman detail lengkap
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  TourDetailScreen(tour: tour),
+                              builder: (context) => TourDetailScreen(tour: tour),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF008080),
                           minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                         ),
-                        child: const Text(
-                          'Lihat Detail Wisata',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: const Text('Lihat Detail Wisata', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -126,15 +107,33 @@ class TourPreviewScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGalleryThumbnails() {
+  // Helper widget untuk menampilkan gambar latar belakang
+  Widget _buildBackgroundImage() {
+    return _isNetworkUrl(tour.imageUrl)
+        ? CachedNetworkImage(
+            imageUrl: tour.imageUrl,
+            fit: BoxFit.cover,
+            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
+          )
+        : Image.asset(
+            tour.imageUrl,
+            fit: BoxFit.cover,
+          );
+  }
+
+  // Helper widget untuk menampilkan thumbnail galeri
+  Widget _buildGalleryThumbnails(List<String> imageUrls) {
     return Row(
-      children: tour.galleryImageUrls.take(3).map((url) {
+      children: imageUrls.take(3).map((url) {
         return Expanded(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12.0),
-              child: Image.asset(url, height: 70, fit: BoxFit.cover),
+              child: _isNetworkUrl(url)
+                  ? CachedNetworkImage(imageUrl: url, height: 70, fit: BoxFit.cover)
+                  : Image.asset(url, height: 70, fit: BoxFit.cover),
             ),
           ),
         );

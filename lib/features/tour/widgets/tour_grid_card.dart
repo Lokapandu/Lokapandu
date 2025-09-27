@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/tour_model.dart';
-import '../screens/priview_screen.dart'; // <-- 1. UBAH IMPORT ke tour_preview_screen.dart
+import '../screens/priview_screen.dart';
 
 class TourGridCard extends StatelessWidget {
   final Tour tour;
@@ -15,7 +15,6 @@ class TourGridCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // 2. UBAH TUJUAN NAVIGASI DI SINI
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -33,56 +32,58 @@ class TourGridCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Gambar dengan ikon bookmark
             Expanded(
-              child: Stack(
-                children: [
-                  // Logika gambar Anda yang sudah canggih (tidak diubah)
-                  SizedBox.expand(
-                    child: _isNetworkUrl(tour.imageUrl)
-                        ? CachedNetworkImage(
-                            imageUrl: tour.imageUrl,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                color: Color(0xFF008080),
+              // 2. TAMBAHKAN HERO WIDGET UNTUK ANIMASI
+              child: Hero(
+                // Buat tag yang unik untuk setiap kartu
+                tag: '${tour.name}_${tour.hashCode}',
+                child: Stack(
+                  children: [
+                    SizedBox.expand(
+                      child: _isNetworkUrl(tour.imageUrl)
+                          ? CachedNetworkImage(
+                              imageUrl: tour.imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => const Center(
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                  color: Color(0xFF008080),
+                                ),
                               ),
-                            ),
-                            errorWidget: (context, url, error) => const Icon(
-                              Icons.broken_image,
-                              size: 50,
-                              color: Colors.grey,
-                            ),
-                          )
-                        : Image.asset(
-                            tour.imageUrl,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
+                              errorWidget: (context, url, error) => const Icon(
                                 Icons.broken_image,
                                 size: 50,
                                 color: Colors.grey,
-                              );
-                            },
-                          ),
-                  ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.8),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.bookmark_border, size: 20),
+                              ),
+                            )
+                          : Image.asset(
+                              tour.imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.broken_image,
+                                  size: 50,
+                                  color: Colors.grey,
+                                );
+                              },
+                            ),
                     ),
-                  ),
-                ],
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.bookmark_border, size: 20),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            // Detail teks (tidak diubah)
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
