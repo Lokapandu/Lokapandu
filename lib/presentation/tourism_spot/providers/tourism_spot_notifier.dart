@@ -43,6 +43,7 @@ class TourismSpotNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  //TODO: Implement more end-user friendly error message. Keep this as is for now.
   void _handleFailure(Failure failure) {
     failure.when(
       server: (message) => _errorMessage = 'Server Error: $message',

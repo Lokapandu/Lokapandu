@@ -30,6 +30,8 @@ dependencies:
 
   #downgrade
   build_runner: ^2.5.4
+  cached_network_image: ^3.4.1
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
