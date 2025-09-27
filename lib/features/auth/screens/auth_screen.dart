@@ -18,15 +18,13 @@ class AuthScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Spacer untuk memberi jarak dari atas
               const Spacer(flex: 2),
 
-              // 1. Header Teks "Lokapandu"
               const Text(
                 'Lokapandu',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF008080), // Warna Teal
+                  color: Color(0xFF008080), 
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),

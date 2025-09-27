@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:lokapandu/features/settings/screens/settings_screen.dart';
 import 'package:lokapandu/features/tour/screens/tour_screen.dart';
@@ -17,7 +18,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  
   static final List<Widget> _pages = <Widget>[
     _buildHomeContent(),
     const TourScreen(),
@@ -35,20 +35,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7FAFA),
-      // IndexedStack menjaga state setiap halaman agar tidak hilang saat berpindah tab
       body: SafeArea(
         child: IndexedStack(index: _selectedIndex, children: _pages),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Aksi untuk membuka halaman AI Chat
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AiChatScaffold()),
           );
         },
         backgroundColor: const Color(0xFF008080),
-        child: const Icon(Icons.chat_bubble, color: Colors.white),
+        child: SvgPicture.asset(
+          'assets/icons/ai_chat.svg',
+          width: 24,
+          height: 24,
+          color: Colors.white,
+        ),
         elevation: 4.0,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -63,12 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: <Widget>[
                   _buildNavItem(
-                    icon: Icons.home_filled,
+                    iconPath: 'assets/icons/home.svg',
                     label: 'Beranda',
                     index: 0,
                   ),
                   _buildNavItem(
-                    icon: Icons.park_outlined,
+                    iconPath: 'assets/icons/icon_park.svg',
                     label: 'Wisata',
                     index: 1,
                   ),
@@ -77,12 +80,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: <Widget>[
                   _buildNavItem(
-                    icon: Icons.calendar_today_outlined,
+                    iconPath: 'assets/icons/planing.svg',
                     label: 'Rencana',
                     index: 2,
                   ),
                   _buildNavItem(
-                    icon: Icons.settings_outlined,
+                    iconPath: 'assets/icons/settings.svg',
                     label: 'Pengaturan',
                     index: 3,
                   ),
@@ -95,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper widget untuk membuat setiap item navigasi
+  // Helper widget untuk BottomNavigationBar item dengan SVG
   Widget _buildNavItem({
-    required IconData icon,
+    required String iconPath,
     required String label,
     required int index,
   }) {
@@ -110,7 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(icon, color: color),
+          SvgPicture.asset(iconPath, width: 24, height: 24, color: color),
           const SizedBox(height: 4),
           Text(
             label,

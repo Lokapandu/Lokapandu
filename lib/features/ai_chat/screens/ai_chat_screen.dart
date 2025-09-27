@@ -11,8 +11,7 @@ class AiChatScreen extends StatefulWidget {
 
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _controller = TextEditingController();
-  final ScrollController _scrollController =
-      ScrollController(); 
+  final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [
     const ChatMessage(
       text: 'Hai, Ayu Krisna! Ada yang bisa aku bantu?',
@@ -91,7 +90,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   Widget _buildHeader(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 16, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -113,7 +112,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   Widget _buildMessageInput() {
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(30.0),
       color: Colors.white,
       child: Row(
         children: [
