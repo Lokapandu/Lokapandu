@@ -1,3 +1,4 @@
+// ONLY FOR PREVIEW PURPOSE. DO NOT USE IN PRODUCTION.
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/provider/tourism_spot_notifier.dart';
@@ -54,19 +55,12 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red,
-                  ),
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
                   Text(
                     notifier.errorMessage!,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.red,
-                    ),
+                    style: const TextStyle(fontSize: 16, color: Colors.red),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -86,18 +80,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.location_off,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
+                  Icon(Icons.location_off, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
                     'No tourism spots found',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
               ),
@@ -174,44 +161,61 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                                   width: 120,
                                   margin: const EdgeInsets.only(right: 8),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                           child: Image.network(
                                             image.imageUrl,
                                             width: 120,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Container(
-                                                width: 120,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[300],
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: const Icon(
-                                                  Icons.image_not_supported,
-                                                  color: Colors.grey,
-                                                  size: 32,
-                                                ),
-                                              );
-                                            },
-                                            loadingBuilder: (context, child, loadingProgress) {
-                                              if (loadingProgress == null) return child;
-                                              return Container(
-                                                width: 120,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[200],
-                                                  borderRadius: BorderRadius.circular(8),
-                                                ),
-                                                child: const Center(
-                                                  child: CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                  ),
-                                                ),
-                                              );
-                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  return Container(
+                                                    width: 120,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey[300],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.image_not_supported,
+                                                      color: Colors.grey,
+                                                      size: 32,
+                                                    ),
+                                                  );
+                                                },
+                                            loadingBuilder:
+                                                (
+                                                  context,
+                                                  child,
+                                                  loadingProgress,
+                                                ) {
+                                                  if (loadingProgress == null)
+                                                    return child;
+                                                  return Container(
+                                                    width: 120,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.grey[200],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                    ),
+                                                    child: const Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                            strokeWidth: 2,
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
                                           ),
                                         ),
                                       ),

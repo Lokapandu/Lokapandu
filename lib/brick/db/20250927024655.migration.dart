@@ -14,8 +14,19 @@ const List<MigrationCommand> _migration_20250927024655_up = [
   DropTable('TourismImage'),
   InsertTable('TourismImageModel'),
   InsertTable('TourismSpotModel'),
-  InsertColumn('id', Column.integer, onTable: 'TourismImageModel', unique: true),
-  InsertForeignKey('TourismImageModel', 'TourismSpotModel', foreignKeyColumn: 'tourism_spot_TourismSpotModel_brick_id', onDeleteCascade: false, onDeleteSetDefault: false),
+  InsertColumn(
+    'id',
+    Column.integer,
+    onTable: 'TourismImageModel',
+    unique: true,
+  ),
+  InsertForeignKey(
+    'TourismImageModel',
+    'TourismSpotModel',
+    foreignKeyColumn: 'tourism_spot_TourismSpotModel_brick_id',
+    onDeleteCascade: false,
+    onDeleteSetDefault: false,
+  ),
   InsertColumn('label', Column.varchar, onTable: 'TourismImageModel'),
   InsertColumn('image_url', Column.varchar, onTable: 'TourismImageModel'),
   InsertColumn('created_at', Column.datetime, onTable: 'TourismImageModel'),
@@ -36,7 +47,7 @@ const List<MigrationCommand> _migration_20250927024655_up = [
   CreateIndex(columns: ['id'], onTable: 'TourismImageModel', unique: true),
   CreateIndex(columns: ['id'], onTable: 'TourismSpotModel', unique: true),
   CreateIndex(columns: ['id'], onTable: 'TourismSpot', unique: true),
-  CreateIndex(columns: ['id'], onTable: 'TourismImage', unique: true)
+  CreateIndex(columns: ['id'], onTable: 'TourismImage', unique: true),
 ];
 
 const List<MigrationCommand> _migration_20250927024655_down = [
@@ -45,7 +56,10 @@ const List<MigrationCommand> _migration_20250927024655_down = [
   DropTable('TourismImageModel'),
   DropTable('TourismSpotModel'),
   DropColumn('id', onTable: 'TourismImageModel'),
-  DropColumn('tourism_spot_TourismSpotModel_brick_id', onTable: 'TourismImageModel'),
+  DropColumn(
+    'tourism_spot_TourismSpotModel_brick_id',
+    onTable: 'TourismImageModel',
+  ),
   DropColumn('label', onTable: 'TourismImageModel'),
   DropColumn('image_url', onTable: 'TourismImageModel'),
   DropColumn('created_at', onTable: 'TourismImageModel'),
@@ -66,7 +80,7 @@ const List<MigrationCommand> _migration_20250927024655_down = [
   DropIndex('index_TourismImageModel_on_id'),
   DropIndex('index_TourismSpotModel_on_id'),
   DropIndex('index_TourismSpot_on_id'),
-  DropIndex('index_TourismImage_on_id')
+  DropIndex('index_TourismImage_on_id'),
 ];
 
 //

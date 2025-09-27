@@ -25,7 +25,7 @@ class TourismSpotNotifier extends ChangeNotifier {
 
     try {
       final result = await _getTourismSpotList.execute();
-      
+
       result.fold(
         (failure) {
           _handleFailure(failure);
