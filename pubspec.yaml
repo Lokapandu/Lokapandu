@@ -24,6 +24,8 @@ dependencies:
   cached_network_image: ^3.4.1
   iconify_design: ^1.0.1
   intl: ^0.20.2
+  shimmer: ^3.0.0
+  google_fonts: ^6.3.2
 
   
 
@@ -38,9 +40,8 @@ dependencies:
 
   #downgrade
   build_runner: ^2.5.4
-  cached_network_image: ^3.4.1
-  shimmer: ^3.0.0
-  google_fonts: ^6.3.2
+  
+  
 
 dev_dependencies:
   flutter_test:
