@@ -24,7 +24,7 @@ class AuthScreen extends StatelessWidget {
                 'Lokapandu',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF008080), 
+                  color: Color(0xFF008080),
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),

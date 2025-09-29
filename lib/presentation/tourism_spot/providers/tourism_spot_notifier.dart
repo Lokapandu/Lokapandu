@@ -15,7 +15,7 @@ class TourismSpotNotifier extends ChangeNotifier {
   List<TourismSpot> get tourismSpots => _tourismSpots;
 
   String? get errorMessage => _errorMessage;
-  
+
   bool get isLoading => _isLoading;
   bool get hasError => _errorMessage != null;
   bool get hasData => _tourismSpots.isNotEmpty;

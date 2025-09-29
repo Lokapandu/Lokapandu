@@ -29,16 +29,9 @@ class AppHeader extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              Icon(
-                Icons.wb_sunny,
-                color: theme.colorScheme.tertiary,
-                size: 16,
-              ),
+              Icon(Icons.wb_sunny, color: theme.colorScheme.tertiary, size: 16),
               const SizedBox(width: 8),
-              Text(
-                '27° C Cerah',
-                style: theme.textTheme.bodyMedium,
-              ),
+              Text('27° C Cerah', style: theme.textTheme.bodyMedium),
             ],
           ),
           const SizedBox(height: 8),

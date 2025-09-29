@@ -31,7 +31,7 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotNotifier>(),
         ),
-         ChangeNotifierProvider(
+        ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotDetailNotifier>(),
         ),
       ],

@@ -5,13 +5,11 @@ import '../models/facility_model.dart';
 class FacilitiesSection extends StatelessWidget {
   final String facilities;
 
-  const FacilitiesSection({
-    super.key,
-    required this.facilities,
-  });
+  const FacilitiesSection({super.key, required this.facilities});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final parsedFacilities = FacilityModel.parseFacilities(facilities);
     final iconFacilities = FacilityModel.getIconFacilities(parsedFacilities);
     final textFacilities = FacilityModel.getTextFacilities(parsedFacilities);
@@ -19,11 +17,13 @@ class FacilitiesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Text(
             'Fasilitas',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -36,15 +36,12 @@ class FacilitiesSection extends StatelessWidget {
               itemCount: iconFacilities.length,
               itemBuilder: (context, index) {
                 final facility = iconFacilities[index];
-                return FacilityIcon(
-                  icon: facility.icon!,
-                  label: facility.name,
-                );
+                return FacilityIcon(icon: facility.icon!, label: facility.name);
               },
               separatorBuilder: (context, index) => const SizedBox(width: 16),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
         ],
         if (textFacilities.isNotEmpty) ...[
           Padding(
@@ -60,16 +57,15 @@ class FacilitiesSection extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFF008080).withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
                     border: Border.all(
-                      color: const Color(0xFF008080).withOpacity(0.3),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Text(
                     facility.name,
-                    style: const TextStyle(
-                      color: Color(0xFF008080),
-                      fontSize: 12,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                 );

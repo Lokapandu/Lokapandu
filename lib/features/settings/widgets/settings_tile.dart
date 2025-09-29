@@ -16,8 +16,7 @@ class SettingsTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.actionType =
-        TileAction.navigation, 
+    this.actionType = TileAction.navigation,
     this.toggleValue,
     this.onToggleChanged,
     this.onTap,

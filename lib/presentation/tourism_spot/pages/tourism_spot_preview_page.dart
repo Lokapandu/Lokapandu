@@ -83,13 +83,17 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                         width: double.infinity,
                         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                         decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.35),
+                          color: theme.colorScheme.scrim.withValues(
+                            alpha: 0.35,
+                          ),
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(30),
                             topRight: Radius.circular(30),
                           ),
                           border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: theme.colorScheme.onPrimary.withValues(
+                              alpha: 0.2,
+                            ),
                           ),
                         ),
                         child: Column(

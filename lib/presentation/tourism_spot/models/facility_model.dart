@@ -5,11 +5,7 @@ class FacilityModel {
   final IconData? icon;
   final bool hasIcon;
 
-  const FacilityModel({
-    required this.name,
-    this.icon,
-    required this.hasIcon,
-  });
+  const FacilityModel({required this.name, this.icon, required this.hasIcon});
 
   static const Map<String, IconData> _facilityIcons = {
     'area parkir': Icons.local_parking,
@@ -34,12 +30,8 @@ class FacilityModel {
     return facilityNames.map((name) {
       final lowerName = name.toLowerCase();
       final icon = _facilityIcons[lowerName];
-      
-      return FacilityModel(
-        name: name,
-        icon: icon,
-        hasIcon: icon != null,
-      );
+
+      return FacilityModel(name: name, icon: icon, hasIcon: icon != null);
     }).toList();
   }
 

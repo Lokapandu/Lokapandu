@@ -100,19 +100,19 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
 
                   if (!notifier.hasData) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.location_off,
                             size: 64,
-                            color: Colors.grey,
+                            color: theme.colorScheme.outline,
                           ),
                           SizedBox(height: 16),
                           Text(
                             'Tidak ada wisata ditemukan',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            style: TextStyle(fontSize: 16, color: theme.colorScheme.outline),
                           ),
                         ],
                       ),
@@ -139,7 +139,9 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       return DestinationCard(
                         tourismSpot: filteredSpots[index],
                         onTap: () {
-                          context.go('/tourism_spot/preview/${filteredSpots[index].id}');
+                          context.go(
+                            '/tourism_spot/preview/${filteredSpots[index].id}',
+                          );
                         },
                       );
                     },

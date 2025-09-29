@@ -6,7 +6,7 @@ import '../widgets/action_button_section.dart';
 import '../widgets/facilities_section.dart';
 import '../widgets/header_section.dart';
 import '../widgets/image_caraosel_section.dart';
-import '../widgets/location_map_section.dart';
+// import '../widgets/location_map_section.dart';
 import '../widgets/tour_detail_silver.dart';
 
 class TourismSpotDetailPage extends StatelessWidget {
@@ -15,6 +15,7 @@ class TourismSpotDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -22,9 +23,9 @@ class TourismSpotDetailPage extends StatelessWidget {
           SliverToBoxAdapter(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 24.0),
-              decoration: const BoxDecoration(
-                color: Color(0xFFF7FAFA),
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(24),
                   topRight: Radius.circular(24),
                 ),
@@ -38,18 +39,16 @@ class TourismSpotDetailPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   AboutSection(aboutText: tour.description),
                   const SizedBox(height: 24),
-                  LocationMapSection(mapImageUrl: tour.mapsLink),
+                  // LocationMapSection(mapImageUrl: tour.mapsLink),
                   const SizedBox(height: 24),
                   FacilitiesSection(facilities: tour.facilities),
-                  const SizedBox(height: 32),
-                  const ActionButtonsSection(),
-                  const SizedBox(height: 24),
                 ],
               ),
             ),
           ),
         ],
       ),
+      bottomNavigationBar: const ActionButtonsSection(),
     );
   }
 }

@@ -24,7 +24,9 @@ class ImageCarouselSection extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.shadow.withValues(alpha: 0.1),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),

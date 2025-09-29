@@ -5,8 +5,9 @@ class ActionButtonsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 16.0, bottom: 64.0),
       child: Row(
         children: [
           Expanded(
@@ -17,13 +18,15 @@ class ActionButtonsSection extends StatelessWidget {
                 // TODO: Implement add to plan functionality
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF008080),
-                foregroundColor: Colors.white,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                textStyle: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -34,7 +37,7 @@ class ActionButtonsSection extends StatelessWidget {
               // TODO: Implement bookmark functionality
             },
             style: IconButton.styleFrom(
-              side: BorderSide(color: Colors.grey.shade300),
+              side: BorderSide(color: theme.colorScheme.outline),
               padding: const EdgeInsets.all(12),
             ),
           ),

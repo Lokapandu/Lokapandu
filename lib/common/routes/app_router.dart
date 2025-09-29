@@ -28,8 +28,7 @@ class AppRouter {
             GoRoute(
               path: '/detail',
               builder: (context, state) {
-                final tour =
-                    state.extra as TourismSpot;
+                final tour = state.extra as TourismSpot;
                 return TourismSpotDetailPage(tour: tour);
               },
             ),
