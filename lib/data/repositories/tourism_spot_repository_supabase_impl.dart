@@ -18,6 +18,7 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     required TourismSpotRemoteDataSource remoteDataSource,
   }) : _remoteDataSource = remoteDataSource;
 
+  // Fetching tourism spot lists
   @override
   Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
     try {
@@ -89,6 +90,42 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     } catch (e) {
       developer.log(e.toString(), name: "Tourism Spot Repository");
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  // Fetching tourism spot by ID
+  @override
+  Future<Either<Failure, TourismSpot>> getTourismSpotById(int id) async {
+    try {
+      // Fetch tourism spot from Supabase by ID
+      final spotResult = await _remoteDataSource.getTourismSpotById(id);
+
+      // Handle empty result
+      if (spotResult == null) {
+        return Left(ServerFailure('Tourism spot with ID $id not found'));
+      }
+
+      // Fetch all tourism images for this spot from Supabase
+      final imagesResult = await _remoteDataSource.getTourismImagesBySpotId(
+        spotResult.id,
+      );
+
+      // Create a map of spots for image mapping
+      final Map<int, TourismSpot> spotMap = {
+        spotResult.id: spotResult.toEntity(),
+      };
+
+      // Map spot to entity with its associated images
+      final spotImagesEntity = imagesResult.toEntityList(spotMap);
+      final spotEntity = spotResult.toEntity(images: spotImagesEntity);
+
+      return Right(spotEntity);
+    } on SupabaseException catch (e) {
+      developer.log(e.toString(), name: "Tourism Spot Repository");
+      return Left(ServerFailure('Supabase error: ${e.message}'));
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Tourism Spot Repository");
+      return Left(ConnectionFailure('Connection error: ${e.message}'));
     }
   }
 }

@@ -1,39 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:lokapandu/common/errors/failure.dart';
+import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
-import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
+import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 
-class TourismSpotNotifier extends ChangeNotifier {
-  final GetTourismSpotList _getTourismSpotList;
+class TourismSpotDetailNotifier extends ChangeNotifier {
+  final GetTourismSpotDetail _getTourismSpotDetail;
 
-  TourismSpotNotifier(this._getTourismSpotList);
+  TourismSpotDetailNotifier(this._getTourismSpotDetail);
 
-  List<TourismSpot> _tourismSpots = [];
+  TourismSpot? _tourismSpot;
+  List<TourismImage> _tourismImages = [];
   bool _isLoading = false;
   String? _errorMessage;
+  String _selectedImage = '';
 
-  List<TourismSpot> get tourismSpots => _tourismSpots;
+  TourismSpot? get tourismSpot => _tourismSpot;
+
+  List<TourismImage> get images => _tourismImages;
 
   String? get errorMessage => _errorMessage;
-  
+  String get selectedImage => _selectedImage;
+
   bool get isLoading => _isLoading;
   bool get hasError => _errorMessage != null;
-  bool get hasData => _tourismSpots.isNotEmpty;
+  bool get hasData => _tourismSpot != null;
 
-  Future<void> loadTourismSpots() async {
+  Future<void> loadTourismSpotDetail(int id) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final result = await _getTourismSpotList.execute();
+      final result = await _getTourismSpotDetail.execute(id);
 
       result.fold(
         (failure) {
           _handleFailure(failure);
         },
-        (spots) {
-          _tourismSpots = spots;
+        (spot) {
+          _tourismSpot = spot;
+          _tourismImages = spot.images;
+          if (_tourismImages.isNotEmpty) {
+            _selectedImage = _tourismImages.first.imageUrl;
+          }
           _errorMessage = null;
         },
       );
@@ -42,6 +52,11 @@ class TourismSpotNotifier extends ChangeNotifier {
     }
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  void selectImage(String image) {
+    _selectedImage = image;
     notifyListeners();
   }
 
@@ -60,6 +75,6 @@ class TourismSpotNotifier extends ChangeNotifier {
   }
 
   void refresh() {
-    loadTourismSpots();
+    loadTourismSpotDetail(_tourismSpot?.id ?? 0);
   }
 }
