@@ -1,9 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class LocationMapSection extends StatelessWidget {
-  final String mapImageUrl;
+class LocationMapSection extends StatefulWidget {
+  final String tourName;
+  final double latitude;
+  final double longitude;
 
-  const LocationMapSection({super.key, required this.mapImageUrl});
+  const LocationMapSection({
+    super.key,
+    required this.tourName,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  State<LocationMapSection> createState() => _LocationMapSectionState();
+}
+
+class _LocationMapSectionState extends State<LocationMapSection> {
+  late GoogleMapController mapController;
+  late final LatLng center;
+  late Marker _marker;
+
+  @override
+  void initState() {
+    super.initState();
+    center = LatLng(widget.latitude, widget.longitude);
+    _marker = Marker(
+      markerId: MarkerId(widget.tourName),
+      position: center,
+      infoWindow: InfoWindow(title: widget.tourName),
+    );
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +49,10 @@ class LocationMapSection extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(mapImageUrl, fit: BoxFit.cover),
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(target: center, zoom: 11.0),
+            markers: {_marker},
           ),
         ],
       ),

@@ -39,7 +39,7 @@ class TourismSpotDetailPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   AboutSection(aboutText: tour.description),
                   const SizedBox(height: 24),
-                  // LocationMapSection(mapImageUrl: tour.mapsLink),
+                  // LocationMapSection(tourName: tour.name, latitude: tour.latitude, longitude: tour.longitude),
                   const SizedBox(height: 24),
                   FacilitiesSection(facilities: tour.facilities),
                 ],
