@@ -40,6 +40,8 @@ dependencies:
 
   #downgrade
   build_runner: ^2.5.4
+  go_router: ^16.2.4
+  google_maps_flutter: ^2.13.1
   
   
 

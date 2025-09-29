@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:lokapandu/data/datasources/services/supabase_service.dart';
@@ -63,6 +65,9 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<GetTourismSpotList>(
     () => GetTourismSpotList(locator<TourismSpotRepository>()),
   );
+  locator.registerLazySingleton<GetTourismSpotDetail>(
+    () => GetTourismSpotDetail(locator<TourismSpotRepository>()),
+  );
 
   // ========================================
   // PRESENTATION LAYER
@@ -72,5 +77,9 @@ Future<void> initDependencies() async {
   /// Using factory registration for stateful providers to ensure fresh state
   locator.registerFactory<TourismSpotNotifier>(
     () => TourismSpotNotifier(locator<GetTourismSpotList>()),
+  );
+
+  locator.registerFactory<TourismSpotDetailNotifier>(
+    () => TourismSpotDetailNotifier(locator<GetTourismSpotDetail>()),
   );
 }

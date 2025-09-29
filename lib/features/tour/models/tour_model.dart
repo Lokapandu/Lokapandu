@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class Facility {
   final IconData icon;
   final String name;

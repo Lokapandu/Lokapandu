@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/routes/app_router.dart';
 import 'package:lokapandu/common/themes/theme.dart';
 import 'package:lokapandu/common/themes/util.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,10 +13,10 @@ class App extends StatelessWidget {
 
     MaterialTheme theme = MaterialTheme(textTheme);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Lokapandu',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      home: const TourismSpotPage(),
+      routerConfig: AppRouter.createRouter(),
     );
   }
 }

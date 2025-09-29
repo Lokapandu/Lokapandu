@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
@@ -65,6 +66,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
 
                   if (notifier.hasError) {
+                    //TODO: Implement more end-user friendly error message. Keep this as is for now.
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -98,19 +100,19 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
 
                   if (!notifier.hasData) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.location_off,
                             size: 64,
-                            color: Colors.grey,
+                            color: theme.colorScheme.outline,
                           ),
                           SizedBox(height: 16),
                           Text(
                             'Tidak ada wisata ditemukan',
-                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                            style: TextStyle(fontSize: 16, color: theme.colorScheme.outline),
                           ),
                         ],
                       ),
@@ -137,7 +139,9 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       return DestinationCard(
                         tourismSpot: filteredSpots[index],
                         onTap: () {
-                          // TODO: Navigate to detail page
+                          context.go(
+                            '/tourism_spot/preview/${filteredSpots[index].id}',
+                          );
                         },
                       );
                     },

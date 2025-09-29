@@ -91,7 +91,7 @@ class SupabaseService implements SupabaseServiceInterface {
     }
   }
 
-  // Method to fetch tourism images for a specific tourism spot
+  // Method to fetch tourism images for a specific tourism spot by its ID
   @override
   Future<List<TourismImageModel>> getTourismImagesBySpotId(int spotId) async {
     try {

@@ -26,7 +26,10 @@ class TourPreviewScreen extends StatelessWidget {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Detail Wisata', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Detail Wisata',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Stack(
@@ -40,7 +43,7 @@ class TourPreviewScreen extends StatelessWidget {
               child: _buildBackgroundImage(), // Panggil helper gambar
             ),
           ),
-          
+
           // Kartu Kaca Buram di Bawah
           Align(
             alignment: Alignment.bottomCenter,
@@ -66,13 +69,30 @@ class TourPreviewScreen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(tour.name, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                      Text(
+                        tour.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Icon(Icons.location_on, color: Colors.white70, size: 16),
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.white70,
+                            size: 16,
+                          ),
                           const SizedBox(width: 8),
-                          Text(tour.location, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                          Text(
+                            tour.location,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -85,16 +105,26 @@ class TourPreviewScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TourDetailScreen(tour: tour),
+                              builder: (context) =>
+                                  TourDetailScreen(tour: tour),
                             ),
                           );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF008080),
                           minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
-                        child: const Text('Lihat Detail Wisata', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Lihat Detail Wisata',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -113,13 +143,12 @@ class TourPreviewScreen extends StatelessWidget {
         ? CachedNetworkImage(
             imageUrl: tour.imageUrl,
             fit: BoxFit.cover,
-            placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) => const Icon(Icons.broken_image, color: Colors.grey),
+            placeholder: (context, url) =>
+                const Center(child: CircularProgressIndicator()),
+            errorWidget: (context, url, error) =>
+                const Icon(Icons.broken_image, color: Colors.grey),
           )
-        : Image.asset(
-            tour.imageUrl,
-            fit: BoxFit.cover,
-          );
+        : Image.asset(tour.imageUrl, fit: BoxFit.cover);
   }
 
   // Helper widget untuk menampilkan thumbnail galeri
@@ -132,7 +161,11 @@ class TourPreviewScreen extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12.0),
               child: _isNetworkUrl(url)
-                  ? CachedNetworkImage(imageUrl: url, height: 70, fit: BoxFit.cover)
+                  ? CachedNetworkImage(
+                      imageUrl: url,
+                      height: 70,
+                      fit: BoxFit.cover,
+                    )
                   : Image.asset(url, height: 70, fit: BoxFit.cover),
             ),
           ),

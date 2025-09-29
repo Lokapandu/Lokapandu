@@ -25,7 +25,10 @@ class PlanTimelineItem extends StatelessWidget {
   Widget _buildTimeIndicator() {
     return Column(
       children: [
-        Text(item.timeRange.split(' - ')[0], style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(
+          item.timeRange.split(' - ')[0],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 4),
         Container(
           padding: const EdgeInsets.all(8),
@@ -34,12 +37,28 @@ class PlanTimelineItem extends StatelessWidget {
             color: Colors.green.withOpacity(0.1),
             border: Border.all(color: Colors.green),
           ),
-          child: const Text('Min', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
+          child: const Text(
+            'Min',
+            style: TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
         ),
         const SizedBox(height: 4),
-        Text(item.timeRange.split(' - ')[1], style: const TextStyle(color: Colors.grey)),
+        Text(
+          item.timeRange.split(' - ')[1],
+          style: const TextStyle(color: Colors.grey),
+        ),
         const Expanded(
-          child: VerticalDivider(color: Colors.green, thickness: 2, width: 20, indent: 8, endIndent: 8),
+          child: VerticalDivider(
+            color: Colors.green,
+            thickness: 2,
+            width: 20,
+            indent: 8,
+            endIndent: 8,
+          ),
         ),
       ],
     );

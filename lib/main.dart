@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lokapandu/app.dart';
 import 'package:lokapandu/env/env.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -29,6 +30,9 @@ void main() async {
       providers: [
         ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotNotifier>(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<TourismSpotDetailNotifier>(),
         ),
       ],
       child: const App(),
