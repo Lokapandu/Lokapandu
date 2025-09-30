@@ -5,10 +5,12 @@ import 'package:dartz/dartz.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
-import 'package:lokapandu/data/mappers/supabase_tourism_spot_mapper.dart';
 import 'package:lokapandu/data/mappers/supabase_tourism_image_mapper.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/data/mappers/supabase_tourism_spot_mapper.dart';
+import 'package:lokapandu/data/models/tourism_image_model.dart';
+import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 
 class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
@@ -18,63 +20,15 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     required TourismSpotRemoteDataSource remoteDataSource,
   }) : _remoteDataSource = remoteDataSource;
 
-  // Fetching tourism spot lists
-  @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
+  Future<Either<Failure, List<TourismSpot>>> _executeSpotListCall(
+      Future<List<TourismSpotModel>> Function() call) async {
     try {
-      // Fetch tourism spots from Supabase
-      final spotsResult = await _remoteDataSource.getTourismSpots();
-
-      // Handle empty result
+      final spotsResult = await call();
       if (spotsResult.isEmpty) {
-        return Right([]);
+        return const Right([]);
       }
-
-      // Fetch all tourism images from Supabase
       final imagesResult = await _remoteDataSource.getAllTourismImages();
-
-      // Create a map of spots for image mapping
-      final Map<int, TourismSpot> spotsMap = {};
-      for (final spot in spotsResult) {
-        spotsMap[spot.id] = spot.toEntity();
-      }
-
-      // Group images by tourism spot ID
-      final Map<int, List<TourismImage>> imagesMap = {};
-      for (final image in imagesResult) {
-        final spotId = image.tourismSpotId;
-        final spot = spotsMap[spotId];
-
-        if (spot != null) {
-          if (!imagesMap.containsKey(spotId)) {
-            imagesMap[spotId] = [];
-          }
-          try {
-            imagesMap[spotId]!.add(image.toEntity(spot));
-          } catch (e) {
-            developer.log(
-              'Error converting tourism image ${image.id}: $e',
-              name: "Tourism Spot Repository",
-            );
-          }
-        }
-      }
-
-      // Map spots to entities with their associated images
-      final entities = <TourismSpot>[];
-      for (final spot in spotsResult) {
-        try {
-          final spotImages = imagesMap[spot.id] ?? [];
-          entities.add(spot.toEntity(images: spotImages));
-        } catch (e) {
-          developer.log(
-            'Error converting tourism spot ${spot.id}: $e',
-            name: "Tourism Spot Repository",
-          );
-        }
-      }
-
-      return Right(entities);
+      return Right(_mapSpotsWithImages(spotsResult, imagesResult));
     } on SupabaseException catch (e) {
       developer.log(e.toString(), name: "Tourism Spot Repository");
       return Left(ServerFailure('Supabase error: ${e.message}'));
@@ -93,31 +47,32 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     }
   }
 
-  // Fetching tourism spot by ID
+  @override
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
+    return _executeSpotListCall(() => _remoteDataSource.getTourismSpots());
+  }
+
+  @override
+  Future<Either<Failure, List<TourismSpot>>> searchTourismSpots(String query) async {
+    // INI BAGIAN YANG DIPERBAIKI: Menggunakan kembali helper untuk memanggil remote data source
+    return _executeSpotListCall(() => _remoteDataSource.searchTourismSpots(query));
+  }
+
   @override
   Future<Either<Failure, TourismSpot>> getTourismSpotById(int id) async {
     try {
-      // Fetch tourism spot from Supabase by ID
       final spotResult = await _remoteDataSource.getTourismSpotById(id);
-
-      // Handle empty result
       if (spotResult == null) {
         return Left(ServerFailure('Tourism spot with ID $id not found'));
       }
 
-      // Fetch all tourism images for this spot from Supabase
-      final imagesResult = await _remoteDataSource.getTourismImagesBySpotId(
-        spotResult.id,
-      );
+      final imagesResult =
+          await _remoteDataSource.getTourismImagesBySpotId(spotResult.id);
 
-      // Create a map of spots for image mapping
-      final Map<int, TourismSpot> spotMap = {
-        spotResult.id: spotResult.toEntity(),
-      };
-
-      // Map spot to entity with its associated images
-      final spotImagesEntity = imagesResult.toEntityList(spotMap);
-      final spotEntity = spotResult.toEntity(images: spotImagesEntity);
+      final spotEntityWithoutImages = spotResult.toEntity();
+      final imageEntities =
+          imagesResult.toEntityList({spotResult.id: spotEntityWithoutImages});
+      final spotEntity = spotResult.toEntity(images: imageEntities);
 
       return Right(spotEntity);
     } on SupabaseException catch (e) {
@@ -126,6 +81,29 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     } on ConnectionException catch (e) {
       developer.log(e.toString(), name: "Tourism Spot Repository");
       return Left(ConnectionFailure('Connection error: ${e.message}'));
+    } catch (e) {
+      developer.log(e.toString(), name: "Tourism Spot Repository");
+      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
     }
+  }
+
+  List<TourismSpot> _mapSpotsWithImages(
+    List<TourismSpotModel> spotsResult,
+    List<TourismImageModel> imagesResult,
+  ) {
+    final Map<int, TourismSpot> spotsMap = {
+      for (var spot in spotsResult) spot.id: spot.toEntity()
+    };
+
+    final Map<int, List<TourismImage>> imagesMap = {};
+    for (final image in imagesResult) {
+      if (spotsMap.containsKey(image.tourismSpotId)) {
+        imagesMap
+            .putIfAbsent(image.tourismSpotId, () => [])
+            .add(image.toEntity(spotsMap[image.tourismSpotId]!));
+      }
+    }
+
+    return spotsResult.toEntityList(imagesMap: imagesMap);
   }
 }

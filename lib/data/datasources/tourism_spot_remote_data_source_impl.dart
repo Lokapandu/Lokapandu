@@ -5,7 +5,6 @@ import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
 import 'package:lokapandu/common/errors/exceptions.dart';
 
-// Implementation class that acts as data source layer for tourism spots
 class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
   final SupabaseServiceInterface _supabaseService;
 
@@ -13,7 +12,6 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
     required SupabaseServiceInterface supabaseService,
   }) : _supabaseService = supabaseService;
 
-  // Method to fetch all tourism spots with comprehensive error handling
   @override
   Future<List<TourismSpotModel>> getTourismSpots() async {
     try {
@@ -29,7 +27,6 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
     }
   }
 
-  // Method to fetch a specific tourism spot by ID with error handling
   @override
   Future<TourismSpotModel?> getTourismSpotById(int id) async {
     try {
@@ -45,7 +42,6 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
     }
   }
 
-  // Method to fetch all tourism images with error handling
   @override
   Future<List<TourismImageModel>> getAllTourismImages() async {
     try {
@@ -61,7 +57,6 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
     }
   }
 
-  // Method to fetch tourism images for a specific spot with error handling
   @override
   Future<List<TourismImageModel>> getTourismImagesBySpotId(int spotId) async {
     try {
@@ -74,6 +69,21 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
       throw ConnectionException('No internet connection');
     } catch (e) {
       throw ServerException('Failed to fetch tourism images: $e');
+    }
+  }
+
+  @override
+  Future<List<TourismSpotModel>> searchTourismSpots(String query) async {
+    try {
+      return await _supabaseService.searchTourismSpots(query);
+    } on SupabaseException {
+      rethrow;
+    } on ServerException {
+      rethrow;
+    } on SocketException {
+      throw ConnectionException('No internet connection');
+    } catch (e) {
+      throw ServerException('Failed to search tourism spots: $e');
     }
   }
 }
