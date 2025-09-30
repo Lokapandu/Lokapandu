@@ -54,18 +54,21 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
 
   @override
   Future<Either<Failure, List<TourismSpot>>> searchTourismSpots(String query) async {
-    // INI BAGIAN YANG DIPERBAIKI: Menggunakan kembali helper untuk memanggil remote data source
     return _executeSpotListCall(() => _remoteDataSource.searchTourismSpots(query));
   }
 
+  // Fetching tourism spot lists
   @override
   Future<Either<Failure, TourismSpot>> getTourismSpotById(int id) async {
     try {
+      // Fetch tourism spots from Supabase
       final spotResult = await _remoteDataSource.getTourismSpotById(id);
+
+      // Handle empty result
       if (spotResult == null) {
         return Left(ServerFailure('Tourism spot with ID $id not found'));
       }
-
+      // Fetch all tourism images from Supabase
       final imagesResult =
           await _remoteDataSource.getTourismImagesBySpotId(spotResult.id);
 

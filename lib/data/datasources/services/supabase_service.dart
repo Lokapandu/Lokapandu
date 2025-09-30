@@ -4,6 +4,7 @@ import 'package:lokapandu/data/models/tourism_image_model.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
 import 'package:lokapandu/common/errors/exceptions.dart';
 
+// Service class that handles all Supabase database operations
 class SupabaseService implements SupabaseServiceInterface {
   static SupabaseService? _instance;
   late final SupabaseClient _client;
@@ -18,6 +19,7 @@ class SupabaseService implements SupabaseServiceInterface {
   }
 
   SupabaseClient get client => _client;
+  // Method to fetch all tourism spots from database
 
   @override
   Future<List<TourismSpotModel>> getAllTourismSpots() async {
