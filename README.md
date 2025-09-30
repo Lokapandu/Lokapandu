@@ -1,3 +1,5 @@
+[![Codemagic build status](https://api.codemagic.io/apps/68d21507b129bcfa785c9173/68d21507b129bcfa785c9172/status_badge.svg)](https://codemagic.io/app/68d21507b129bcfa785c9173/68d21507b129bcfa785c9172/latest_build)
+
 # Lokapandu
 
 Aplikasi Flutter untuk eksplorasi tempat wisata lokal Indonesia dengan integrasi Firebase dan Supabase.
