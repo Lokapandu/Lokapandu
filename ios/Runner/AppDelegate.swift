@@ -9,8 +9,7 @@ import UIKit
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
 
-    // TODO: Add your Google Maps API key
-    GMSServices.provideAPIKey("YOUR-API-KEY") 
+    GMSServices.provideAPIKey("AIzaSyBPmbfVbuXVaMZbFQvE7KNcsQ4ATCT8q5Q") 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
