@@ -1,0 +1,30 @@
+# codemagic.yaml
+workflows:
+  default-workflow:
+    name: Default Workflow
+    instance_type: mac_mini_m1
+    max_build_duration: 60
+    environment:
+      flutter: stable
+
+    # Caching untuk mempercepat proses build
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.gradle/caches
+        - $HOME/Library/Caches/CocoaPods
+        - $FCI_BUILD_DIR/ios/Pods
+
+    scripts:
+      - name: Set up local properties
+        script: | 
+          echo "flutter.sdk=$FLUTTER_ROOT" > "$FCI_BUILD_DIR/android/local.properties"
+      - name: Get Flutter packages
+        script: | 
+          flutter pub get
+      - name: Build Flutter App for Android (Release)
+        script: | 
+          flutter build apk --release
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
