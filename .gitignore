@@ -44,6 +44,7 @@ env.g.dart
 brick/adapters/*.dart
 brick/db/*.g.dart
 brick/brick.g.dart
+secrets.properties
 
 # Android Studio will place build artifacts here
 /android/app/debug
