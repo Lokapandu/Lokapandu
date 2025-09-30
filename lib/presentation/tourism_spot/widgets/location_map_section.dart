@@ -44,15 +44,30 @@ class _LocationMapSectionState extends State<LocationMapSection> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Peta Lokasi',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Peta Lokasi',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text('buka di Google Maps'),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
-          GoogleMap(
-            onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(target: center, zoom: 11.0),
-            markers: {_marker},
+          SizedBox(
+            height: 500,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(target: center, zoom: 11.0),
+                markers: {_marker},
+              ),
+            ),
           ),
         ],
       ),

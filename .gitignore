@@ -40,6 +40,7 @@ app.*.symbols
 app.*.map.json
 
 .env
+secrets.properties
 env.g.dart
 
 # Android Studio will place build artifacts here
