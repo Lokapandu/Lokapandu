@@ -9,24 +9,11 @@ part of 'schema.g.dart';
 
 // The migration version must **always** mirror the file name
 
-const List<MigrationCommand> _migration_20250927024655_up = [
-  DropTable('TourismSpot'),
-  DropTable('TourismImage'),
+const List<MigrationCommand> _migration_20250930051644_up = [
   InsertTable('TourismImageModel'),
   InsertTable('TourismSpotModel'),
-  InsertColumn(
-    'id',
-    Column.integer,
-    onTable: 'TourismImageModel',
-    unique: true,
-  ),
-  InsertForeignKey(
-    'TourismImageModel',
-    'TourismSpotModel',
-    foreignKeyColumn: 'tourism_spot_TourismSpotModel_brick_id',
-    onDeleteCascade: false,
-    onDeleteSetDefault: false,
-  ),
+  InsertColumn('id', Column.integer, onTable: 'TourismImageModel', unique: true),
+  InsertForeignKey('TourismImageModel', 'TourismSpotModel', foreignKeyColumn: 'tourism_spot_TourismSpotModel_brick_id', onDeleteCascade: false, onDeleteSetDefault: false),
   InsertColumn('label', Column.varchar, onTable: 'TourismImageModel'),
   InsertColumn('image_url', Column.varchar, onTable: 'TourismImageModel'),
   InsertColumn('created_at', Column.datetime, onTable: 'TourismImageModel'),
@@ -45,21 +32,14 @@ const List<MigrationCommand> _migration_20250927024655_up = [
   InsertColumn('facilities', Column.varchar, onTable: 'TourismSpotModel'),
   InsertColumn('created_at', Column.datetime, onTable: 'TourismSpotModel'),
   CreateIndex(columns: ['id'], onTable: 'TourismImageModel', unique: true),
-  CreateIndex(columns: ['id'], onTable: 'TourismSpotModel', unique: true),
-  CreateIndex(columns: ['id'], onTable: 'TourismSpot', unique: true),
-  CreateIndex(columns: ['id'], onTable: 'TourismImage', unique: true),
+  CreateIndex(columns: ['id'], onTable: 'TourismSpotModel', unique: true)
 ];
 
-const List<MigrationCommand> _migration_20250927024655_down = [
-  InsertTable('TourismSpot'),
-  InsertTable('TourismImage'),
+const List<MigrationCommand> _migration_20250930051644_down = [
   DropTable('TourismImageModel'),
   DropTable('TourismSpotModel'),
   DropColumn('id', onTable: 'TourismImageModel'),
-  DropColumn(
-    'tourism_spot_TourismSpotModel_brick_id',
-    onTable: 'TourismImageModel',
-  ),
+  DropColumn('tourism_spot_TourismSpotModel_brick_id', onTable: 'TourismImageModel'),
   DropColumn('label', onTable: 'TourismImageModel'),
   DropColumn('image_url', onTable: 'TourismImageModel'),
   DropColumn('created_at', onTable: 'TourismImageModel'),
@@ -78,9 +58,7 @@ const List<MigrationCommand> _migration_20250927024655_down = [
   DropColumn('facilities', onTable: 'TourismSpotModel'),
   DropColumn('created_at', onTable: 'TourismSpotModel'),
   DropIndex('index_TourismImageModel_on_id'),
-  DropIndex('index_TourismSpotModel_on_id'),
-  DropIndex('index_TourismSpot_on_id'),
-  DropIndex('index_TourismImage_on_id'),
+  DropIndex('index_TourismSpotModel_on_id')
 ];
 
 //
@@ -88,15 +66,15 @@ const List<MigrationCommand> _migration_20250927024655_down = [
 //
 
 @Migratable(
-  version: '20250927024655',
-  up: _migration_20250927024655_up,
-  down: _migration_20250927024655_down,
+  version: '20250930051644',
+  up: _migration_20250930051644_up,
+  down: _migration_20250930051644_down,
 )
-class Migration20250927024655 extends Migration {
-  const Migration20250927024655()
+class Migration20250930051644 extends Migration {
+  const Migration20250930051644()
     : super(
-        version: 20250927024655,
-        up: _migration_20250927024655_up,
-        down: _migration_20250927024655_down,
+        version: 20250930051644,
+        up: _migration_20250930051644_up,
+        down: _migration_20250930051644_down,
       );
 }
