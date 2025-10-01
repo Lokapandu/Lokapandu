@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
+import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -26,6 +27,7 @@ final locator = GetIt.instance;
 /// - registerSingleton: Single instance created immediately
 /// - registerLazySingleton: Single instance created when first requested
 /// - registerFactory: New instance created each time requested
+
 Future<void> initDependencies() async {
   // ========================================
   // EXTERNAL SERVICES
@@ -68,6 +70,9 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<GetTourismSpotDetail>(
     () => GetTourismSpotDetail(locator<TourismSpotRepository>()),
   );
+  locator.registerLazySingleton<SearchTourismSpots>(
+    () => SearchTourismSpots(locator<TourismSpotRepository>()),
+  );
 
   // ========================================
   // PRESENTATION LAYER
@@ -76,7 +81,10 @@ Future<void> initDependencies() async {
   /// Providers/Notifiers - Manage UI state and user interactions
   /// Using factory registration for stateful providers to ensure fresh state
   locator.registerFactory<TourismSpotNotifier>(
-    () => TourismSpotNotifier(locator<GetTourismSpotList>()),
+    () => TourismSpotNotifier(
+      locator<GetTourismSpotList>(),
+      locator<SearchTourismSpots>(),
+    ),
   );
 
   locator.registerFactory<TourismSpotDetailNotifier>(
