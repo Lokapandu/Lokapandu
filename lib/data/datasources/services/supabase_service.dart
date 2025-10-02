@@ -136,4 +136,35 @@ class SupabaseService implements SupabaseServiceInterface {
       );
     }
   }
+
+  @override
+  Future<List<TourismSpotModel>> getTourismSpotsByCategory(
+    String category,
+  ) async {
+    try {
+      // If category is 'Semua', return all tourism spots
+      if (category == 'Semua') {
+        return await getAllTourismSpots();
+      }
+
+      final response = await _client
+          .from('tourism_spots')
+          .select('*')
+          .eq('category', category)
+          .order('created_at', ascending: false);
+
+      return (response as List)
+          .map((json) => TourismSpotModel.fromJson(json))
+          .toList();
+    } on PostgrestException catch (e) {
+      throw SupabaseException(
+        'Failed to fetch tourism spots by category: ${e.message}',
+        code: e.code,
+      );
+    } catch (e) {
+      throw ServerException(
+        'Unexpected error while fetching tourism spots by category: $e',
+      );
+    }
+  }
 }

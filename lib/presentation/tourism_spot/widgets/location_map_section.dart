@@ -60,7 +60,10 @@ class _LocationMapSectionState extends State<LocationMapSection> {
               borderRadius: BorderRadius.circular(12),
               child: GoogleMap(
                 onMapCreated: _onMapCreated,
-                initialCameraPosition: CameraPosition(target: center, zoom: 11.0),
+                initialCameraPosition: CameraPosition(
+                  target: center,
+                  zoom: 11.0,
+                ),
                 markers: {_marker},
               ),
             ),

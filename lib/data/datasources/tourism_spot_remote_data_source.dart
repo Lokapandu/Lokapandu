@@ -15,4 +15,7 @@ abstract class TourismSpotRemoteDataSource {
   // Method to fetch all tourism images from remote data source
   Future<List<TourismImageModel>> getAllTourismImages();
   Future<List<TourismSpotModel>> searchTourismSpots(String query);
+
+  // Method to fetch tourism spots filtered by category
+  Future<List<TourismSpotModel>> getTourismSpotsByCategory(String category);
 }
