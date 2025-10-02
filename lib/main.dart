@@ -12,8 +12,15 @@ import 'injection.dart' as di;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseKey);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Supabase.initialize(
+    url: Env.supabaseUrl,
+    anonKey: Env.supabaseKey,
+    // accessToken: () async {
+    //   final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+    //   return token ?? '';
+    // },
+  );
 
   // Un-comment when needed, This Repository refers to Brick's repository
   // await Repository.configure(
