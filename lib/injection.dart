@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
+import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -73,6 +74,9 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<SearchTourismSpots>(
     () => SearchTourismSpots(locator<TourismSpotRepository>()),
   );
+  locator.registerLazySingleton<GetTourismSpotsByCategory>(
+    () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
+  );
 
   // ========================================
   // PRESENTATION LAYER
@@ -84,6 +88,7 @@ Future<void> initDependencies() async {
     () => TourismSpotNotifier(
       locator<GetTourismSpotList>(),
       locator<SearchTourismSpots>(),
+      locator<GetTourismSpotsByCategory>(),
     ),
   );
 

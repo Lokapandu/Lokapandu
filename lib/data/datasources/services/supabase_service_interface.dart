@@ -1,11 +1,6 @@
 import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
 
-/// Abstract interface for Supabase service operations.
-///
-/// This interface defines the contract for all Supabase-related operations,
-/// enabling better testability and allowing for different implementations
-/// (e.g., mock implementations for testing).
 abstract class SupabaseServiceInterface {
   /// Retrieves all tourism spots from the database.
   ///
@@ -38,4 +33,12 @@ abstract class SupabaseServiceInterface {
   /// Throws [ServerException] if there's a server-side error.
   Future<List<TourismImageModel>> getAllTourismImages();
   Future<List<TourismSpotModel>> searchTourismSpots(String query);
+
+  /// Retrieves tourism spots filtered by category.
+  ///
+  /// [category] The category to filter by (e.g., 'Taman Budaya & Bersejarah').
+  /// Returns a [Future] that completes with a list of [TourismSpotModel].
+  /// Throws [SupabaseException] if the database operation fails.
+  /// Throws [ServerException] if there's a server-side error.
+  Future<List<TourismSpotModel>> getTourismSpotsByCategory(String category);
 }

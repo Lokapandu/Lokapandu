@@ -18,5 +18,11 @@ class App extends StatelessWidget {
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       routerConfig: AppRouter.createRouter(),
     );
+
+    // return MaterialApp(
+    //   title: 'Lokapandu',
+    //   theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+    //   home: const PlanScreen(),
+    // );
   }
 }
