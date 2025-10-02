@@ -51,15 +51,11 @@ class _LocationMapSectionState extends State<LocationMapSection> {
                 'Peta Lokasi',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              TextButton(
-                onPressed: () {},
-                child: const Text('buka di Google Maps'),
-              ),
             ],
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 500,
+            height: 250,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: GoogleMap(
