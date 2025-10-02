@@ -15,7 +15,6 @@ class TourismSpotPage extends StatefulWidget {
 }
 
 class _TourismSpotPageState extends State<TourismSpotPage> {
-  //TODO: Remove hardcoded categories
   final List<String> _categories = [
     'Semua',
     'Taman Budaya',
@@ -43,11 +42,10 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppHeader(),
+            const AppHeader(),
             const SizedBox(height: 16),
             _buildSearchAndFilter(),
             const SizedBox(height: 16),
-            //TODO: Remove setState and implement proper category handling in filter
             TourCategoryChips(
               categories: _categories,
               selectedCategory: _selectedCategory,
@@ -66,7 +64,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
 
                   if (notifier.hasError) {
-                    //TODO: Implement more end-user friendly error message. Keep this as is for now.
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +106,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                             size: 64,
                             color: theme.colorScheme.outline,
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Text(
                             'Tidak ada wisata ditemukan',
                             style: TextStyle(fontSize: 16, color: theme.colorScheme.outline),
@@ -155,7 +152,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
     );
   }
 
-  //TODO: Add search and filter, make this widget reusable
   Widget _buildSearchAndFilter() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -163,6 +159,9 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
         children: [
           Expanded(
             child: TextField(
+              onChanged: (query) {
+                context.read<TourismSpotNotifier>().search(query);
+              },
               decoration: InputDecoration(
                 hintText: 'Cari destinasi wisata...',
                 hintStyle: Theme.of(context).textTheme.bodyMedium,

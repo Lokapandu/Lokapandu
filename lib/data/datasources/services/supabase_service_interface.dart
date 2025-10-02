@@ -37,4 +37,5 @@ abstract class SupabaseServiceInterface {
   /// Throws [SupabaseException] if the database operation fails.
   /// Throws [ServerException] if there's a server-side error.
   Future<List<TourismImageModel>> getAllTourismImages();
+  Future<List<TourismSpotModel>> searchTourismSpots(String query);
 }

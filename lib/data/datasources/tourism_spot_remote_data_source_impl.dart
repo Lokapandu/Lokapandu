@@ -60,7 +60,7 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
       throw ServerException('Failed to fetch all tourism images: $e');
     }
   }
-
+  
   // Method to fetch tourism images for a specific spot with error handling
   @override
   Future<List<TourismImageModel>> getTourismImagesBySpotId(int spotId) async {
@@ -74,6 +74,21 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
       throw ConnectionException('No internet connection');
     } catch (e) {
       throw ServerException('Failed to fetch tourism images: $e');
+    }
+  }
+
+  @override
+  Future<List<TourismSpotModel>> searchTourismSpots(String query) async {
+    try {
+      return await _supabaseService.searchTourismSpots(query);
+    } on SupabaseException {
+      rethrow;
+    } on ServerException {
+      rethrow;
+    } on SocketException {
+      throw ConnectionException('No internet connection');
+    } catch (e) {
+      throw ServerException('Failed to search tourism spots: $e');
     }
   }
 }

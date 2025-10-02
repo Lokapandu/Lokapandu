@@ -6,7 +6,7 @@ import '../widgets/action_button_section.dart';
 import '../widgets/facilities_section.dart';
 import '../widgets/header_section.dart';
 import '../widgets/image_caraosel_section.dart';
-// import '../widgets/location_map_section.dart';
+import '../widgets/location_map_section.dart';
 import '../widgets/tour_detail_silver.dart';
 
 class TourismSpotDetailPage extends StatelessWidget {
@@ -39,7 +39,7 @@ class TourismSpotDetailPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   AboutSection(aboutText: tour.description),
                   const SizedBox(height: 24),
-                  // LocationMapSection(tourName: tour.name, latitude: tour.latitude, longitude: tour.longitude),
+                  LocationMapSection(tourName: tour.name, latitude: tour.latitude, longitude: tour.longitude),
                   const SizedBox(height: 24),
                   FacilitiesSection(facilities: tour.facilities),
                 ],
