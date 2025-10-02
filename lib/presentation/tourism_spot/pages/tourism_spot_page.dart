@@ -17,20 +17,26 @@ class TourismSpotPage extends StatefulWidget {
 class _TourismSpotPageState extends State<TourismSpotPage> {
   final List<String> _categories = [
     'Semua',
-    'Taman Budaya',
-    'Pantai',
-    'Alam',
-    'Kuliner',
-    'Sejarah',
-    'Taman Hiburan',
+    'Taman Budaya & Bersejarah',
+    'Pantai & Pesisir',
+    'Pusat Seni & Belanja',
+    'Wisata Alam',
+    'Kafe & Resto',
   ];
   String _selectedCategory = 'Semua';
+
+  void _onCategorySelected(String category) {
+    setState(() {
+      _selectedCategory = category;
+    });
+    context.read<TourismSpotNotifier>().filterByCategory(category);
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TourismSpotNotifier>().loadTourismSpots();
+      context.read<TourismSpotNotifier>().filterByCategory('Semua');
     });
   }
 
@@ -49,11 +55,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
             TourCategoryChips(
               categories: _categories,
               selectedCategory: _selectedCategory,
-              onCategorySelected: (category) {
-                setState(() {
-                  _selectedCategory = category;
-                });
-              },
+              onCategorySelected: _onCategorySelected,
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -77,8 +79,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           Text(
                             notifier.errorMessage!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.error,
                             ),
                           ),
@@ -109,18 +110,16 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           const SizedBox(height: 16),
                           Text(
                             'Tidak ada wisata ditemukan',
-                            style: TextStyle(fontSize: 16, color: theme.colorScheme.outline),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
                           ),
                         ],
                       ),
                     );
                   }
 
-                  final filteredSpots = _selectedCategory == 'Semua'
-                      ? notifier.tourismSpots
-                      : notifier.tourismSpots
-                            .where((spot) => spot.category == _selectedCategory)
-                            .toList();
+                  final filteredSpots = notifier.tourismSpots;
 
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
