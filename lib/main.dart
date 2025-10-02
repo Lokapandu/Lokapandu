@@ -29,6 +29,9 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => di.locator(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotNotifier>(),
         ),
         ChangeNotifierProvider(
