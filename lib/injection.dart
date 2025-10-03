@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:location/location.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
+import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -42,6 +44,7 @@ Future<void> initDependencies() async {
 
   /// Supabase client - singleton as it manages connection state
   locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
+  locator.registerSingleton<Location>(Location());
 
   // ========================================
   // DATA LAYER
@@ -54,11 +57,9 @@ Future<void> initDependencies() async {
 
   /// Authentication service - handles Google Sign-In with Supabase
   final googleSignIn = GoogleSignIn.instance;
- 
+
   locator.registerLazySingleton<AuthService>(
-    () => AuthService(
-      googleSignIn: googleSignIn,
-    ),
+    () => AuthService(googleSignIn: googleSignIn),
   );
 
   /// Analytics service - handles Firebase Analytics
@@ -121,5 +122,12 @@ Future<void> initDependencies() async {
       analyticsManager: locator<AnalyticsManager>(),
     ),
   );
-}
 
+  /// App Header Notifier - manages app header state
+  locator.registerFactory<AppHeaderNotifier>(
+    () => AppHeaderNotifier(
+      location: locator<Location>(),
+      analyticsManager: locator<AnalyticsManager>(),
+    ),
+  );
+}

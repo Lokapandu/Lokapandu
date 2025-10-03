@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
+import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:provider/provider.dart';
 
 class AppHeader extends StatelessWidget {
   const AppHeader({super.key});
@@ -20,12 +23,17 @@ class AppHeader extends StatelessWidget {
                 size: 16,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Bali, Indonesia',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.onSurface,
-                ),
+              Consumer<AppHeaderNotifier>(
+                builder: (context, notifier, cihld) {
+                  return Text(
+                    notifier.nowLocation,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onSurface,
+                      overflow: TextOverflow.clip,
+                    ),
+                  );
+                },
               ),
               const Spacer(),
               Icon(Icons.wb_sunny, color: theme.colorScheme.tertiary, size: 16),
