@@ -11,6 +11,7 @@ TextTheme createTextTheme(
     bodyFontString,
     baseTextTheme,
   );
+
   TextTheme displayTextTheme = GoogleFonts.getTextTheme(
     displayFontString,
     baseTextTheme,

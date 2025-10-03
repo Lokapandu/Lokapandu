@@ -45,7 +45,23 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+<<<<<<< HEAD
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Aplikasi membutuhkan akses lokasi saat digunakan</string>
+=======
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CLIENT_ID</key>
+			<string>815598506761-q0jsm22omhdanvhscbem2fvefi8hp7in.apps.googleusercontent.com</string>
+			<key>REVERSED_CLIENT_ID</key>
+			<string>com.googleusercontent.apps.815598506761-q0jsm22omhdanvhscbem2fvefi8hp7in</string>
+			<key>PLIST_VERSION</key>
+			<string>1</string>
+			<key>BUNDLE_ID</key>
+			<string>id.lokapandu.lokapandu</string>
+		</dict>
+	</array>
+>>>>>>> team
 </dict>
 </plist>
