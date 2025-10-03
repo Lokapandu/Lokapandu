@@ -1,71 +1,64 @@
 import 'package:flutter/material.dart';
-import '../../tour/models/tour_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart'; 
 import '../widgets/bookmark_card.dart';
 
-class BookmarkScreen extends StatefulWidget {
+class BookmarkScreen extends StatelessWidget {
   const BookmarkScreen({super.key});
 
   @override
-  State<BookmarkScreen> createState() => _BookmarkScreenState();
-}
-
-class _BookmarkScreenState extends State<BookmarkScreen> {
-  // Nanti data ini akan diambil dari database lokal atau state management
-  final List<Tour> _bookmarkedTours = [
-    // Contoh data
-    Tour(
-      imageUrl: 'assets/images/taman_ujung.jpg',
-      name: 'Taman Ujung Soekasada',
-      location: 'Karangasem, Bali',
-      // Properti lain diisi dengan data dummy jika diperlukan
-      galleryImageUrls: [],
-      openingHours: '',
-      address: '',
-      distanceKm: 0,
-      aboutText: '',
-      mapImageUrl: '',
-      facilities: [],
-      tags: [],
-    ),
-    Tour(
-      imageUrl: 'assets/images/taman_ujung.jpg',
-      name: 'Taman Ujung Soekasada',
-      location: 'Karangasem, Bali',
-      galleryImageUrls: [],
-      openingHours: '',
-      address: '',
-      distanceKm: 0,
-      aboutText: '',
-      mapImageUrl: '',
-      facilities: [],
-      tags: [],
-    ),
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final bookmarkProvider = context.watch<BookmarkProvider>();
+    final bookmarkedSpots = bookmarkProvider.bookmarkedSpots;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFA),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Bookmark',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        title: Text('Bookmark', style: theme.textTheme.titleLarge),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(24.0),
-        itemCount: _bookmarkedTours.length,
-        itemBuilder: (context, index) {
-          return BookmarkCard(tour: _bookmarkedTours[index]);
-        },
-      ),
+     
+      body: bookmarkedSpots.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.bookmark_add_outlined, size: 80, color: colorScheme.outline),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Belum Ada Bookmark',
+                      style: theme.textTheme.headlineSmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Tekan ikon bookmark pada destinasi wisata untuk menyimpannya di sini.',
+                      style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.outline),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            )
+          
+          : ListView.separated(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+              itemCount: bookmarkedSpots.length,
+              itemBuilder: (context, index) {
+                return BookmarkCard(spot: bookmarkedSpots[index]);
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+            ),
     );
   }
 }
