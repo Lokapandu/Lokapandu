@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart'; // Import GoRouter untuk navigasi
 import '../models/chat_message_model.dart';
 import '../widgets/chat_buble.dart';
 
@@ -14,7 +15,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [
     const ChatMessage(
-      text: 'Hai, Ayu Krisna! Ada yang bisa aku bantu?',
+      text: 'Hai, Ayu Krisna! Ada yang bisa aku bantu di Ngoro sore ini?',
       isFromUser: false,
     ),
     const ChatMessage(
@@ -40,7 +41,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       Future.delayed(const Duration(milliseconds: 300), () {
         setState(() {
           _messages.add(
-            ChatMessage(
+            const ChatMessage(
               text: "Ini balasan AI untuk pesanmu 😄",
               isFromUser: false,
             ),
@@ -64,56 +65,64 @@ class _AiChatScreenState extends State<AiChatScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildHeader(context),
-        Expanded(
-          child: ListView.separated(
-            controller: _scrollController, // pasang controller
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            itemCount: _messages.length,
-            itemBuilder: (context, index) {
-              final message = _messages[index];
-              return ChatBubble(
-                text: message.text,
-                isFromUser: message.isFromUser,
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-          ),
-        ),
-        _buildMessageInput(),
-      ],
-    );
+  void dispose() {
+    _controller.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 16, 16, 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(), 
+        ),
+        title: Text('AI Chat', style: theme.textTheme.titleLarge),
+        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: CircleAvatar(
+              backgroundColor: colorScheme.secondaryContainer,
+            ),
+          ),
+        ],
+        
+        elevation: 0,
+        scrolledUnderElevation: 1, 
+      ),
+      body: Column(
         children: [
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          Expanded(
+            child: ListView.separated(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return ChatBubble(
+                  text: message.text,
+                  isFromUser: message.isFromUser,
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+            ),
           ),
-          const Text(
-            'AI Chat',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const CircleAvatar(backgroundColor: Colors.grey),
+          _buildMessageInput(theme, colorScheme),
         ],
       ),
     );
   }
 
-  Widget _buildMessageInput() {
+  Widget _buildMessageInput(ThemeData theme, ColorScheme colorScheme) {
     return Container(
-      padding: const EdgeInsets.all(30.0),
-      color: Colors.white,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      color: colorScheme.surface,
       child: Row(
         children: [
           Expanded(
@@ -122,9 +131,9 @@ class _AiChatScreenState extends State<AiChatScreen> {
               decoration: InputDecoration(
                 hintText: 'Tulis pesanmu di sini',
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: colorScheme.surfaceContainerHigh,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                  horizontal: 20,
                   vertical: 14,
                 ),
                 border: OutlineInputBorder(
@@ -132,14 +141,15 @@ class _AiChatScreenState extends State<AiChatScreen> {
                   borderSide: BorderSide.none,
                 ),
               ),
+              onSubmitted: (_) => _sendMessage(),
             ),
           ),
           const SizedBox(width: 12),
           FloatingActionButton(
             onPressed: _sendMessage,
-            backgroundColor: const Color(0xFF008080),
+            backgroundColor: colorScheme.primary,
             elevation: 2,
-            child: const Icon(Icons.send, color: Colors.white),
+            child: Icon(Icons.send, color: colorScheme.onPrimary),
           ),
         ],
       ),

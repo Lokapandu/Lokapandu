@@ -8,12 +8,28 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Menentukan alignment dan warna berdasarkan pengirim
+    // Ambil theme dan colorScheme dari context
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    // Menentukan alignment (tidak perlu diubah)
     final alignment = isFromUser
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
-    final color = isFromUser ? const Color(0xFF008080) : Colors.grey[200];
-    final textColor = isFromUser ? Colors.white : Colors.black87;
+
+    // --- PERUBAHAN UTAMA ADA DI SINI ---
+
+    // 1. Mengambil warna bubble dari theme
+    final color = isFromUser ? colorScheme.primary : colorScheme.outlineVariant;
+
+    // 2. Mengambil warna teks dari theme
+    final textColor = isFromUser
+        ? colorScheme.onPrimary
+        : colorScheme.onSurface;
+
+    // ------------------------------------
+
+    // Bentuk sudut bubble (tidak perlu diubah)
     final borderRadius = isFromUser
         ? const BorderRadius.only(
             topLeft: Radius.circular(16),
@@ -35,7 +51,14 @@ class ChatBubble extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(color: color, borderRadius: borderRadius),
-          child: Text(text, style: TextStyle(color: textColor, height: 1.4)),
+          child: Text(
+            text,
+            // 3. Menerapkan style teks dari theme
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: textColor,
+              height: 1.4, // Line spacing bisa tetap jika diinginkan
+            ),
+          ),
         ),
       ],
     );
