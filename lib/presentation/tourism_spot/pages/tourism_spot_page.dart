@@ -6,7 +6,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'dart:developer' as developer;
 
 class TourismSpotPage extends StatefulWidget {
@@ -80,7 +80,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   backgroundColor: Colors.red,
                 ),
               );
-              
+
               developer.log('Logout failed: $e', name: 'TourismSpotPage');
             }
           }

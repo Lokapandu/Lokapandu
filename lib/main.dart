@@ -4,7 +4,7 @@ import 'package:lokapandu/app.dart';
 import 'package:lokapandu/env/env.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lokapandu/common/services/crashlytics_service.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:provider/provider.dart';
@@ -46,9 +46,6 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => di.locator(),
-        ),
         ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotNotifier>(),
         ),

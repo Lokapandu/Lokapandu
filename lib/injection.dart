@@ -17,7 +17,7 @@ import 'package:lokapandu/data/repositories/tourism_spot_repository_supabase_imp
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/common/services/analytics_manager.dart';
 
 final locator = GetIt.instance;

@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/presentation/auth/widgets/sign_in_error_message.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/common/services/firebase_analytics_service.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/common/utils/error_message_helper.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -46,7 +46,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   Text(
                     'Lokapandu',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       color: Theme.of(context).primaryColor,
                     ),
                   ),

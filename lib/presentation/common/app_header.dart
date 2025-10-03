@@ -1,4 +1,3 @@
-//TODO: Implement reusable app header widget
 import 'package:flutter/material.dart';
 
 class AppHeader extends StatelessWidget {

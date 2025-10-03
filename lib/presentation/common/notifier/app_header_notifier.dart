@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class GeoLocationProvider extends ChangeNotifier {
+class AppHeaderNotifier extends ChangeNotifier {
   Future<void> init() async {
 
   }
