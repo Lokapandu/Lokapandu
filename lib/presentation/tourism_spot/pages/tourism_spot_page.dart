@@ -6,6 +6,8 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'dart:developer' as developer;
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});
@@ -17,20 +19,26 @@ class TourismSpotPage extends StatefulWidget {
 class _TourismSpotPageState extends State<TourismSpotPage> {
   final List<String> _categories = [
     'Semua',
-    'Taman Budaya',
-    'Pantai',
-    'Alam',
-    'Kuliner',
-    'Sejarah',
-    'Taman Hiburan',
+    'Taman Budaya & Bersejarah',
+    'Pantai & Pesisir',
+    'Pusat Seni & Belanja',
+    'Wisata Alam',
+    'Kafe & Resto',
   ];
   String _selectedCategory = 'Semua';
+
+  void _onCategorySelected(String category) {
+    setState(() {
+      _selectedCategory = category;
+    });
+    context.read<TourismSpotNotifier>().filterByCategory(category);
+  }
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TourismSpotNotifier>().loadTourismSpots();
+      context.read<TourismSpotNotifier>().filterByCategory('Semua');
     });
   }
 
@@ -38,6 +46,48 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      /// TODO: REMOVE THIS CODE AFTER IMPLEMENT LOGOUT UI ON SETTINGS SCREEN
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          try {
+            // Show loading indicator
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
+            );
+
+            // Perform logout
+            await context.read<AuthNotifier>().signOut();
+
+            // Close loading dialog
+            if (context.mounted) {
+              Navigator.of(context).pop();
+
+              // Navigate to auth screen
+              context.pushReplacementNamed('auth');
+            }
+          } catch (e) {
+            // Close loading dialog if still open
+            if (context.mounted) {
+              Navigator.of(context).pop();
+
+              // Show error message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Gagal logout!'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+              
+              developer.log('Logout failed: $e', name: 'TourismSpotPage');
+            }
+          }
+        },
+        icon: const Icon(Icons.logout),
+        label: const Text('Logout'),
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,11 +99,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
             TourCategoryChips(
               categories: _categories,
               selectedCategory: _selectedCategory,
-              onCategorySelected: (category) {
-                setState(() {
-                  _selectedCategory = category;
-                });
-              },
+              onCategorySelected: _onCategorySelected,
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -77,8 +123,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           Text(
                             notifier.errorMessage!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
+                            style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.error,
                             ),
                           ),
@@ -109,18 +154,16 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           const SizedBox(height: 16),
                           Text(
                             'Tidak ada wisata ditemukan',
-                            style: TextStyle(fontSize: 16, color: theme.colorScheme.outline),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
                           ),
                         ],
                       ),
                     );
                   }
 
-                  final filteredSpots = _selectedCategory == 'Semua'
-                      ? notifier.tourismSpots
-                      : notifier.tourismSpots
-                            .where((spot) => spot.category == _selectedCategory)
-                            .toList();
+                  final filteredSpots = notifier.tourismSpots;
 
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
