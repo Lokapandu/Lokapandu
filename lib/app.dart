@@ -29,11 +29,5 @@ class App extends StatelessWidget {
         },
       ),
     );
-
-    // return MaterialApp(
-    //   title: 'Lokapandu',
-    //   theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-    //   home: const PlanScreen(),
-    // );
   }
 }

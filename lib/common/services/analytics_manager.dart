@@ -15,13 +15,14 @@ class AnalyticsManager {
   AnalyticsManager._internal();
 
   // Services
-  final FirebaseAnalyticsService _firebaseAnalytics = FirebaseAnalyticsService();
+  final FirebaseAnalyticsService _firebaseAnalytics =
+      FirebaseAnalyticsService();
   final DebugAnalyticsService _debugAnalytics = DebugAnalyticsService();
-  
+
   // Configuration
   late FirebaseAnalyticsConfig _config;
   bool _isInitialized = false;
-  
+
   static const String _debugTag = 'AnalyticsManager';
 
   /// Initialize the analytics manager
@@ -31,21 +32,23 @@ class AnalyticsManager {
     try {
       // Load environment configuration
       _config = EnvironmentConfig.analyticsConfig;
-      
+
       // Initialize Firebase debug configuration if needed
       if (_config.enableDebugMode) {
         await FirebaseDebugConfig.initialize();
       }
-      
+
       // Configure analytics collection
-      await _firebaseAnalytics.setAnalyticsCollectionEnabled(_config.collectAnalytics);
-      
+      await _firebaseAnalytics.setAnalyticsCollectionEnabled(
+        _config.collectAnalytics,
+      );
+
       _isInitialized = true;
-      
+
       _logDebug('Analytics Manager initialized successfully');
       _logDebug('Environment: ${EnvironmentConfig.environmentDisplayName}');
       _logDebug('Configuration: ${_config.toMap()}');
-      
+
       // Print debug info if enabled
       if (_config.enableDebugMode) {
         FirebaseDebugConfig.printDebugInfo();
@@ -53,7 +56,6 @@ class AnalyticsManager {
           FirebaseDebugConfig.printManualSetupInstructions();
         }
       }
-      
     } catch (e) {
       developer.log(
         'Failed to initialize Analytics Manager: $e',
@@ -374,7 +376,7 @@ class AnalyticsManager {
     Map<String, Object> additionalParameters,
   ) {
     final Map<String, Object> enriched = {};
-    
+
     // Add original parameters (filter out nulls)
     if (originalParameters != null) {
       originalParameters.forEach((key, value) {
@@ -383,15 +385,15 @@ class AnalyticsManager {
         }
       });
     }
-    
+
     // Add additional parameters
     enriched.addAll(additionalParameters);
-    
+
     // Add common context
     enriched['app_version'] = '1.0.0'; // Should come from package info
     enriched['platform'] = defaultTargetPlatform.name;
-    enriched['debug_mode'] = kDebugMode;
-    
+    enriched['debug_mode'] = kDebugMode.toString();
+
     return enriched;
   }
 

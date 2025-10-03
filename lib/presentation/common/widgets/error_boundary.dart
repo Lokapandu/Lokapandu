@@ -21,7 +21,6 @@ class ErrorBoundary extends StatefulWidget {
 
 class _ErrorBoundaryState extends State<ErrorBoundary> {
   bool _hasError = false;
-  Object? _error;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +34,12 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
   @override
   void initState() {
     super.initState();
-    
+
     // Set up error handling
-    final originalBuilder = ErrorWidget.builder;
     ErrorWidget.builder = (FlutterErrorDetails details) {
       // Log error ke Crashlytics
       CrashlyticsService.recordFlutterError(details);
-      
+
       // Set custom context jika ada
       if (widget.errorContext != null) {
         CrashlyticsService.setCustomKey('error_context', widget.errorContext!);
@@ -53,7 +51,6 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
           if (mounted) {
             setState(() {
               _hasError = true;
-              _error = details.exception;
             });
           }
         });
@@ -70,18 +67,11 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 48,
-          ),
+          const Icon(Icons.error_outline, color: Colors.red, size: 48),
           const SizedBox(height: 16),
           const Text(
             'Oops! Terjadi kesalahan',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -94,7 +84,6 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
             onPressed: () {
               setState(() {
                 _hasError = false;
-                _error = null;
               });
             },
             child: const Text('Coba Lagi'),
@@ -107,10 +96,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
 
 /// Extension untuk memudahkan wrapping widget dengan ErrorBoundary
 extension ErrorBoundaryExtension on Widget {
-  Widget withErrorBoundary({
-    Widget? fallbackWidget,
-    String? errorContext,
-  }) {
+  Widget withErrorBoundary({Widget? fallbackWidget, String? errorContext}) {
     return ErrorBoundary(
       fallbackWidget: fallbackWidget,
       errorContext: errorContext,

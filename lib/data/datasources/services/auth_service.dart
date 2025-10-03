@@ -4,15 +4,15 @@ import 'dart:developer' as developer;
 
 /// Service class that handles authentication operations with Google Sign-In and Supabase
 class AuthService {
-  static const _androidClientId = '815598506761-j8c2icgmo1h77a6or9nbu900kdgnltsb.apps.googleusercontent.com';
-  static const _iosClientId = '815598506761-ho0ck3e9k89r8v5eutsg1mvhg2o6raup.apps.googleusercontent.com';
+  // static const _androidClientId = '815598506761-g2b0qgus8j9dpmild7ji1n493qneifdf.apps.googleusercontent.com';
+  // static const _iosClientId = '815598506761-ho0ck3e9k89r8v5eutsg1mvhg2o6raup.apps.googleusercontent.com';
   final _scopes = ['email', 'profile'];
   final SupabaseClient _supabaseClient;
   final GoogleSignIn _googleSignIn;
 
   AuthService({required GoogleSignIn googleSignIn})
-      : _googleSignIn = googleSignIn,
-        _supabaseClient = Supabase.instance.client;
+    : _googleSignIn = googleSignIn,
+      _supabaseClient = Supabase.instance.client;
 
   /// Get current user from Supabase
   User? get currentUser => _supabaseClient.auth.currentUser;
@@ -28,10 +28,7 @@ class AuthService {
   Future<AuthResponse> signInWithGoogle() async {
     try {
       developer.log('Starting Google Sign-In process', name: 'AuthService');
-      await _googleSignIn.initialize(
-        clientId: _iosClientId,
-        serverClientId: _androidClientId,
-      );
+      await _googleSignIn.initialize();
       // Step 1: Sign in with Google
       final googleUser = await _googleSignIn.attemptLightweightAuthentication();
 

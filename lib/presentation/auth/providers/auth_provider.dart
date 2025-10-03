@@ -6,19 +6,13 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 /// Authentication state enum
-enum AuthStatus {
-  initial,
-  loading,
-  authenticated,
-  unauthenticated,
-  error,
-}
+enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
 /// AuthNotifier handles authentication state management using Provider pattern
 class AuthNotifier extends ChangeNotifier {
   final AuthService _authService;
   final AnalyticsManager _analyticsManager;
-  
+
   AuthStatus _status = AuthStatus.initial;
   String? _errorMessage;
   User? _user;
@@ -36,21 +30,27 @@ class AuthNotifier extends ChangeNotifier {
   AuthStatus get status => _status;
   String? get errorMessage => _errorMessage;
   User? get user => _user;
-  bool get isAuthenticated => _status == AuthStatus.authenticated && _user != null;
+  bool get isAuthenticated =>
+      _status == AuthStatus.authenticated && _user != null;
   bool get isLoading => _status == AuthStatus.loading;
 
   /// Initialize authentication state and listen to auth changes
   void _initializeAuth() {
     developer.log('Initializing auth state', name: 'AuthNotifier');
-    
+
     // Set initial user state
     _user = _authService.currentUser;
-    _status = _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
-    
+    _status = _user != null
+        ? AuthStatus.authenticated
+        : AuthStatus.unauthenticated;
+
     // Listen to auth state changes
     _authSubscription = _authService.authStateChanges.listen(
       (AuthState authState) {
-        developer.log('Auth state changed: ${authState.event}', name: 'AuthNotifier');
+        developer.log(
+          'Auth state changed: ${authState.event}',
+          name: 'AuthNotifier',
+        );
         _handleAuthStateChange(authState);
       },
       onError: (error) {
@@ -58,7 +58,7 @@ class AuthNotifier extends ChangeNotifier {
         _setError('Authentication error: $error');
       },
     );
-    
+
     notifyListeners();
   }
 
@@ -79,7 +79,10 @@ class AuthNotifier extends ChangeNotifier {
         break;
       case AuthChangeEvent.tokenRefreshed:
         _user = authState.session?.user;
-        developer.log('Token refreshed for user: ${_user?.email}', name: 'AuthNotifier');
+        developer.log(
+          'Token refreshed for user: ${_user?.email}',
+          name: 'AuthNotifier',
+        );
         break;
       default:
         break;
@@ -91,9 +94,9 @@ class AuthNotifier extends ChangeNotifier {
   Future<bool> signInWithGoogle() async {
     try {
       _setLoading();
-      
+
       developer.log('Starting Google Sign-In', name: 'AuthNotifier');
-      
+
       // Track analytics event
       await _analyticsManager.trackUserAction(
         action: 'google_sign_in_attempt',
@@ -105,7 +108,7 @@ class AuthNotifier extends ChangeNotifier {
       );
 
       final response = await _authService.signInWithGoogle();
-      
+
       if (response.user != null) {
         // Track successful sign-in
         await _analyticsManager.trackUserAction(
@@ -124,14 +127,14 @@ class AuthNotifier extends ChangeNotifier {
           parameters: {
             'method': 'google',
             'user_id': response.user!.id,
-            'success': true,
+            'success': 'true',
             'timestamp': DateTime.now().toIso8601String(),
           },
         );
 
         // Set user ID for analytics
         await _analyticsManager.setUserId(response.user!.id);
-        
+
         developer.log('Google Sign-In successful', name: 'AuthNotifier');
         return true;
       } else {
@@ -139,7 +142,7 @@ class AuthNotifier extends ChangeNotifier {
       }
     } catch (e) {
       developer.log('Google Sign-In failed: $e', name: 'AuthNotifier');
-      
+
       // Track failed sign-in
       await _analyticsManager.trackUserAction(
         action: 'google_sign_in_failed',
@@ -149,7 +152,7 @@ class AuthNotifier extends ChangeNotifier {
           'method': 'google',
         },
       );
-      
+
       _setError('Failed to sign in with Google: $e');
       return false;
     }
@@ -159,19 +162,17 @@ class AuthNotifier extends ChangeNotifier {
   Future<void> signOut() async {
     try {
       _setLoading();
-      
+
       developer.log('Starting sign out', name: 'AuthNotifier');
-      
+
       // Track logout event
       await _analyticsManager.trackEvent(
         eventName: 'logout',
-        parameters: {
-          'timestamp': DateTime.now().toIso8601String(),
-        },
+        parameters: {'timestamp': DateTime.now().toIso8601String()},
       );
-      
+
       await _authService.signOut();
-      
+
       developer.log('Sign out successful', name: 'AuthNotifier');
     } catch (e) {
       developer.log('Sign out failed: $e', name: 'AuthNotifier');
@@ -199,7 +200,9 @@ class AuthNotifier extends ChangeNotifier {
   /// Clear error
   void clearError() {
     if (_status == AuthStatus.error) {
-      _status = _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      _status = _user != null
+          ? AuthStatus.authenticated
+          : AuthStatus.unauthenticated;
       _errorMessage = null;
       notifyListeners();
     }
