@@ -1,49 +1,56 @@
 import 'package:flutter/material.dart';
 
-enum TileAction { toggle, navigation }
+enum TileAction { navigation, toggle }
 
 class SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final TileAction actionType;
-  final bool? toggleValue;
-  final ValueChanged<bool>? onToggleChanged;
   final VoidCallback? onTap;
+  final TileAction actionType;
+  final bool toggleValue;
+  final ValueChanged<bool>? onToggleChanged;
 
   const SettingsTile({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.actionType = TileAction.navigation,
-    this.toggleValue,
-    this.onToggleChanged,
     this.onTap,
+    this.actionType = TileAction.navigation,
+    this.toggleValue = false,
+    this.onToggleChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      leading: Icon(icon, color: const Color(0xFF008080)),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
-      trailing: _buildTrailing(),
-      contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
-    );
-  }
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
-  // Helper untuk menentukan widget di sebelah kanan (trailing)
-  Widget? _buildTrailing() {
-    if (actionType == TileAction.toggle) {
-      return Switch(
-        value: toggleValue ?? false,
-        onChanged: onToggleChanged,
-        activeColor: const Color(0xFF008080),
-      );
+    Widget trailingWidget;
+    switch (actionType) {
+      case TileAction.toggle:
+        trailingWidget = Switch(
+          value: toggleValue,
+          onChanged: onToggleChanged,
+          activeColor: colorScheme.primary,
+        );
+        break;
+      case TileAction.navigation:
+        trailingWidget = Icon(Icons.chevron_right, color: colorScheme.outline);
+        break;
     }
-    // Jika tipe-nya navigation atau tidak ada aksi
-    return const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey);
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      onTap: onTap,
+      leading: Icon(icon, color: colorScheme.primary, size: 28),
+      title: Text(title, style: theme.textTheme.titleMedium),
+      subtitle: Text(
+        subtitle,
+        style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+      ),
+      trailing: trailingWidget,
+    );
   }
 }
