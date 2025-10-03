@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
@@ -7,12 +10,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:lokapandu/data/datasources/services/supabase_service.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
+import 'package:lokapandu/data/datasources/services/auth_service.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source_impl.dart';
 import 'package:lokapandu/data/repositories/tourism_spot_repository_supabase_impl.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/common/services/analytics_manager.dart';
 
 final locator = GetIt.instance;
 
@@ -45,6 +51,18 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<SupabaseServiceInterface>(
     () => SupabaseService(),
   );
+
+  /// Authentication service - handles Google Sign-In with Supabase
+  final googleSignIn = GoogleSignIn.instance;
+ 
+  locator.registerLazySingleton<AuthService>(
+    () => AuthService(
+      googleSignIn: googleSignIn,
+    ),
+  );
+
+  /// Analytics service - handles Firebase Analytics
+  locator.registerLazySingleton<AnalyticsManager>(() => AnalyticsManager());
 
   /// Data Sources - Handle data retrieval from external sources
   locator.registerLazySingleton<TourismSpotRemoteDataSource>(
@@ -95,4 +113,13 @@ Future<void> initDependencies() async {
   locator.registerFactory<TourismSpotDetailNotifier>(
     () => TourismSpotDetailNotifier(locator<GetTourismSpotDetail>()),
   );
+
+  /// Authentication provider - manages auth state
+  locator.registerFactory<AuthNotifier>(
+    () => AuthNotifier(
+      authService: locator<AuthService>(),
+      analyticsManager: locator<AnalyticsManager>(),
+    ),
+  );
 }
+

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lokapandu/common/routes/app_router.dart';
 import 'package:lokapandu/common/themes/theme.dart';
 import 'package:lokapandu/common/themes/util.dart';
+import 'package:lokapandu/presentation/common/widgets/error_boundary.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -13,16 +14,20 @@ class App extends StatelessWidget {
 
     MaterialTheme theme = MaterialTheme(textTheme);
 
-    return MaterialApp.router(
-      title: 'Lokapandu',
-      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      routerConfig: AppRouter.createRouter(),
+    return ErrorBoundary(
+      errorContext: 'App Root',
+      child: MaterialApp.router(
+        title: 'Lokapandu',
+        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+        routerConfig: AppRouter.createRouter(),
+        // Tambahkan navigation observer untuk tracking
+        builder: (context, child) {
+          return ErrorBoundary(
+            errorContext: 'App Builder',
+            child: child ?? const SizedBox.shrink(),
+          );
+        },
+      ),
     );
-
-    // return MaterialApp(
-    //   title: 'Lokapandu',
-    //   theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-    //   home: const PlanScreen(),
-    // );
   }
 }
