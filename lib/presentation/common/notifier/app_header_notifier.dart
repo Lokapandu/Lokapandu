@@ -4,22 +4,39 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart'
     show placemarkFromCoordinates, Placemark;
 import 'package:location/location.dart';
+import 'package:lokapandu/common/errors/failure.dart';
 import 'dart:developer' as dev;
 
 import 'package:lokapandu/common/services/analytics_manager.dart';
+import 'package:lokapandu/domain/entities/weather_entity.dart';
+import 'package:lokapandu/domain/usecases/get_current_weather.dart';
 
 class AppHeaderNotifier extends ChangeNotifier {
   final Location _location;
   final AnalyticsManager _analyticsManager;
+  final GetCurrentWeather _currentWeather;
 
   AppHeaderNotifier({
     required Location location,
+    required GetCurrentWeather currentWeather,
     required AnalyticsManager analyticsManager,
   }) : _location = location,
+       _currentWeather = currentWeather,
        _analyticsManager = analyticsManager;
+
+  LocationData? _locationData;
+
+  bool isLoadingWeather = false;
+  PermissionStatus _permissionStatus = PermissionStatus.denied;
+  Weather? _currentWeatherData;
+  Weather? get currentWeatherData => _currentWeatherData;
 
   String _nowLocation = 'mendapatkan data...';
   String get nowLocation => _nowLocation;
+
+  bool isPermissionGranted() {
+    return _permissionStatus == PermissionStatus.granted;
+  }
 
   Future<void> initialize() async {
     dev.log('Getting location...', name: 'AppHeaderNotifier');
@@ -32,31 +49,64 @@ class AppHeaderNotifier extends ChangeNotifier {
       }
     }
 
-    PermissionStatus permissionStatus = await _location.hasPermission();
-    if (permissionStatus == PermissionStatus.denied) {
-      permissionStatus = await _location.requestPermission();
+    _permissionStatus = await _location.hasPermission();
+    if (_permissionStatus == PermissionStatus.denied) {
+      _permissionStatus = await _location.requestPermission();
       await _analyticsManager.trackEvent(
         eventName: 'location_permission_requested',
         parameters: {
-          'permission_status': permissionStatus.toString(),
+          'permission_status': _permissionStatus.toString(),
           'timestamp': DateTime.now().toIso8601String(),
         },
       );
-      if (permissionStatus != PermissionStatus.granted) {
+      if (_permissionStatus != PermissionStatus.granted) {
         _nowLocation = 'Bali, Indonesia';
         notifyListeners();
         return;
       }
     }
 
-    LocationData locationData = await _location.getLocation();
+    _locationData = await _location.getLocation();
     List<Placemark> placemarks = await placemarkFromCoordinates(
-      locationData.latitude ?? 0,
-      locationData.longitude ?? 0,
+      _locationData?.latitude ?? 0,
+      _locationData?.longitude ?? 0,
     );
 
     _nowLocation =
         '${placemarks.first.subAdministrativeArea}, ${placemarks.first.administrativeArea}';
+    notifyListeners();
+  }
+
+  void _handleFailure(Failure failure) {
+    failure.when(
+      server: (String message) => dev.log(message),
+      connection: (String message) => dev.log(message),
+      database: (String message) => dev.log(message),
+    );
+  }
+
+  Future<void> getCurrentWeather() async {
+    dev.log('Getting current weather...', name: 'AppHeaderNotifier');
+
+    try {
+      isLoadingWeather = true;
+      notifyListeners();
+
+      final result = await _currentWeather.execute(
+        latLon: isPermissionGranted()
+            ? '${_locationData?.latitude},${_locationData?.longitude}'
+            : 'Denpasar',
+      );
+
+      result.fold((failure) => _handleFailure(failure), (weather) {
+        _currentWeatherData = weather;
+      });
+    } catch (e) {
+      dev.log('Error getting current weather: $e', name: 'AppHeaderNotifier');
+    } finally {
+      isLoadingWeather = false;
+    }
+
     notifyListeners();
   }
 }

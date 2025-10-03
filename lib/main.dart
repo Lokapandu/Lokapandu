@@ -55,7 +55,9 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => di.locator<AuthNotifier>()),
         ChangeNotifierProvider(
-          create: (_) => di.locator<AppHeaderNotifier>()..initialize(),
+          create: (_) => di.locator<AppHeaderNotifier>()
+            ..initialize()
+            ..getCurrentWeather(),
         ),
       ],
       child: const App(),

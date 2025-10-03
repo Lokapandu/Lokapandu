@@ -1,0 +1,42 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:lokapandu/common/errors/exceptions.dart';
+import 'package:lokapandu/data/datasources/weather_remote_data_source.dart';
+import 'package:lokapandu/data/models/weather/weather_model.dart';
+import 'package:lokapandu/env/env.dart';
+import 'dart:developer' as dev;
+
+class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
+  final http.Client client;
+
+  WeatherRemoteDataSourceImpl({required this.client});
+
+  @override
+  Future<WeatherModel> getCurrentWeather(String latLon) async {
+    Uri uri = Uri.https(Env.weatherBaseUrl, 'v1/current.json', {
+      'key': Env.weatherApiKey,
+      'q': latLon,
+      'aqi': 'no',
+    });
+
+    try {
+      final response = await client.get(uri);
+      if (response.statusCode == 200) {
+        dev.log(
+          'Response body: ${response.body}',
+          name: 'WeatherRemoteDataSourceImpl',
+        );
+        return WeatherModel.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to load weather data');
+      }
+    } on FormatException catch (e) {
+      throw DataParsingException(e.message);
+    } on http.ClientException {
+      throw ConnectionException('Failed to connect to the server');
+    } catch (e) {
+      throw ServerException('Failed to load weather data: $e');
+    }
+  }
+}
