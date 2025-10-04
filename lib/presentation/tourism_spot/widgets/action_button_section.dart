@@ -7,7 +7,12 @@ class ActionButtonsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 16.0, bottom: 64.0),
+      padding: const EdgeInsets.only(
+        left: 24.0,
+        right: 24.0,
+        top: 16.0,
+        bottom: 64.0,
+      ),
       child: Row(
         children: [
           Expanded(

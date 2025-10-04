@@ -12,7 +12,28 @@
           "package_name": "id.lokapandu.lokapandu"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "815598506761-j8c2icgmo1h77a6or9nbu900kdgnltsb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.lokapandu.lokapandu",
+            "certificate_hash": "ec3a258598cd81dbc192fd798792da8a59f2cd3a"
+          }
+        },
+        {
+          "client_id": "815598506761-vu7eqmois0alasnroqr3gg90s8cbde0t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.lokapandu.lokapandu",
+            "certificate_hash": "ff2386f0a7940f8a33e1deb8dfb1e56873f5ecd3"
+          }
+        },
+        {
+          "client_id": "815598506761-g2b0qgus8j9dpmild7ji1n493qneifdf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBFJMg0OEAj2WHVQ43sfzoR4SHrOOrBUto"
@@ -20,7 +41,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "815598506761-g2b0qgus8j9dpmild7ji1n493qneifdf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "815598506761-ho0ck3e9k89r8v5eutsg1mvhg2o6raup.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "id.lokapandu.lokapandu"
+              }
+            }
+          ]
         }
       }
     }

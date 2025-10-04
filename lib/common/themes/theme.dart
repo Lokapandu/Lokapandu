@@ -62,9 +62,7 @@ class MaterialTheme {
     );
   }
 
-  ThemeData dark() {
-    return theme(darkScheme());
-  }
+  ThemeData dark() => theme(darkScheme());
 
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
     useMaterial3: true,
