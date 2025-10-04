@@ -30,11 +30,7 @@ class AuthService {
       developer.log('Starting Google Sign-In process', name: 'AuthService');
       await _googleSignIn.initialize();
       // Step 1: Sign in with Google
-      final googleUser = await _googleSignIn.attemptLightweightAuthentication();
-
-      if (googleUser == null) {
-        throw AuthException('Google Sign-In was cancelled by user');
-      }
+      final googleUser = await _googleSignIn.authenticate();
 
       developer.log(
         'Google Sign-In successful for: ${googleUser.email}',

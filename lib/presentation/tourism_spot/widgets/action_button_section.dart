@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 
 class ActionButtonsSection extends StatelessWidget {
-  const ActionButtonsSection({super.key});
+  const ActionButtonsSection({super.key, required TourismSpot tour});
 
   @override
   Widget build(BuildContext context) {
