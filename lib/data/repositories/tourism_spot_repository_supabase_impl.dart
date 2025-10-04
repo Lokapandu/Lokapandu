@@ -21,7 +21,8 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   }) : _remoteDataSource = remoteDataSource;
 
   Future<Either<Failure, List<TourismSpot>>> _executeSpotListCall(
-      Future<List<TourismSpotModel>> Function() call) async {
+    Future<List<TourismSpotModel>> Function() call,
+  ) async {
     try {
       final spotsResult = await call();
       if (spotsResult.isEmpty) {
@@ -53,8 +54,21 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   }
 
   @override
-  Future<Either<Failure, List<TourismSpot>>> searchTourismSpots(String query) async {
-    return _executeSpotListCall(() => _remoteDataSource.searchTourismSpots(query));
+  Future<Either<Failure, List<TourismSpot>>> searchTourismSpots(
+    String query,
+  ) async {
+    return _executeSpotListCall(
+      () => _remoteDataSource.searchTourismSpots(query),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpotsByCategory(
+    String category,
+  ) async {
+    return _executeSpotListCall(
+      () => _remoteDataSource.getTourismSpotsByCategory(category),
+    );
   }
 
   // Fetching tourism spot lists
@@ -69,12 +83,14 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
         return Left(ServerFailure('Tourism spot with ID $id not found'));
       }
       // Fetch all tourism images from Supabase
-      final imagesResult =
-          await _remoteDataSource.getTourismImagesBySpotId(spotResult.id);
+      final imagesResult = await _remoteDataSource.getTourismImagesBySpotId(
+        spotResult.id,
+      );
 
       final spotEntityWithoutImages = spotResult.toEntity();
-      final imageEntities =
-          imagesResult.toEntityList({spotResult.id: spotEntityWithoutImages});
+      final imageEntities = imagesResult.toEntityList({
+        spotResult.id: spotEntityWithoutImages,
+      });
       final spotEntity = spotResult.toEntity(images: imageEntities);
 
       return Right(spotEntity);
@@ -95,7 +111,7 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     List<TourismImageModel> imagesResult,
   ) {
     final Map<int, TourismSpot> spotsMap = {
-      for (var spot in spotsResult) spot.id: spot.toEntity()
+      for (var spot in spotsResult) spot.id: spot.toEntity(),
     };
 
     final Map<int, List<TourismImage>> imagesMap = {};

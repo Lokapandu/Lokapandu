@@ -6,4 +6,7 @@ abstract class TourismSpotRepository {
   Future<Either<Failure, List<TourismSpot>>> getTourismSpots();
   Future<Either<Failure, TourismSpot>> getTourismSpotById(int id);
   Future<Either<Failure, List<TourismSpot>>> searchTourismSpots(String query);
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpotsByCategory(
+    String category,
+  );
 }
