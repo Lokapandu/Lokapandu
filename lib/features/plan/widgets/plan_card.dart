@@ -1,17 +1,51 @@
-// File: lib/features/plan/widgets/plan_card.dart
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/plan_item_model.dart';
 
 class PlanCard extends StatelessWidget {
   final PlanItem item;
-  const PlanCard({super.key, required this.item});
+  final VoidCallback? onTap;
+
+  const PlanCard({super.key, required this.item, this.onTap});
+  Widget _buildImage(String imageUrl, ColorScheme colorScheme) {
+    bool isNetwork = imageUrl.startsWith('http');
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12.0),
+      child: isNetwork
+          ? CachedNetworkImage(
+              imageUrl: imageUrl,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              placeholder: (context, url) =>
+                  Container(color: colorScheme.surfaceContainerHighest),
+              errorWidget: (context, url, error) =>
+                  const Icon(Icons.broken_image_outlined),
+            )
+          : Image.asset(imageUrl, width: 60, height: 60, fit: BoxFit.cover),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    //  Ambil theme dari context
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Card(
-      elevation: 3.0,
-      shadowColor: Colors.black.withOpacity(0.1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      //  Mengunakan styling dari theme
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0),
+        side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+      ),
+      elevation: 0,
+      color: colorScheme.surface,
+      child: InkWell(
+        onTap: onTap, // Hubungkan dengan callback
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -19,21 +53,15 @@ class PlanCard extends StatelessWidget {
           children: [
             Text(
               item.title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
             ),
             if (item.type == PlanItemType.tour) ...[
               const SizedBox(height: 16),
               Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: Image.asset(
-                      item.tourImageUrl!,
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                    _buildImage(item.tourImageUrl!, colorScheme),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -41,12 +69,16 @@ class PlanCard extends StatelessWidget {
                       children: [
                         Text(
                           item.tourLocation!,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Klik untuk lihat detail wisata',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                          Text(
+                            'Klik untuk lihat detail',
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.outline,
+                            ),
                         ),
                       ],
                     ),
@@ -56,6 +88,7 @@ class PlanCard extends StatelessWidget {
             ],
           ],
         ),
+      ),
       ),
     );
   }

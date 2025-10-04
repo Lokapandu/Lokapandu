@@ -53,36 +53,6 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
           ),
         ),
         centerTitle: true,
-        // --- FIX: Tombol bookmark dipindahkan ke sini ---
-        actions: [
-          // Gunakan Consumer<BookmarkProvider> untuk mendapatkan status bookmark
-          Consumer<BookmarkProvider>(
-            builder: (context, bookmarkProvider, _) {
-              // Baca data 'tour' dari notifier detail, karena AppBar berada di dalam Consumer utama
-              final tour = context
-                  .read<TourismSpotDetailNotifier>()
-                  .tourismSpot;
-
-              // Jika data tour belum siap, jangan tampilkan tombol
-              if (tour == null) return const SizedBox.shrink();
-
-              final isBookmarked = bookmarkProvider.isBookmarked(tour);
-              return CircleAvatar(
-                backgroundColor: Colors.black.withOpacity(0.4),
-                child: IconButton(
-                  icon: Icon(
-                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: isBookmarked ? colorScheme.primary : Colors.white,
-                  ),
-                  onPressed: () {
-                    bookmarkProvider.toggleBookmark(tour);
-                  },
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 16), // Beri jarak dari tepi kanan
-        ],
       ),
       body: Consumer<TourismSpotDetailNotifier>(
         builder: (context, notifier, child) {

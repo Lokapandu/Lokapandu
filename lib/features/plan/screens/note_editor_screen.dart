@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Jangan lupa tambahkan 'intl' di pubspec.yaml
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../models/note_model.dart';
 
 class NoteEditorScreen extends StatefulWidget {
-  final Note? note; // Note akan null jika ini adalah mode 'Tambah'
+  final Note? note;
 
   const NoteEditorScreen({super.key, this.note});
 
@@ -32,7 +33,19 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _startTime = TimeOfDay.fromDateTime(widget.note!.startTime);
       _endDate = widget.note!.endTime;
       _endTime = TimeOfDay.fromDateTime(widget.note!.endTime);
+    } else {
+      // Mengisi data baru dengan konteks saat ini
+      _startDate = DateTime(2025, 10, 3);
+      _endDate = DateTime(2025, 10, 3);
+      _titleController.text = 'Makan siang di dekat Candi Jedong';
     }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -41,13 +54,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       initialDate: (isStart ? _startDate : _endDate) ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      locale: const Locale('id', 'ID'),
     );
     if (picked != null) {
       setState(() {
-        if (isStart)
+        if (isStart) {
           _startDate = picked;
-        else
+        } else {
           _endDate = picked;
+        }
       });
     }
   }

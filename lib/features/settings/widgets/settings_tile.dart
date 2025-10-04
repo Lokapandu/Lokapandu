@@ -1,49 +1,46 @@
 import 'package:flutter/material.dart';
 
-enum TileAction { toggle, navigation }
-
 class SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final TileAction actionType;
-  final bool? toggleValue;
-  final ValueChanged<bool>? onToggleChanged;
   final VoidCallback? onTap;
+  final Widget? trailing;
 
   const SettingsTile({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.actionType = TileAction.navigation,
-    this.toggleValue,
-    this.onToggleChanged,
     this.onTap,
+    this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return ListTile(
       onTap: onTap,
-      leading: Icon(icon, color: const Color(0xFF008080)),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12)),
-      trailing: _buildTrailing(),
-      contentPadding: const EdgeInsets.symmetric(vertical: 8.0),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: colorScheme.primary),
+      ),
+      title: Text(title, style: textTheme.titleMedium),
+      subtitle: Text(
+        subtitle,
+        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+      ),
+      trailing: trailing ??
+          (onTap != null
+              ? Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)
+              : null),
     );
-  }
-
-  // Helper untuk menentukan widget di sebelah kanan (trailing)
-  Widget? _buildTrailing() {
-    if (actionType == TileAction.toggle) {
-      return Switch(
-        value: toggleValue ?? false,
-        onChanged: onToggleChanged,
-        activeColor: const Color(0xFF008080),
-      );
-    }
-    // Jika tipe-nya navigation atau tidak ada aksi
-    return const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey);
   }
 }

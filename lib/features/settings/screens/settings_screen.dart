@@ -1,98 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
 import '../widgets/settings_tile.dart';
-import '../../bookmark/screens/bookmark_screen.dart'; // Import halaman Bookmark
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  // State untuk mengelola nilai toggle
-  bool _isNotificationOn = true;
-  bool _isDarkModeOn = false;
-
-  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFA),
+      backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(
-        title: const Text(
-          'Pengaturan',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: colorScheme.surface,
+        scrolledUnderElevation: 4.0,
+        shadowColor: theme.shadowColor.withOpacity(0.1),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        title: Text(
+          'Pengaturan',
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(vertical: 24.0),
         children: [
-          // Item Notifikasi
-          SettingsTile(
-            icon: Icons.notifications_outlined,
-            title: 'Notifikasi',
-            subtitle: 'Dapatkan notifikasi mengenai wisata yang menarik.',
-            actionType: TileAction.toggle,
-            toggleValue: _isNotificationOn,
-            onToggleChanged: (value) {
-              setState(() {
-                _isNotificationOn = value;
-                // TODO: Simpan preferensi notifikasi
-              });
-            },
-          ),
-
-          const Divider(thickness: 0.5, height: 24),
-
-          // Item Tema Gelap
-          SettingsTile(
-            icon: Icons.palette_outlined,
-            title: 'Tema Gelap',
-            subtitle:
-                'Tersedia tema terang dan gelap. Ubah tema sesuai kebutuhan.',
-            actionType: TileAction.toggle,
-            toggleValue: _isDarkModeOn,
-            onToggleChanged: (value) {
-              setState(() {
-                _isDarkModeOn = value;
-                // TODO: Implementasikan logika ganti tema
-              });
-            },
-          ),
-
-          const Divider(thickness: 0.5, height: 24),
-
-          // Item Bookmark
+          _buildSectionTitle(context, 'Preferensi'),
           SettingsTile(
             icon: Icons.bookmark_border,
             title: 'Bookmark',
-            subtitle: 'Wisata tersimpan',
-            // Tidak perlu actionType karena default-nya adalah navigasi
+            subtitle: 'Lihat daftar wisata tersimpan',
+            onTap: () => context.push('/bookmarks'),
+          ),
+          SettingsTile(
+            icon: Icons.dark_mode_outlined,
+            title: 'Mode Gelap',
+            subtitle: 'Ganti antara tema terang dan gelap',
+            trailing: Consumer<ThemeProvider>(
+              builder: (context, themeProvider, child) {
+                return Switch(
+                  value: themeProvider.isDarkMode,
+                  onChanged: (value) {
+                    themeProvider.toggleTheme();
+                  },
+                );
+              },
+            ),
+          ),
+          const Divider(height: 48, indent: 24, endIndent: 24),
+          _buildSectionTitle(context, 'Lainnya'),
+          SettingsTile(
+            icon: Icons.help_outline,
+            title: 'Bantuan & Dukungan',
+            subtitle: 'Hubungi kami jika ada masalah',
             onTap: () {
-              // Navigasi ke halaman Bookmark saat diklik
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const BookmarkScreen()),
-              );
+              // TODO: Navigasi ke halaman bantuan
             },
           ),
-
-          const Divider(thickness: 0.5, height: 24),
-
-          // Item Tentang Pengembang
           SettingsTile(
             icon: Icons.info_outline,
-            title: 'Tentang Pengembang',
-            subtitle: 'Lokapandu by BEKUP B25-PG008 Team',
+            title: 'Tentang Aplikasi',
+            subtitle: 'Lihat versi dan informasi aplikasi',
             onTap: () {
-              // TODO: Tampilkan dialog atau halaman 'Tentang Kami'
+              // TODO: Navigasi ke halaman tentang
             },
           ),
+          const SizedBox(height: 40),
+          Center(
+            child: Text(
+              'LokaPandu v1.0.0',
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+            ),
+          )
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 8.0),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontWeight: FontWeight.bold,
+            ),
       ),
     );
   }

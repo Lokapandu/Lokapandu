@@ -1,30 +1,60 @@
-// File: lib/features/plan/widgets/search_result_card.dart
-
 import 'package:flutter/material.dart';
-import 'package:lokapandu/features/tour/models/tour_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 
 class SearchResultCard extends StatelessWidget {
-  final Tour tour;
-  const SearchResultCard({super.key, required this.tour});
+  final TourismSpot spot;
+  final bool isSelected;
+  final VoidCallback? onTap;
+
+  const SearchResultCard({
+    super.key,
+    required this.spot,
+    this.isSelected = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final primaryImage = spot.images.isNotEmpty
+        ? spot.images.first.imageUrl
+        : '';
+    final location = '${spot.city}, ${spot.province}';
+
     return Card(
+      // mengunakan styling dari theme ya ges
       margin: const EdgeInsets.only(bottom: 16.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      shadowColor: Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+          width: isSelected ? 2.0 : 1.0,
+        ),
+      ),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      color: colorScheme.surface,
+      child: InkWell(
+        onTap: onTap,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12.0),
-              child: Image.asset(
-                tour.imageUrl,
+                // mengunakan CachedNetworkImage untuk gambar dari internet
+                child: CachedNetworkImage(
+                  imageUrl: primaryImage,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      Container(color: colorScheme.surfaceContainerHighest),
+                  errorWidget: (context, url, error) =>
+                      const Icon(Icons.broken_image),
               ),
             ),
             const SizedBox(width: 16),
@@ -33,26 +63,27 @@ class SearchResultCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    tour.name,
-                    style: const TextStyle(
+                      spot.name,
+                      style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(
-                        Icons.location_on,
+                        Icon(
+                          Icons.location_on_outlined,
                         size: 14,
-                        color: Colors.grey,
+                          color: colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        tour.location,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
+                        Expanded(
+                          child: Text(
+                            location,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -61,10 +92,16 @@ class SearchResultCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            // Tombol radio atau check untuk memilih
-            const Icon(Icons.radio_button_off, color: Colors.grey),
+              Icon(
+                isSelected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_off,
+                color: isSelected ? colorScheme.primary : colorScheme.outline,
+                size: 28,
+              ),
           ],
         ),
+      ),
       ),
     );
   }

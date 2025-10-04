@@ -1,193 +1,184 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:lokapandu/features/plan/screens/plan_screen.dart';
-import 'package:lokapandu/features/settings/screens/settings_screen.dart';
-import 'package:lokapandu/features/tour/screens/tour_screen.dart';
-import '../widgets/home_header.dart';
-import '../widgets/dont_miss_carausel.dart';
-import '../widgets/search_bar.dart';
-import '../widgets/upcoming_tour_card.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
+import 'package:lokapandu/features/home/models/navigation_item_model.dart';
+import 'package:lokapandu/features/home/widgets/home_header.dart';
+import 'package:lokapandu/features/home/widgets/dont_miss_carausel.dart';
+import 'package:lokapandu/features/home/widgets/search_bar.dart';
+import 'package:lokapandu/features/home/widgets/upcoming_tour_card.dart';
+import 'package:lokapandu/features/home/widgets/home_widgets.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  final Widget child;
+  const HomeScreen({super.key, required this.child});
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
+  int _getCurrentIndex(BuildContext context) {
+    final location = GoRouterState.of(context).matchedLocation;
+    final index = navigationItems.indexWhere(
+      (item) => location.startsWith(item.path),
+    );
+    return index == -1 ? 0 : index;
+  }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  static final List<Widget> _pages = <Widget>[
-    _buildHomeContent(),
-    const TourScreen(),
-    const PlanScreen(),
-    const SettingsScreen(),
-  ];
-
-  void _onNavItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _onNavItemTapped(BuildContext context, int index) {
+    context.go(navigationItems[index].path);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final selectedIndex = _getCurrentIndex(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFA),
-      body: SafeArea(
-        child: IndexedStack(index: _selectedIndex, children: _pages),
-      ),
+      
+      backgroundColor: colorScheme.surfaceContainerHigh,
+      body: child,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const AiChatScaffold()),
-          );
-        },
-        backgroundColor: const Color(0xFF008080),
-        child: SvgPicture.asset(
-          'assets/icons/ai_chat.svg',
-          width: 24,
-          height: 24,
-          color: Colors.white,
-        ),
-        elevation: 4.0,
+        onPressed: () {},
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: null,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8.0,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
+      bottomNavigationBar: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          BottomAppBar(
+            shape: const CircularNotchedRectangle(),
+            notchMargin: 8.0,
+            color: colorScheme.surfaceContainer,
+            elevation: 2,
+            child: SizedBox(
+              height: 65,
+              child: Row(
                 children: <Widget>[
-                  _buildNavItem(
-                    iconPath: 'assets/icons/home.svg',
-                    label: 'Beranda',
-                    index: 0,
+                  NavItem(
+                    item: navigationItems[0],
+                    isSelected: selectedIndex == 0,
+                    onTap: () => _onNavItemTapped(context, 0),
                   ),
-                  _buildNavItem(
-                    iconPath: 'assets/icons/icon_park.svg',
-                    label: 'Wisata',
-                    index: 1,
+                  NavItem(
+                    item: navigationItems[1],
+                    isSelected: selectedIndex == 1,
+                    onTap: () => _onNavItemTapped(context, 1),
+                  ),
+                  const SizedBox(width: 48),
+                  NavItem(
+                    item: navigationItems[2],
+                    isSelected: selectedIndex == 2,
+                    onTap: () => _onNavItemTapped(context, 2),
+                  ),
+                  NavItem(
+                    item: navigationItems[3],
+                    isSelected: selectedIndex == 3,
+                    onTap: () => _onNavItemTapped(context, 3),
                   ),
                 ],
               ),
-              Row(
-                children: <Widget>[
-                  _buildNavItem(
-                    iconPath: 'assets/icons/planing.svg',
-                    label: 'Rencana',
-                    index: 2,
-                  ),
-                  _buildNavItem(
-                    iconPath: 'assets/icons/settings.svg',
-                    label: 'Pengaturan',
-                    index: 3,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Helper widget untuk BottomNavigationBar item dengan SVG
-  Widget _buildNavItem({
-    required String iconPath,
-    required String label,
-    required int index,
-  }) {
-    final isSelected = index == _selectedIndex;
-    final color = isSelected ? const Color(0xFF008080) : Colors.grey[400];
-
-    return MaterialButton(
-      minWidth: 40,
-      onPressed: () => _onNavItemTapped(index),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SvgPicture.asset(iconPath, width: 24, height: 24, color: color),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),
+          Positioned(bottom: 50, child: buildCenterButton(context)),
         ],
       ),
     );
   }
 }
 
-// Widget khusus untuk konten Beranda agar build method utama tetap rapi
-Widget _buildHomeContent() {
-  return ListView(
-    padding: const EdgeInsets.symmetric(vertical: 20.0),
-    children: [
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: HomeHeader(),
-      ),
-      const SizedBox(height: 24),
-      const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-        child: CustomSearchBar(),
-      ),
-      const SizedBox(height: 24),
-      const DontMissCarousel(),
-      const SizedBox(height: 32),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Text(
-          'Wisata yang akan datang',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
-          ),
-        ),
-      ),
-      const SizedBox(height: 16),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children: [
-            UpcomingTourCard(
-              imageUrl: 'assets/images/taman_ujung.jpg',
-              title: 'Taman Ujung Soekasada',
-              location: 'Kecamatan, Kab',
-              time: '12.00 - 13.00',
-            ),
-            const SizedBox(height: 12),
-            UpcomingTourCard(
-              imageUrl: 'assets/images/taman_ujung.jpg',
-              title: 'Taman Ujung Soekasada',
-              location: 'Kecamatan, Kab',
-              time: '12.00 - 13.00',
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
+class HomeContent extends StatefulWidget {
+  const HomeContent({super.key});
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
 }
 
-// Wrapper untuk AiChatScreen agar memiliki Scaffold saat dibuka
-class AiChatScaffold extends StatelessWidget {
-  const AiChatScaffold({super.key});
+class _HomeContentState extends State<HomeContent> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<TourismSpotNotifier>().loadTourismSpots();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: AiChatScreen());
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.only(top: 20.0, bottom: 40.0),
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: HomeHeader(),
+          ),
+          const SizedBox(height: 24),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: CustomSearchBar(),
+          ),
+          const SizedBox(height: 24),
+          const DontMissCarousel(),
+          const SizedBox(height: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Text(
+              'Rekomendasi Untuk Anda',
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Consumer<TourismSpotNotifier>(
+            builder: (context, notifier, child) {
+              if (notifier.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (notifier.hasError) {
+                return Center(
+                  child: Text('Gagal memuat data: ${notifier.errorMessage}'),
+                );
+              }
+              if (!notifier.hasData) {
+                return const Center(child: Text('Belum ada rekomendasi.'));
+              }
+
+              final upcomingSpots = notifier.tourismSpots.take(3).toList();
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: ListView.separated(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: upcomingSpots.length,
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final spot = upcomingSpots[index];
+                    return UpcomingTourCard(
+                      imageUrl: spot.images.isNotEmpty
+                          ? spot.images.first.imageUrl
+                          : '',
+                      title: spot.name,
+                      location: '${spot.city}, ${spot.province}',
+                      time: 'Dibuka: ${spot.openTime}',
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/features/plan/models/plan_item_model.dart';
-import '../screens/tour_search_sceen.dart';
 import 'package:lokapandu/features/plan/widgets/selected_tour_card.dart';
-import 'package:lokapandu/features/tour/models/tour_model.dart';
 
 class TourPlanEditorScreen extends StatefulWidget {
   final PlanItem? planItem;
@@ -20,8 +20,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   DateTime? _selectedDate;
   TimeOfDay? _startTime;
   TimeOfDay? _endTime;
-
-  Tour? _selectedTour;
+  TourismSpot? _selectedTour;
 
   bool get isEditing => widget.planItem != null;
 
@@ -29,15 +28,24 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   void initState() {
     super.initState();
     if (isEditing) {
-      // TODO: Isi field dari widget.planItem
+      // TODO: Logika untuk mengisi data saat mode edit
+    } else {
+      _selectedDate = DateTime(2025, 10, 3);
+      _titleController.text = 'Jelajah Air Terjun di Sekitar Ngoro';
     }
   }
 
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
   Future<void> _navigateToSearchScreen() async {
-    final result = await Navigator.push<Tour>(
-      context,
-      MaterialPageRoute(builder: (context) => const TourSearchScreen()),
-    );
+    // Navigasi ke halaman pencarian wisata, menunggu hasil berupa TourismSpot
+    final result = await context.push<TourismSpot>('/plan/search-tour');
+
     if (result != null && mounted) {
       setState(() {
         _selectedTour = result;
@@ -51,6 +59,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      locale: const Locale('id', 'ID'),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -77,19 +86,23 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFA),
+      backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
+        scrolledUnderElevation: 4.0,
+        shadowColor: theme.shadowColor.withOpacity(0.1),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          onPressed: () => context.pop(),
         ),
         title: Text(
-          isEditing ? 'Edit Rencana Wisata' : 'Tambah Rencana Wisata',
-          style: const TextStyle(
-            color: Colors.black,
+          isEditing ? 'Edit Rencana' : 'Tambah Rencana',
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -101,16 +114,21 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTextField(
-              label: 'Rencana Pariwisata',
+              theme: theme,
+              label: 'Nama Rencana',
               controller: _titleController,
-              hint: 'Contoh: Tour di Taman Tirta Gangga',
+              hint: 'Contoh: Jelajahi Candi Jedong',
             ),
             const SizedBox(height: 24),
             _buildDateTimeField(
+              theme: theme,
               label: 'Tanggal',
               value: _selectedDate != null
-                  ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                  : 'DD/MM/YYYY',
+                  ? DateFormat(
+                      'EEEE, dd MMMM yyyy',
+                      'id_ID',
+                    ).format(_selectedDate!)
+                  : 'Pilih Tanggal',
               icon: Icons.calendar_today_outlined,
               onTap: _selectDate,
             ),
@@ -119,8 +137,9 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
               children: [
                 Expanded(
                   child: _buildDateTimeField(
+                    theme: theme,
                     label: 'Waktu Mulai',
-                    value: _startTime?.format(context) ?? '00:00',
+                    value: _startTime?.format(context) ?? 'Pilih Waktu',
                     icon: Icons.access_time_outlined,
                     onTap: () => _selectTime(true),
                   ),
@@ -128,8 +147,9 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildDateTimeField(
+                    theme: theme,
                     label: 'Waktu Selesai',
-                    value: _endTime?.format(context) ?? '00:00',
+                    value: _endTime?.format(context) ?? 'Pilih Waktu',
                     icon: Icons.access_time_outlined,
                     onTap: () => _selectTime(false),
                   ),
@@ -143,25 +163,31 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
             ),
             const SizedBox(height: 24),
             _buildTextField(
+              theme: theme,
               label: 'Catatan',
               controller: _noteController,
-              hint: 'Tulis catatan di sini',
+              hint: 'Tulis catatan di sini (opsional)',
               maxLines: 4,
             ),
             const SizedBox(height: 40),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // Implementasi logika penyimpanan
+                context.pop();
+              },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF008080),
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              child: const Text(
-                'Simpan Rencana Wisata',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              child: Text(
+                'Simpan Rencana',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -171,30 +197,39 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   }
 
   Widget _buildTextField({
+    required ThemeData theme,
     required String label,
     required TextEditingController controller,
     required String hint,
     int maxLines = 1,
   }) {
+    final colorScheme = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(label, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           maxLines: maxLines,
+          style: theme.textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
-            filled: true,
-            fillColor: Colors.white,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+            hintStyle: theme.textTheme.bodyLarge?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.5),
             ),
+            filled: true,
+    
+            fillColor: colorScheme.surface,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide(
+                color: colorScheme.surfaceContainerHighest,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colorScheme.primary, width: 2),
             ),
           ),
         ),
@@ -203,31 +238,39 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   }
 
   Widget _buildDateTimeField({
+    required ThemeData theme,
     required String label,
     required String value,
     required IconData icon,
     required VoidCallback onTap,
   }) {
+    final colorScheme = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(label, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
+              border: Border.all(color: colorScheme.surfaceContainerHighest),
             ),
             child: Row(
               children: [
-                Icon(icon, color: Colors.grey, size: 20),
-                const SizedBox(width: 12),
-                Text(value),
+                Icon(icon, color: colorScheme.onSurfaceVariant, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    value,
+                    style: theme.textTheme.bodyLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           ),

@@ -1,7 +1,5 @@
-// File: lib/features/plan/models/note_model.dart
-
 class Note {
-  final String? id; // Akan null saat membuat catatan baru
+  final String? id; 
   final String title;
   final String content;
   final DateTime startTime;
