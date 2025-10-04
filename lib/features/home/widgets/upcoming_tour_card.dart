@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UpcomingTourCard extends StatelessWidget {
   final String imageUrl;
@@ -14,20 +15,52 @@ class UpcomingTourCard extends StatelessWidget {
     required this.time,
   });
 
+  // Helper untuk membedakan URL network dan path aset lokal
+  bool _isNetworkUrl(String url) {
+    return url.startsWith('http://') || url.startsWith('https://');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Container(
       padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: Colors.grey.shade200, width: 1.0),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withOpacity(0.5),
+          width: 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12.0),
-            child: Image.asset(
+            // DYNAMIC IMAGE: Gunakan CachedNetworkImage untuk URL dari internet
+            child: _isNetworkUrl(imageUrl)
+                ? CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Container(color: colorScheme.surfaceContainerHighest),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.broken_image_outlined),
+                  )
+                : Image.asset(
+                    // Fallback untuk gambar lokal
               imageUrl,
               width: 70,
               height: 70,
@@ -39,33 +72,59 @@ class UpcomingTourCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Selanjutnya',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.outline,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    color: colorScheme.onSurface,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, color: Colors.grey, size: 14),
+                    Icon(
+                      Icons.location_on_outlined,
+                      color: colorScheme.outline,
+                      size: 14,
+                    ),
                     const SizedBox(width: 4),
-                    Text(
+
+                    Expanded(
+                      child: Text(
                       location,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.outline,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    const Icon(Icons.access_time, color: Colors.grey, size: 14),
+                    Icon(
+                      Icons.access_time_outlined,
+                      color: colorScheme.outline,
+                      size: 14,
+                    ),
                     const SizedBox(width: 4),
-                    Text(
+
+                    Expanded(
+                      child: Text(
                       time,
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.outline,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
                     ),
                   ],
                 ),

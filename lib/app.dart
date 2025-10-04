@@ -3,24 +3,28 @@ import 'package:lokapandu/common/routes/app_router.dart';
 import 'package:lokapandu/common/themes/theme.dart';
 import 'package:lokapandu/common/themes/util.dart';
 import 'package:lokapandu/presentation/common/widgets/error_boundary.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
-    TextTheme textTheme = createTextTheme(context, "Open Sans", "Nunito");
+    final themeProvider = context.watch<ThemeProvider>();
 
+    TextTheme textTheme = createTextTheme(context, "Open Sans", "Nunito");
     MaterialTheme theme = MaterialTheme(textTheme);
 
     return ErrorBoundary(
       errorContext: 'App Root',
       child: MaterialApp.router(
         title: 'Lokapandu',
-        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+        themeMode: themeProvider.themeMode,
+        theme: theme.light(),
+        darkTheme: theme.dark(),
         routerConfig: AppRouter.createRouter(),
-        // Tambahkan navigation observer untuk tracking
+
         builder: (context, child) {
           return ErrorBoundary(
             errorContext: 'App Builder',

@@ -15,7 +15,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [
     const ChatMessage(
-      text: 'Hai, Ayu Krisna! Ada yang bisa aku bantu di Ngoro sore ini?',
+      text: 'Hai, Ayu Krisna! Ada yang bisa aku bantu di Bali sore ini?',
       isFromUser: false,
     ),
     const ChatMessage(
@@ -97,22 +97,22 @@ class _AiChatScreenState extends State<AiChatScreen> {
         scrolledUnderElevation: 1, 
       ),
       body: Column(
-        children: [
-          Expanded(
-            child: ListView.separated(
+      children: [
+        Expanded(
+          child: ListView.separated(
               controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return ChatBubble(
-                  text: message.text,
-                  isFromUser: message.isFromUser,
-                );
-              },
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            itemCount: _messages.length,
+            itemBuilder: (context, index) {
+              final message = _messages[index];
+              return ChatBubble(
+                text: message.text,
+                isFromUser: message.isFromUser,
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
           ),
+        ),
           _buildMessageInput(theme, colorScheme),
         ],
       ),

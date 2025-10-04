@@ -1,71 +1,151 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
-import '../widgets/settings_tile.dart'; 
+import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
+import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Mengambil theme dan colorScheme yang didefinisikan di MaterialTheme Anda
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    // Mendengarkan perubahan tema dari ThemeProvider
-    final themeProvider = context.watch<ThemeProvider>();
+    final textTheme = theme.textTheme;
 
     return Scaffold(
+      backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(
-        title: Text('Pengaturan', style: theme.textTheme.titleLarge),
         backgroundColor: colorScheme.surface,
-        elevation: 0,
+        scrolledUnderElevation: 4.0,
+        shadowColor: theme.shadowColor.withOpacity(0.1),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        title: Text(
+          'Pengaturan',
+          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(vertical: 24.0),
         children: [
-          SettingsTile(
-            icon: Icons.notifications_outlined,
-            title: 'Notifikasi',
-            subtitle: 'Dapatkan notifikasi mengenai wisata yang menarik.',
-            actionType: TileAction.toggle,
-            toggleValue: true, 
-            onToggleChanged: (value) {
-              // TODO: Implementasi logika notifikasi
-            },
-          ),
-          Divider(color: colorScheme.outlineVariant, thickness: 1, height: 32),
-          SettingsTile(
-            icon: Icons.palette_outlined,
-            title: 'Tema Gelap',
-            subtitle: 'Ubah tema sesuai kebutuhan.',
-            actionType: TileAction.toggle,
-            toggleValue: themeProvider.themeMode == ThemeMode.dark,
-            onToggleChanged: (value) {
-              context.read<ThemeProvider>().toggleTheme(value);
-            },
-          ),
-          Divider(color: colorScheme.outlineVariant, thickness: 1, height: 32),
+          _buildUserProfileHeader(context),
+          const Divider(height: 48, indent: 24, endIndent: 24),
+          _buildSectionTitle(context, 'Preferensi'),
           SettingsTile(
             icon: Icons.bookmark_border,
             title: 'Bookmark',
-            subtitle: 'Wisata tersimpan',
-            onTap: () {
-              context.push('/bookmarks');
-            },
+            subtitle: 'Lihat daftar wisata tersimpan',
+            onTap: () => context.push('/bookmarks'),
           ),
-          Divider(color: colorScheme.outlineVariant, thickness: 1, height: 32),
+          SettingsTile(
+            icon: Icons.dark_mode_outlined,
+            title: 'Mode Gelap',
+            subtitle: 'Ganti antara tema terang dan gelap',
+            trailing: Consumer<ThemeProvider>(
+              builder: (context, themeProvider, child) {
+                return Switch(
+                  value: themeProvider.isDarkMode,
+                  onChanged: (value) {
+                    // FIX: Gunakan context.read di sini
+                    context.read<ThemeProvider>().toggleTheme();
+                  },
+                );
+              },
+            ),
+          ),
+          const Divider(height: 48, indent: 24, endIndent: 24),
+          _buildSectionTitle(context, 'Lainnya'),
+          SettingsTile(
+            icon: Icons.help_outline,
+            title: 'Bantuan & Dukungan',
+            subtitle: 'Hubungi kami jika ada masalah',
+            onTap: () {},
+          ),
           SettingsTile(
             icon: Icons.info_outline,
-            title: 'Tentang Pengembang',
-            subtitle: 'Lokapandu by BEKUP B25-PG008 Team',
-            onTap: () {
-            },
+            title: 'Tentang Aplikasi',
+            subtitle: 'Lihat versi dan informasi aplikasi',
+            onTap: () {},
+          ),
+          const SizedBox(height: 40),
+          Center(
+            child: Text(
+              'LokaPandu v1.0.0',
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildUserProfileHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    const String userName = 'Ayu Lestari';
+    const String userEmail = 'ayulestari@example.com';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 32,
+            backgroundColor: colorScheme.primaryContainer,
+            child: Text(
+              userName.isNotEmpty ? userName[0] : 'U',
+              style: textTheme.headlineSmall?.copyWith(
+                color: colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  userName,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  userEmail,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.edit_outlined,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24.0, 0, 24.0, 8.0),
+      child: Text(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
