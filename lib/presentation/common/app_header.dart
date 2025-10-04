@@ -3,8 +3,21 @@ import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart'
 import 'package:provider/provider.dart';
 import 'package:iconify_design/iconify_design.dart';
 
-class AppHeader extends StatelessWidget {
+class AppHeader extends StatefulWidget {
   const AppHeader({super.key});
+
+  @override
+  State<AppHeader> createState() => _AppHeaderState();
+}
+
+class _AppHeaderState extends State<AppHeader> {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<AppHeaderNotifier>().getCurrentWeather();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +33,7 @@ class AppHeader extends StatelessWidget {
               Row(
                 children: [
                   Consumer<AppHeaderNotifier>(
-                    builder: (context, notifier, cihld) {
+                    builder: (context, notifier, child) {
                       return Row(
                         children: [
                           IconifyIcon(

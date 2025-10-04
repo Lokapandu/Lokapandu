@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:lokapandu/common/services/crashlytics_service.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:provider/provider.dart';
@@ -48,17 +49,16 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => di.locator<AppHeaderNotifier>()..initialize(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotNotifier>(),
         ),
+        ChangeNotifierProvider(create: (_) => di.locator<BookmarkProvider>()),
         ChangeNotifierProvider(
           create: (_) => di.locator<TourismSpotDetailNotifier>(),
         ),
         ChangeNotifierProvider(create: (_) => di.locator<AuthNotifier>()),
-        ChangeNotifierProvider(
-          create: (_) => di.locator<AppHeaderNotifier>()
-            ..initialize()
-            ..getCurrentWeather(),
-        ),
       ],
       child: const App(),
     ),

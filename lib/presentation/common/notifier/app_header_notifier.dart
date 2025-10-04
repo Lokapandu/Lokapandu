@@ -87,11 +87,10 @@ class AppHeaderNotifier extends ChangeNotifier {
 
   Future<void> getCurrentWeather() async {
     dev.log('Getting current weather...', name: 'AppHeaderNotifier');
+    isLoadingWeather = true;
+    notifyListeners();
 
     try {
-      isLoadingWeather = true;
-      notifyListeners();
-
       final result = await _currentWeather.execute(
         latLon: isPermissionGranted()
             ? '${_locationData?.latitude},${_locationData?.longitude}'
@@ -101,6 +100,15 @@ class AppHeaderNotifier extends ChangeNotifier {
       result.fold((failure) => _handleFailure(failure), (weather) {
         _currentWeatherData = weather;
       });
+
+      await _analyticsManager.trackEvent(
+        eventName: 'get_weather_information',
+        parameters: {
+          'weather_status':
+              _currentWeatherData?.toString() ?? 'Cant Get Weather Data',
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+      );
     } catch (e) {
       dev.log('Error getting current weather: $e', name: 'AppHeaderNotifier');
     } finally {

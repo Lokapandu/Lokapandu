@@ -13,6 +13,7 @@ import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -95,9 +96,7 @@ Future<void> initDependencies() async {
     ),
   );
   locator.registerLazySingleton<WeatherRepository>(
-    () => WeatherRepositoryImpl(
-      dataSource: locator<WeatherRemoteDataSource>(),
-    ),
+    () => WeatherRepositoryImpl(dataSource: locator<WeatherRemoteDataSource>()),
   );
 
   // ========================================
@@ -155,4 +154,6 @@ Future<void> initDependencies() async {
       currentWeather: locator<GetCurrentWeather>(),
     ),
   );
+
+  locator.registerFactory<BookmarkProvider>(() => BookmarkProvider());
 }

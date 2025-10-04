@@ -181,15 +181,14 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           childAspectRatio: 0.9,
                         ),
                     itemBuilder: (context, index) {
-                      final spot = filteredSpots[index] as TourismSpot;
-
+                      final spot = filteredSpots[index];
 
                       return DestinationCard(
                         tourismSpot: spot,
                         onTap: () {
                           context.push('/tourism_spot/preview/${spot.id}');
                         },
-                        
+
                         isFavorited: bookmarkProvider.isBookmarked(spot),
                         onFavoriteToggle: () {
                           context.read<BookmarkProvider>().toggleBookmark(spot);
