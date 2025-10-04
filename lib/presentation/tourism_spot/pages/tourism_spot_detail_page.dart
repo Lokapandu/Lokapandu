@@ -16,13 +16,18 @@ class TourismSpotDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          TourDetailSliverAppBar(imageUrl: tour.images[0].imageUrl),
+         
+          TourDetailSliverAppBar(
+            imageUrl: tour.images.isNotEmpty ? tour.images.first.imageUrl : '',
+          ),
           SliverToBoxAdapter(
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 24.0),
+              transform: Matrix4.translationValues(0.0, -24.0, 0.0),
+              padding: const EdgeInsets.only(top: 24.0),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface,
                 borderRadius: const BorderRadius.only(
@@ -33,11 +38,17 @@ class TourismSpotDetailPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  HeaderSection(tour: tour),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: HeaderSection(tour: tour),
+                  ),
                   const SizedBox(height: 24),
                   ImageCarouselSection(images: tour.images),
                   const SizedBox(height: 24),
-                  AboutSection(aboutText: tour.description),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: AboutSection(aboutText: tour.description),
+                  ),
                   const SizedBox(height: 24),
                   LocationMapSection(
                     tourName: tour.name,
@@ -45,14 +56,20 @@ class TourismSpotDetailPage extends StatelessWidget {
                     longitude: tour.longitude,
                   ),
                   const SizedBox(height: 24),
-                  FacilitiesSection(facilities: tour.facilities),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: FacilitiesSection(facilities: tour.facilities),
+                  ),
+                  const SizedBox(
+                    height: 48,
+                  ), 
                 ],
               ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: const ActionButtonsSection(),
+      bottomNavigationBar: ActionButtonsSection(tour: tour),
     );
   }
 }
