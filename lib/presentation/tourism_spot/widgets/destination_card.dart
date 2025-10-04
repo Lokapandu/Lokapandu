@@ -6,7 +6,7 @@ class DestinationCard extends StatelessWidget {
   final TourismSpot tourismSpot;
   final VoidCallback? onTap;
 
-  const DestinationCard({super.key, required this.tourismSpot, this.onTap});
+  const DestinationCard({super.key, required this.tourismSpot, this.onTap, required bool isFavorited, required Null Function() onFavoriteToggle});
 
   bool _isNetworkUrl(String url) {
     return url.startsWith('http://') || url.startsWith('https://');
