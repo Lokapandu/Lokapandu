@@ -1,69 +1,81 @@
 // GENERATED CODE DO NOT EDIT
 part of '../brick.g.dart';
 
-Future<TourismImageModel> _$TourismImageModelFromSupabase(
+Future<ItinerariesModel> _$ItinerariesModelFromSupabase(
   Map<String, dynamic> data, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return TourismImageModel(
+  return ItinerariesModel(
     id: data['id'] as int,
-    tourismSpotId: data['tourism_spot_id'] as int,
-    label: data['label'] as String,
-    imageUrl: data['image_url'] as String,
+    name: data['name'] as String,
+    notes: data['notes'] == null ? null : data['notes'] as String?,
+    startTime: DateTime.parse(data['start_time'] as String),
+    endTime: DateTime.parse(data['end_time'] as String),
     createdAt: DateTime.parse(data['created_at'] as String),
+    tourismSpotId: data['tourism_spot_id'] == null
+        ? null
+        : data['tourism_spot_id'] as int?,
   );
 }
 
-Future<Map<String, dynamic>> _$TourismImageModelToSupabase(
-  TourismImageModel instance, {
+Future<Map<String, dynamic>> _$ItinerariesModelToSupabase(
+  ItinerariesModel instance, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return {
     'id': instance.id,
-    'tourism_spot_id': instance.tourismSpotId,
-    'label': instance.label,
-    'image_url': instance.imageUrl,
+    'name': instance.name,
+    'notes': instance.notes,
+    'start_time': instance.startTime.toIso8601String(),
+    'end_time': instance.endTime.toIso8601String(),
     'created_at': instance.createdAt.toIso8601String(),
+    'tourism_spot_id': instance.tourismSpotId,
   };
 }
 
-Future<TourismImageModel> _$TourismImageModelFromSqlite(
+Future<ItinerariesModel> _$ItinerariesModelFromSqlite(
   Map<String, dynamic> data, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return TourismImageModel(
+  return ItinerariesModel(
     id: data['id'] as int,
-    tourismSpotId: data['tourism_spot_id'] as int,
-    label: data['label'] as String,
-    imageUrl: data['image_url'] as String,
+    name: data['name'] as String,
+    notes: data['notes'] == null ? null : data['notes'] as String?,
+    startTime: DateTime.parse(data['start_time'] as String),
+    endTime: DateTime.parse(data['end_time'] as String),
     createdAt: DateTime.parse(data['created_at'] as String),
+    tourismSpotId: data['tourism_spot_id'] == null
+        ? null
+        : data['tourism_spot_id'] as int?,
   )..primaryKey = data['_brick_id'] as int;
 }
 
-Future<Map<String, dynamic>> _$TourismImageModelToSqlite(
-  TourismImageModel instance, {
+Future<Map<String, dynamic>> _$ItinerariesModelToSqlite(
+  ItinerariesModel instance, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return {
     'id': instance.id,
-    'tourism_spot_id': instance.tourismSpotId,
-    'label': instance.label,
-    'image_url': instance.imageUrl,
+    'name': instance.name,
+    'notes': instance.notes,
+    'start_time': instance.startTime.toIso8601String(),
+    'end_time': instance.endTime.toIso8601String(),
     'created_at': instance.createdAt.toIso8601String(),
+    'tourism_spot_id': instance.tourismSpotId,
   };
 }
 
-/// Construct a [TourismImageModel]
-class TourismImageModelAdapter
-    extends OfflineFirstWithSupabaseAdapter<TourismImageModel> {
-  TourismImageModelAdapter();
+/// Construct a [ItinerariesModel]
+class ItinerariesModelAdapter
+    extends OfflineFirstWithSupabaseAdapter<ItinerariesModel> {
+  ItinerariesModelAdapter();
 
   @override
-  final supabaseTableName = 'tourism_images';
+  final supabaseTableName = 'itineraries';
   @override
   final defaultToNull = true;
   @override
@@ -72,21 +84,29 @@ class TourismImageModelAdapter
       association: false,
       columnName: 'id',
     ),
-    'tourismSpotId': const RuntimeSupabaseColumnDefinition(
+    'name': const RuntimeSupabaseColumnDefinition(
       association: false,
-      columnName: 'tourism_spot_id',
+      columnName: 'name',
     ),
-    'label': const RuntimeSupabaseColumnDefinition(
+    'notes': const RuntimeSupabaseColumnDefinition(
       association: false,
-      columnName: 'label',
+      columnName: 'notes',
     ),
-    'imageUrl': const RuntimeSupabaseColumnDefinition(
+    'startTime': const RuntimeSupabaseColumnDefinition(
       association: false,
-      columnName: 'image_url',
+      columnName: 'start_time',
+    ),
+    'endTime': const RuntimeSupabaseColumnDefinition(
+      association: false,
+      columnName: 'end_time',
     ),
     'createdAt': const RuntimeSupabaseColumnDefinition(
       association: false,
       columnName: 'created_at',
+    ),
+    'tourismSpotId': const RuntimeSupabaseColumnDefinition(
+      association: false,
+      columnName: 'tourism_spot_id',
     ),
   };
   @override
@@ -107,23 +127,29 @@ class TourismImageModelAdapter
       iterable: false,
       type: int,
     ),
-    'tourismSpotId': const RuntimeSqliteColumnDefinition(
+    'name': const RuntimeSqliteColumnDefinition(
       association: false,
-      columnName: 'tourism_spot_id',
-      iterable: false,
-      type: int,
-    ),
-    'label': const RuntimeSqliteColumnDefinition(
-      association: false,
-      columnName: 'label',
+      columnName: 'name',
       iterable: false,
       type: String,
     ),
-    'imageUrl': const RuntimeSqliteColumnDefinition(
+    'notes': const RuntimeSqliteColumnDefinition(
       association: false,
-      columnName: 'image_url',
+      columnName: 'notes',
       iterable: false,
       type: String,
+    ),
+    'startTime': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'start_time',
+      iterable: false,
+      type: DateTime,
+    ),
+    'endTime': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'end_time',
+      iterable: false,
+      type: DateTime,
     ),
     'createdAt': const RuntimeSqliteColumnDefinition(
       association: false,
@@ -131,15 +157,21 @@ class TourismImageModelAdapter
       iterable: false,
       type: DateTime,
     ),
+    'tourismSpotId': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'tourism_spot_id',
+      iterable: false,
+      type: int,
+    ),
   };
   @override
   Future<int?> primaryKeyByUniqueColumns(
-    TourismImageModel instance,
+    ItinerariesModel instance,
     DatabaseExecutor executor,
   ) async {
     final results = await executor.rawQuery(
       '''
-        SELECT * FROM `TourismImageModel` WHERE id = ? LIMIT 1''',
+        SELECT * FROM `ItinerariesModel` WHERE id = ? LIMIT 1''',
       [instance.id],
     );
 
@@ -152,44 +184,44 @@ class TourismImageModelAdapter
   }
 
   @override
-  final String tableName = 'TourismImageModel';
+  final String tableName = 'ItinerariesModel';
 
   @override
-  Future<TourismImageModel> fromSupabase(
+  Future<ItinerariesModel> fromSupabase(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageModelFromSupabase(
+  }) async => await _$ItinerariesModelFromSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSupabase(
-    TourismImageModel input, {
+    ItinerariesModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageModelToSupabase(
+  }) async => await _$ItinerariesModelToSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
-  Future<TourismImageModel> fromSqlite(
+  Future<ItinerariesModel> fromSqlite(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageModelFromSqlite(
+  }) async => await _$ItinerariesModelFromSqlite(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSqlite(
-    TourismImageModel input, {
+    ItinerariesModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$TourismImageModelToSqlite(
+  }) async => await _$ItinerariesModelToSqlite(
     input,
     provider: provider,
     repository: repository,

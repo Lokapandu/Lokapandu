@@ -6,7 +6,7 @@ import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 extension SupabaseTourismImageModelMapper on TourismImageModel {
   TourismImage toEntity(TourismSpot tourismSpot) => TourismImage(
     id: id,
-    tourismSpot: tourismSpot,
+    tourismSpotId: tourismSpotId,
     label: label,
     imageUrl: imageUrl,
     createdAt: createdAt,
@@ -20,7 +20,7 @@ extension SupabaseTourismImageEntityMapper on TourismImage {
     label: label,
     imageUrl: imageUrl,
     createdAt: createdAt,
-    tourismSpotId: tourismSpot.id,
+    tourismSpotId: tourismSpotId,
   );
 }
 
