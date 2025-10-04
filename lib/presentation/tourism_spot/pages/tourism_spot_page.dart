@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'dart:developer' as developer;
 
@@ -38,13 +40,20 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TourismSpotNotifier>().filterByCategory('Semua');
+      try {
+        context.read<TourismSpotNotifier>().loadTourismSpots();
+      } catch (e) {
+        debugPrint("Error loading tourism spots on init: $e");
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // "Tonton" BookmarkProvider untuk mendapatkan status favorit
+    final bookmarkProvider = context.watch<BookmarkProvider>();
+
     return Scaffold(
       /// TODO: REMOVE THIS CODE AFTER IMPLEMENT LOGOUT UI ON SETTINGS SCREEN
       floatingActionButton: FloatingActionButton.extended(
@@ -129,12 +138,8 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: () {
-                              context
-                                  .read<TourismSpotNotifier>()
-                                  .loadTourismSpots();
-                            },
-                            child: const Text('Retry'),
+                            onPressed: () => notifier.loadTourismSpots(),
+                            child: const Text('Coba Lagi'),
                           ),
                         ],
                       ),
@@ -147,7 +152,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
-                            Icons.location_off,
+                            Icons.location_off_outlined,
                             size: 64,
                             color: theme.colorScheme.outline,
                           ),
@@ -176,12 +181,18 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           childAspectRatio: 0.9,
                         ),
                     itemBuilder: (context, index) {
+                      final spot = filteredSpots[index] as TourismSpot;
+
+
                       return DestinationCard(
-                        tourismSpot: filteredSpots[index],
+                        tourismSpot: spot,
                         onTap: () {
-                          context.go(
-                            '/tourism_spot/preview/${filteredSpots[index].id}',
-                          );
+                          context.push('/tourism_spot/preview/${spot.id}');
+                        },
+                        
+                        isFavorited: bookmarkProvider.isBookmarked(spot),
+                        onFavoriteToggle: () {
+                          context.read<BookmarkProvider>().toggleBookmark(spot);
                         },
                       );
                     },
@@ -196,6 +207,9 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   }
 
   Widget _buildSearchAndFilter() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -207,36 +221,38 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
               },
               decoration: InputDecoration(
                 hintText: 'Cari destinasi wisata...',
-                hintStyle: Theme.of(context).textTheme.bodyMedium,
+                hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
                 prefixIcon: Icon(
                   Icons.search,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(40),
+                  borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: Theme.of(context).colorScheme.surfaceContainer,
+                fillColor: colorScheme.surfaceContainerHigh,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
+                  horizontal: 20,
                   vertical: 12,
                 ),
               ),
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: theme.textTheme.bodyMedium,
             ),
           ),
           const SizedBox(width: 12),
           Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              borderRadius: BorderRadius.circular(50),
+              color: colorScheme.primary,
+              shape: BoxShape.circle,
             ),
             child: IconButton(
-              icon: Icon(
-                Icons.tune,
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
-              onPressed: () {},
+              icon: Icon(Icons.tune, color: colorScheme.onPrimary),
+              onPressed: () {
+                // TODO: Implementasi filter
+              },
             ),
           ),
         ],
