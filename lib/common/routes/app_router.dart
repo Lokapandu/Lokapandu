@@ -57,7 +57,7 @@ class AppRouter {
               },
             ),
             GoRoute(
-              path: 'detail/:id',
+              path: 'detail',
               name: 'tourism_spot_detail',
               pageBuilder: (context, state) {
                 final tour = state.extra as TourismSpot;
