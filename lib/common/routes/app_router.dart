@@ -12,7 +12,7 @@ class AppRouter {
   static GoRouter createRouter() {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: '/home',
+      initialLocation: TourismSpotRoute().path,
       routes: [
         GoRoute(
           path: SplashRoute().path,
