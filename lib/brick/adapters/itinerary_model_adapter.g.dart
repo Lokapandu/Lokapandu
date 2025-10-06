@@ -1,65 +1,81 @@
 // GENERATED CODE DO NOT EDIT
 part of '../brick.g.dart';
 
-Future<UserItinerariesModel> _$UserItinerariesModelFromSupabase(
+Future<ItineraryModel> _$ItineraryModelFromSupabase(
   Map<String, dynamic> data, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return UserItinerariesModel(
+  return ItineraryModel(
     id: data['id'] as int,
-    userId: data['user_id'] as int,
-    itinerariesId: data['itineraries_id'] as int,
+    name: data['name'] as String,
+    notes: data['notes'] == null ? null : data['notes'] as String?,
+    startTime: DateTime.parse(data['start_time'] as String),
+    endTime: DateTime.parse(data['end_time'] as String),
     createdAt: DateTime.parse(data['created_at'] as String),
+    tourismSpotId: data['tourism_spot_id'] == null
+        ? null
+        : data['tourism_spot_id'] as int?,
   );
 }
 
-Future<Map<String, dynamic>> _$UserItinerariesModelToSupabase(
-  UserItinerariesModel instance, {
+Future<Map<String, dynamic>> _$ItineraryModelToSupabase(
+  ItineraryModel instance, {
   required SupabaseProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return {
     'id': instance.id,
-    'user_id': instance.userId,
-    'itineraries_id': instance.itinerariesId,
+    'name': instance.name,
+    'notes': instance.notes,
+    'start_time': instance.startTime.toIso8601String(),
+    'end_time': instance.endTime.toIso8601String(),
     'created_at': instance.createdAt.toIso8601String(),
+    'tourism_spot_id': instance.tourismSpotId,
   };
 }
 
-Future<UserItinerariesModel> _$UserItinerariesModelFromSqlite(
+Future<ItineraryModel> _$ItineraryModelFromSqlite(
   Map<String, dynamic> data, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
-  return UserItinerariesModel(
+  return ItineraryModel(
     id: data['id'] as int,
-    userId: data['user_id'] as int,
-    itinerariesId: data['itineraries_id'] as int,
+    name: data['name'] as String,
+    notes: data['notes'] == null ? null : data['notes'] as String?,
+    startTime: DateTime.parse(data['start_time'] as String),
+    endTime: DateTime.parse(data['end_time'] as String),
     createdAt: DateTime.parse(data['created_at'] as String),
+    tourismSpotId: data['tourism_spot_id'] == null
+        ? null
+        : data['tourism_spot_id'] as int?,
   )..primaryKey = data['_brick_id'] as int;
 }
 
-Future<Map<String, dynamic>> _$UserItinerariesModelToSqlite(
-  UserItinerariesModel instance, {
+Future<Map<String, dynamic>> _$ItineraryModelToSqlite(
+  ItineraryModel instance, {
   required SqliteProvider provider,
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return {
     'id': instance.id,
-    'user_id': instance.userId,
-    'itineraries_id': instance.itinerariesId,
+    'name': instance.name,
+    'notes': instance.notes,
+    'start_time': instance.startTime.toIso8601String(),
+    'end_time': instance.endTime.toIso8601String(),
     'created_at': instance.createdAt.toIso8601String(),
+    'tourism_spot_id': instance.tourismSpotId,
   };
 }
 
-/// Construct a [UserItinerariesModel]
-class UserItinerariesModelAdapter
-    extends OfflineFirstWithSupabaseAdapter<UserItinerariesModel> {
-  UserItinerariesModelAdapter();
+/// Construct a [ItineraryModel]
+class ItineraryModelAdapter
+    extends OfflineFirstWithSupabaseAdapter<ItineraryModel> {
+  ItineraryModelAdapter();
 
   @override
-  final supabaseTableName = 'user_itineraries';
+  final supabaseTableName = 'itineraries';
   @override
   final defaultToNull = true;
   @override
@@ -68,17 +84,29 @@ class UserItinerariesModelAdapter
       association: false,
       columnName: 'id',
     ),
-    'userId': const RuntimeSupabaseColumnDefinition(
+    'name': const RuntimeSupabaseColumnDefinition(
       association: false,
-      columnName: 'user_id',
+      columnName: 'name',
     ),
-    'itinerariesId': const RuntimeSupabaseColumnDefinition(
+    'notes': const RuntimeSupabaseColumnDefinition(
       association: false,
-      columnName: 'itineraries_id',
+      columnName: 'notes',
+    ),
+    'startTime': const RuntimeSupabaseColumnDefinition(
+      association: false,
+      columnName: 'start_time',
+    ),
+    'endTime': const RuntimeSupabaseColumnDefinition(
+      association: false,
+      columnName: 'end_time',
     ),
     'createdAt': const RuntimeSupabaseColumnDefinition(
       association: false,
       columnName: 'created_at',
+    ),
+    'tourismSpotId': const RuntimeSupabaseColumnDefinition(
+      association: false,
+      columnName: 'tourism_spot_id',
     ),
   };
   @override
@@ -99,17 +127,29 @@ class UserItinerariesModelAdapter
       iterable: false,
       type: int,
     ),
-    'userId': const RuntimeSqliteColumnDefinition(
+    'name': const RuntimeSqliteColumnDefinition(
       association: false,
-      columnName: 'user_id',
+      columnName: 'name',
       iterable: false,
-      type: int,
+      type: String,
     ),
-    'itinerariesId': const RuntimeSqliteColumnDefinition(
+    'notes': const RuntimeSqliteColumnDefinition(
       association: false,
-      columnName: 'itineraries_id',
+      columnName: 'notes',
       iterable: false,
-      type: int,
+      type: String,
+    ),
+    'startTime': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'start_time',
+      iterable: false,
+      type: DateTime,
+    ),
+    'endTime': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'end_time',
+      iterable: false,
+      type: DateTime,
     ),
     'createdAt': const RuntimeSqliteColumnDefinition(
       association: false,
@@ -117,15 +157,21 @@ class UserItinerariesModelAdapter
       iterable: false,
       type: DateTime,
     ),
+    'tourismSpotId': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'tourism_spot_id',
+      iterable: false,
+      type: int,
+    ),
   };
   @override
   Future<int?> primaryKeyByUniqueColumns(
-    UserItinerariesModel instance,
+    ItineraryModel instance,
     DatabaseExecutor executor,
   ) async {
     final results = await executor.rawQuery(
       '''
-        SELECT * FROM `UserItinerariesModel` WHERE id = ? LIMIT 1''',
+        SELECT * FROM `ItineraryModel` WHERE id = ? LIMIT 1''',
       [instance.id],
     );
 
@@ -138,44 +184,44 @@ class UserItinerariesModelAdapter
   }
 
   @override
-  final String tableName = 'UserItinerariesModel';
+  final String tableName = 'ItineraryModel';
 
   @override
-  Future<UserItinerariesModel> fromSupabase(
+  Future<ItineraryModel> fromSupabase(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$UserItinerariesModelFromSupabase(
+  }) async => await _$ItineraryModelFromSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSupabase(
-    UserItinerariesModel input, {
+    ItineraryModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$UserItinerariesModelToSupabase(
+  }) async => await _$ItineraryModelToSupabase(
     input,
     provider: provider,
     repository: repository,
   );
   @override
-  Future<UserItinerariesModel> fromSqlite(
+  Future<ItineraryModel> fromSqlite(
     Map<String, dynamic> input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$UserItinerariesModelFromSqlite(
+  }) async => await _$ItineraryModelFromSqlite(
     input,
     provider: provider,
     repository: repository,
   );
   @override
   Future<Map<String, dynamic>> toSqlite(
-    UserItinerariesModel input, {
+    ItineraryModel input, {
     required provider,
     covariant OfflineFirstWithSupabaseRepository? repository,
-  }) async => await _$UserItinerariesModelToSqlite(
+  }) async => await _$ItineraryModelToSqlite(
     input,
     provider: provider,
     repository: repository,

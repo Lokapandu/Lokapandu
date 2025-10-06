@@ -1,42 +1,20 @@
 // GENERATED CODE DO NOT EDIT
 // This file should be version controlled
 import 'package:brick_sqlite/db.dart';
-part '20250930051644.migration.dart';
-part '20251004134641.migration.dart';
+part '20251006073628.migration.dart';
+part '20251006161242.migration.dart';
 
 /// All intelligently-generated migrations from all `@Migratable` classes on disk
 final migrations = <Migration>{
-  const Migration20250930051644(),
-  const Migration20251004134641(),
+  const Migration20251006073628(),
+  const Migration20251006161242(),
 };
 
 /// A consumable database structure including the latest generated migration.
 final schema = Schema(
-  20251004134641,
+  20251006161242,
   generatorVersion: 1,
   tables: <SchemaTable>{
-    SchemaTable(
-      'ItinerariesModel',
-      columns: <SchemaColumn>{
-        SchemaColumn(
-          '_brick_id',
-          Column.integer,
-          autoincrement: true,
-          nullable: false,
-          isPrimaryKey: true,
-        ),
-        SchemaColumn('id', Column.integer, unique: true),
-        SchemaColumn('name', Column.varchar),
-        SchemaColumn('notes', Column.varchar),
-        SchemaColumn('start_time', Column.datetime),
-        SchemaColumn('end_time', Column.datetime),
-        SchemaColumn('created_at', Column.datetime),
-        SchemaColumn('tourism_spot_id', Column.integer),
-      },
-      indices: <SchemaIndex>{
-        SchemaIndex(columns: ['id'], unique: true),
-      },
-    ),
     SchemaTable(
       'TourismImageModel',
       columns: <SchemaColumn>{
@@ -87,7 +65,7 @@ final schema = Schema(
       },
     ),
     SchemaTable(
-      'UserItinerariesModel',
+      'ItineraryModel',
       columns: <SchemaColumn>{
         SchemaColumn(
           '_brick_id',
@@ -97,7 +75,29 @@ final schema = Schema(
           isPrimaryKey: true,
         ),
         SchemaColumn('id', Column.integer, unique: true),
-        SchemaColumn('user_id', Column.integer),
+        SchemaColumn('name', Column.varchar),
+        SchemaColumn('notes', Column.varchar),
+        SchemaColumn('start_time', Column.datetime),
+        SchemaColumn('end_time', Column.datetime),
+        SchemaColumn('created_at', Column.datetime),
+        SchemaColumn('tourism_spot_id', Column.integer),
+      },
+      indices: <SchemaIndex>{
+        SchemaIndex(columns: ['id'], unique: true),
+      },
+    ),
+    SchemaTable(
+      'UserItineraryModel',
+      columns: <SchemaColumn>{
+        SchemaColumn(
+          '_brick_id',
+          Column.integer,
+          autoincrement: true,
+          nullable: false,
+          isPrimaryKey: true,
+        ),
+        SchemaColumn('id', Column.integer, unique: true),
+        SchemaColumn('user_id', Column.varchar),
         SchemaColumn('itineraries_id', Column.integer),
         SchemaColumn('created_at', Column.datetime),
       },
