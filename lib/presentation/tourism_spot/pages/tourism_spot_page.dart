@@ -7,9 +7,6 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
-import 'dart:developer' as developer;
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});
@@ -21,20 +18,14 @@ class TourismSpotPage extends StatefulWidget {
 class _TourismSpotPageState extends State<TourismSpotPage> {
   final List<String> _categories = [
     'Semua',
-    'Taman Budaya & Bersejarah',
-    'Pantai & Pesisir',
-    'Pusat Seni & Belanja',
-    'Wisata Alam',
-    'Kafe & Resto',
+    'Taman Budaya',
+    'Pantai',
+    'Alam',
+    'Kuliner',
+    'Sejarah',
+    'Taman Hiburan',
   ];
   String _selectedCategory = 'Semua';
-
-  void _onCategorySelected(String category) {
-    setState(() {
-      _selectedCategory = category;
-    });
-    context.read<TourismSpotNotifier>().filterByCategory(category);
-  }
 
   @override
   void initState() {
@@ -51,52 +42,8 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // "Tonton" BookmarkProvider untuk mendapatkan status favorit
-    final bookmarkProvider = context.watch<BookmarkProvider>();
 
     return Scaffold(
-      /// TODO: REMOVE THIS CODE AFTER IMPLEMENT LOGOUT UI ON SETTINGS SCREEN
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          try {
-            // Show loading indicator
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) =>
-                  const Center(child: CircularProgressIndicator()),
-            );
-
-            // Perform logout
-            await context.read<AuthNotifier>().signOut();
-
-            // Close loading dialog
-            if (context.mounted) {
-              Navigator.of(context).pop();
-
-              // Navigate to auth screen
-              context.pushReplacementNamed('auth');
-            }
-          } catch (e) {
-            // Close loading dialog if still open
-            if (context.mounted) {
-              Navigator.of(context).pop();
-
-              // Show error message
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Gagal logout!'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-              
-              developer.log('Logout failed: $e', name: 'TourismSpotPage');
-            }
-          }
-        },
-        icon: const Icon(Icons.logout),
-        label: const Text('Logout'),
-      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +55,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
             TourCategoryChips(
               categories: _categories,
               selectedCategory: _selectedCategory,
-              onCategorySelected: _onCategorySelected,
+              onCategorySelected: (category) {
+                setState(() {
+                  _selectedCategory = category;
+                });
+              },
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -168,7 +119,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                     );
                   }
 
-                  final filteredSpots = notifier.tourismSpots;
+                  final filteredSpots = _selectedCategory == 'Semua'
+                      ? notifier.tourismSpots
+                      : notifier.tourismSpots
+                            .where((spot) => spot.category == _selectedCategory)
+                            .toList();
 
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -188,11 +143,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                         tourismSpot: spot,
                         onTap: () {
                           context.push('/tourism_spot/preview/${spot.id}');
-                        },
-                        
-                        isFavorited: bookmarkProvider.isBookmarked(spot),
-                        onFavoriteToggle: () {
-                          context.read<BookmarkProvider>().toggleBookmark(spot);
                         },
                       );
                     },

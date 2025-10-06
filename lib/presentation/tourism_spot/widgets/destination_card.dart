@@ -1,153 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 
 class DestinationCard extends StatelessWidget {
   final TourismSpot tourismSpot;
   final VoidCallback? onTap;
 
-  const DestinationCard({super.key, required this.tourismSpot, this.onTap, required bool isFavorited, required Null Function() onFavoriteToggle});
-
-  bool _isNetworkUrl(String url) {
-    return url.startsWith('http://') || url.startsWith('https://');
-  }
+  const DestinationCard({
+    super.key,
+    required this.tourismSpot,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final primaryImage = tourismSpot.images.isNotEmpty
-        ? tourismSpot.images.first.imageUrl
-        : '';
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
-          side: BorderSide(
-            color: Theme.of(context).colorScheme.outline, // warna border
-            width: 1, // ketebalan border
+    return Consumer<BookmarkProvider>(
+      builder: (context, bookmarkProvider, child) {
+        final isFavorited = bookmarkProvider.isBookmarked(tourismSpot);
+
+        return Card(
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
           ),
-        ),
-        elevation: 0,
-        color: theme.colorScheme.surfaceContainer,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Hero(
-                tag: '${tourismSpot.name}_${tourismSpot.hashCode}',
-                child: Stack(
-                  children: [
-                    SizedBox.expand(
-                      child: primaryImage.isNotEmpty
-                          ? (_isNetworkUrl(primaryImage)
-                                ? CachedNetworkImage(
-                                    imageUrl: primaryImage,
-                                    fit: BoxFit.cover,
-                                    placeholder: (context, url) => Center(
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.0,
-                                        color: theme.colorScheme.primary,
-                                      ),
-                                    ),
-                                    errorWidget: (context, url, error) => Icon(
-                                      Icons.broken_image,
-                                      size: 50,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  )
-                                : Image.asset(
-                                    primaryImage,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Icon(
-                                        Icons.broken_image,
-                                        size: 50,
-                                        color:
-                                            theme.colorScheme.onSurfaceVariant,
-                                      );
-                                    },
-                                  ))
-                          : Container(
-                              color: theme.colorScheme.surfaceContainerHigh,
-                              child: Icon(
-                                Icons.image_not_supported,
-                                size: 50,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withValues(
-                            alpha: 0.9,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: theme.colorScheme.outline.withValues(
-                              alpha: 0.3,
-                            ),
-                            width: 1,
-                          ),
-                        ),
-                        child: Icon(
-                          Icons.bookmark_border,
-                          size: 20,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    tourismSpot.name,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
+          child: InkWell(
+            onTap: onTap,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Icon(
-                        Icons.location_on,
-                        color: theme.colorScheme.primary,
-                        size: 14,
+                      CachedNetworkImage(
+                        imageUrl: tourismSpot.images.isNotEmpty ? tourismSpot.images.first.imageUrl : '',
+                        fit: BoxFit.cover,
                       ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          '${tourismSpot.city}, ${tourismSpot.province}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Colors.black.withOpacity(0.4),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            iconSize: 22,
+                            icon: Icon(
+                              isFavorited ? Icons.bookmark : Icons.bookmark_border,
+                              color: isFavorited ? colorScheme.primary : Colors.white,
+                            ),
+                            onPressed: () {
+                              bookmarkProvider.toggleBookmark(tourismSpot);
+                            },
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tourismSpot.name,
+                        style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on_outlined, size: 14, color: colorScheme.onSurfaceVariant),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              '${tourismSpot.city}, ${tourismSpot.province}',
+                              style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
