@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 
-enum TileAction { navigation, toggle }
-
 class SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final VoidCallback? onTap;
-  final TileAction actionType;
-  final bool toggleValue;
-  final ValueChanged<bool>? onToggleChanged;
+  final Widget? trailing;
 
   const SettingsTile({
     super.key,
@@ -17,40 +13,37 @@ class SettingsTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.onTap,
-    this.actionType = TileAction.navigation,
-    this.toggleValue = false,
-    this.onToggleChanged,
+    this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-
-    Widget trailingWidget;
-    switch (actionType) {
-      case TileAction.toggle:
-        trailingWidget = Switch(
-          value: toggleValue,
-          onChanged: onToggleChanged,
-          activeColor: colorScheme.primary,
-        );
-        break;
-      case TileAction.navigation:
-        trailingWidget = Icon(Icons.chevron_right, color: colorScheme.outline);
-        break;
-    }
+    final textTheme = theme.textTheme;
 
     return ListTile(
-      contentPadding: EdgeInsets.zero,
       onTap: onTap,
-      leading: Icon(icon, color: colorScheme.primary, size: 28),
-      title: Text(title, style: theme.textTheme.titleMedium),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: colorScheme.primary),
+      ),
+      title: Text(title, style: textTheme.titleMedium),
       subtitle: Text(
         subtitle,
-        style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+        style: textTheme.bodyMedium?.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
       ),
-      trailing: trailingWidget,
+      trailing:
+          trailing ??
+          (onTap != null
+              ? Icon(Icons.chevron_right, color: colorScheme.onSurfaceVariant)
+              : null),
     );
   }
 }

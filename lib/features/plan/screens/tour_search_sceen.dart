@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/features/tour/models/tour_model.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import '../widgets/search_result_card.dart';
 
 class TourSearchScreen extends StatefulWidget {
@@ -10,38 +11,48 @@ class TourSearchScreen extends StatefulWidget {
 }
 
 class _TourSearchScreenState extends State<TourSearchScreen> {
-  List<Tour> _searchResults = [];
+  List<TourismSpot> _searchResults = [];
+  TourismSpot? _selectedSpot;
 
+  // Data pencarian sekarang menggunakan model TourismSpot yang asli
   void _searchWisata(String query) {
     // TODO: Ganti dengan panggilan API Backend
     if (query.isNotEmpty) {
       setState(() {
         _searchResults = [
-          Tour(
-            imageUrl: 'assets/images/taman_ujung.jpg',
-            name: 'Taman Ujung Soekasada',
-            location: 'Karangasem, Bali',
-            galleryImageUrls: [],
-            openingHours: '',
-            address: '',
-            distanceKm: 0,
-            aboutText: '',
-            mapImageUrl: '',
-            facilities: [],
-            tags: [],
+          TourismSpot(
+            id: 101,
+            name: 'Candi Jedong',
+            description: 'Deskripsi Candi Jedong...',
+            category: 'Sejarah',
+            city: 'Ngoro',
+            province: 'Mojokerto',
+            address: 'Alamat Candi Jedong...',
+            latitude: -7.6,
+            longitude: 112.6,
+            openTime: '08:00',
+            closeTime: '16:00',
+            mapsLink: '',
+            images: [], // Isi dengan TourismImage jika ada
+            facilities: 'Toilet,Parkir',
+            createdAt: DateTime.now(),
           ),
-          Tour(
-            imageUrl: 'assets/images/tirta_gangga.jpg',
-            name: 'Taman Tirta Gangga',
-            location: 'Karangasem, Bali',
-            galleryImageUrls: [],
-            openingHours: '',
-            address: '',
-            distanceKm: 0,
-            aboutText: '',
-            mapImageUrl: '',
-            facilities: [],
-            tags: [],
+          TourismSpot(
+            id: 102,
+            name: 'Air Terjun Tretes',
+            description: 'Deskripsi Air Terjun Tretes...',
+            category: 'Alam',
+            city: 'Pacet',
+            province: 'Mojokerto',
+            address: 'Alamat Air Terjun Tretes...',
+            latitude: -7.7,
+            longitude: 112.5,
+            openTime: '07:00',
+            closeTime: '17:00',
+            mapsLink: '',
+            images: [],
+            facilities: 'Warung,Toilet',
+            createdAt: DateTime.now(),
           ),
         ];
       });
@@ -54,8 +65,31 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final bool isSelectionMade = _selectedSpot != null;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Cari Wisata')),
+      backgroundColor: colorScheme.surfaceContainerHigh,
+      appBar: AppBar(
+        title: const Text('Cari Wisata'),
+        backgroundColor: colorScheme.surface,
+        scrolledUnderElevation: 4.0,
+        shadowColor: theme.shadowColor.withOpacity(0.1),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ElevatedButton(
+              onPressed: isSelectionMade
+                  ? () {
+                      context.pop(_selectedSpot);
+                    }
+                  : null,
+              child: const Text('Pilih'),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -63,11 +97,29 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
             child: TextField(
               onChanged: _searchWisata,
               autofocus: true,
+              style: theme.textTheme.bodyLarge,
               decoration: InputDecoration(
-                hintText: 'Cari wisata...',
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Cari wisata di sekitar Ngoro...',
+                hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                  color: colorScheme.onSurface.withOpacity(0.5),
+                ),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                filled: true,
+                fillColor: colorScheme.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(color: colorScheme.outlineVariant),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide(color: colorScheme.primary, width: 2),
                 ),
               ),
             ),
@@ -77,15 +129,17 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _searchResults.length,
               itemBuilder: (context, index) {
-                final tour = _searchResults[index];
-                return GestureDetector(
+                final spot = _searchResults[index];
+                final bool isSelected = _selectedSpot?.id == spot.id;
+
+                return SearchResultCard(
+                  spot: spot,
+                  isSelected: isSelected,
                   onTap: () {
-                    Navigator.pop(
-                      context,
-                      tour,
-                    ); // Kirim data tour yang dipilih kembali
+                    setState(() {
+                      _selectedSpot = spot;
+                    });
                   },
-                  child: SearchResultCard(tour: tour),
                 );
               },
             ),

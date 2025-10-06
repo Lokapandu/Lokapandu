@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
 
-// Helper widget untuk satu opsi (tidak perlu diubah)
 class _FabOption extends StatelessWidget {
   const _FabOption({required this.icon, required this.label, this.onTap});
   final IconData icon;
@@ -11,40 +10,17 @@ class _FabOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFD281),
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: Colors.brown[800],
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          CircleAvatar(
-            backgroundColor: const Color(0xFFFFD281),
-            child: Icon(icon, color: Colors.brown[800], size: 22),
-          ),
-        ],
-      ),
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return FloatingActionButton.extended(
+      onPressed: onTap,
+      heroTag: null,
+      label: Text(label, style: theme.textTheme.labelLarge),
+      icon: Icon(icon, size: 20),
+      backgroundColor: colorScheme.primary,
+      foregroundColor: colorScheme.onPrimary,
+      elevation: 4,
     );
   }
 }
@@ -96,31 +72,31 @@ class _ExpandingFabState extends State<ExpandingFab>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return SizedBox(
-      width: 250, // Beri area yang cukup
+      width: 250,
       height: 250,
       child: Stack(
         alignment: Alignment.bottomRight,
         clipBehavior: Clip.none,
         children: [
-          // Tombol Close (yang tidak terlihat)
           FloatingActionButton(
-            backgroundColor: const Color(0xFF008080),
+            heroTag: 'close_fab',
+            backgroundColor: colorScheme.primary,
             onPressed: _toggle,
-            child: const Icon(Icons.close, color: Colors.white),
+            child: Icon(Icons.close, color: colorScheme.onPrimary),
           ),
-
-          // Opsi-opsi
           _buildExpandingAction(
             distance: 80,
             progress: _expandAnimation,
             child: _FabOption(
               icon: Icons.note_add_outlined,
-              label: 'Catatan',
+              label: 'Buat Catatan',
               onTap: () {
                 _toggle();
-                Navigator.push(
-                  context,
+                Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) => const NoteEditorScreen(),
                   ),
@@ -133,11 +109,10 @@ class _ExpandingFabState extends State<ExpandingFab>
             progress: _expandAnimation,
             child: _FabOption(
               icon: Icons.map_outlined,
-              label: 'Rencana Pariwisata',
+              label: 'Buat Rencana',
               onTap: () {
                 _toggle();
-                Navigator.push(
-                  context,
+                Navigator.of(context, rootNavigator: true).push(
                   MaterialPageRoute(
                     builder: (context) => const TourPlanEditorScreen(),
                   ),
@@ -145,15 +120,14 @@ class _ExpandingFabState extends State<ExpandingFab>
               },
             ),
           ),
-
-          // Tombol Open (yang terlihat di awal)
           FloatingActionButton(
-            backgroundColor: const Color(0xFF008080),
+            heroTag: 'open_fab',
+            backgroundColor: colorScheme.primary,
             onPressed: _toggle,
             child: AnimatedIcon(
               icon: AnimatedIcons.menu_close,
               progress: _expandAnimation,
-              color: Colors.white,
+              color: colorScheme.onPrimary,
             ),
           ),
         ],
@@ -171,7 +145,7 @@ class _ExpandingFabState extends State<ExpandingFab>
       builder: (context, child) {
         return Positioned(
           bottom: progress.value * distance,
-          right: 0,
+          right: 4,
           child: Opacity(opacity: progress.value, child: child!),
         );
       },

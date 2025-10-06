@@ -1,89 +1,137 @@
-// File: lib/features/plan/widgets/selected_tour_card.dart
-
 import 'package:flutter/material.dart';
-import 'package:lokapandu/features/tour/models/tour_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dotted_border/dotted_border.dart';
+import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 
 class SelectedTourCard extends StatelessWidget {
-  final Tour? selectedTour;
+  final TourismSpot? selectedTour;
   final VoidCallback onTap;
 
-  const SelectedTourCard({super.key, this.selectedTour, required this.onTap});
+  const SelectedTourCard({
+    super.key,
+    required this.selectedTour,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final Widget content;
+    if (selectedTour == null) {
+      content = InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: DottedBorder(
+          borderType: BorderType.RRect,
+          radius: const Radius.circular(12),
+          color: colorScheme.primary,
+          strokeWidth: 2,
+          dashPattern: const [8, 4],
+          child: Container(
+            height: 80,
+            decoration: BoxDecoration(
+              color: colorScheme.primary.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add_circle_outline, color: colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Pilih Destinasi Wisata',
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      final primaryImage = selectedTour!.images.isNotEmpty
+          ? selectedTour!.images.first.imageUrl
+          : '';
+      final location = '${selectedTour!.city}, ${selectedTour!.province}';
+
+      content = Card(
+        margin: EdgeInsets.zero,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        elevation: 0,
+        color: colorScheme.surface,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: CachedNetworkImage(
+                    imageUrl: primaryImage,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) =>
+                        Container(color: colorScheme.surfaceContainerHighest),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.broken_image),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        selectedTour!.name,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        location,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.edit_outlined, color: colorScheme.primary, size: 20),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Wisata', style: TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300),
-            ),
-            child: selectedTour == null
-                ? _buildPlaceholder() // Tampilan jika belum ada yang dipilih
-                : _buildSelectedTour(
-                    selectedTour!,
-                  ), // Tampilan jika sudah dipilih
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPlaceholder() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
-        Icon(Icons.add_location_alt_outlined, color: Colors.grey),
-        SizedBox(width: 8),
         Text(
-          'Pilih Wisata',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+          selectedTour == null ? 'Pilih Wisata' : 'Wisata Dipilih',
+          style: textTheme.titleMedium,
         ),
-      ],
-    );
-  }
-
-  Widget _buildSelectedTour(Tour tour) {
-    return Row(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: Image.asset(
-            tour.imageUrl,
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                tour.name,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                tour.location,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-            ],
-          ),
-        ),
-        const Icon(Icons.edit, color: Colors.grey),
+        const SizedBox(height: 8),
+        content,
       ],
     );
   }

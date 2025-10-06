@@ -48,6 +48,8 @@ dependencies:
   http: ^1.5.0
   location: ^8.0.1
   geocoding: ^4.0.0
+
+  dotted_border: ^2.1.0
   
 dev_dependencies:
   flutter_test:

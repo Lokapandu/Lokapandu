@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Jangan lupa tambahkan 'intl' di pubspec.yaml
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../models/note_model.dart';
 
 class NoteEditorScreen extends StatefulWidget {
-  final Note? note; // Note akan null jika ini adalah mode 'Tambah'
+  final Note? note;
 
   const NoteEditorScreen({super.key, this.note});
 
@@ -25,14 +26,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   void initState() {
     super.initState();
     if (isEditing) {
-      // Jika mode edit, isi semua field dengan data yang ada
       _titleController.text = widget.note!.title;
       _contentController.text = widget.note!.content;
       _startDate = widget.note!.startTime;
       _startTime = TimeOfDay.fromDateTime(widget.note!.startTime);
       _endDate = widget.note!.endTime;
       _endTime = TimeOfDay.fromDateTime(widget.note!.endTime);
+    } else {
+      // Mengisi data baru dengan konteks saat ini
+      _startDate = DateTime(2025, 10, 3);
+      _endDate = DateTime(2025, 10, 3);
+      _titleController.text = 'Makan siang di dekat Candi Jedong';
     }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _contentController.dispose();
+    super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context, bool isStart) async {
@@ -41,13 +53,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       initialDate: (isStart ? _startDate : _endDate) ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
+      locale: const Locale('id', 'ID'),
     );
     if (picked != null) {
       setState(() {
-        if (isStart)
+        if (isStart) {
           _startDate = picked;
-        else
+        } else {
           _endDate = picked;
+        }
       });
     }
   }
@@ -59,46 +73,53 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     );
     if (picked != null) {
       setState(() {
-        if (isStart)
+        if (isStart) {
           _startTime = picked;
-        else
+        } else {
           _endTime = picked;
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFA),
+      backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
+        scrolledUnderElevation: 4.0,
+        shadowColor: theme.shadowColor.withOpacity(0.1),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+          onPressed: () => context.pop(),
         ),
         title: Text(
           isEditing ? 'Edit Catatan' : 'Tambah Catatan',
-          style: const TextStyle(
-            color: Colors.black,
+          style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTextField(
-              label: 'Catatan',
+              theme: theme,
+              label: 'Judul Catatan',
               controller: _titleController,
-              hint: 'Contoh: Makan siang di Tirta Ayu',
+              hint: 'Contoh: Beli oleh-oleh khas Bali',
             ),
             const SizedBox(height: 24),
             _buildDateTimePicker(
+              theme: theme,
               label: 'Waktu Mulai',
               date: _startDate,
               time: _startTime,
@@ -107,6 +128,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
             const SizedBox(height: 24),
             _buildDateTimePicker(
+              theme: theme,
               label: 'Waktu Selesai',
               date: _endDate,
               time: _endTime,
@@ -115,27 +137,31 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
             ),
             const SizedBox(height: 24),
             _buildTextField(
-              label: 'Catatan',
+              theme: theme,
+              label: 'Detail Catatan',
               controller: _contentController,
-              hint: 'Tulis catatan di sini',
+              hint: 'Tulis detail catatan di sini...',
               maxLines: 5,
             ),
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                // TODO: Logika untuk menyimpan data ke backend
+                // TODO: Logika untuk menyimpan data
+                context.pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF008080),
-                foregroundColor: Colors.white,
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
               ),
-              child: const Text(
+              child: Text(
                 'Simpan Catatan',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
@@ -145,30 +171,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Widget _buildTextField({
+    required ThemeData theme,
     required String label,
     required TextEditingController controller,
     required String hint,
     int maxLines = 1,
   }) {
+    final colorScheme = theme.colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(label, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
           maxLines: maxLines,
+          style: theme.textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
+            hintStyle: theme.textTheme.bodyLarge?.copyWith(
+              color: colorScheme.onSurface.withOpacity(0.5),
+            ),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: colorScheme.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide(
+                color: colorScheme.surfaceContainerHighest,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colorScheme.primary, width: 2),
             ),
           ),
         ),
@@ -177,6 +215,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Widget _buildDateTimePicker({
+    required ThemeData theme,
     required String label,
     DateTime? date,
     TimeOfDay? time,
@@ -186,66 +225,68 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(label, style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-              child: InkWell(
+              flex: 3,
+              child: _buildPickerTile(
+                theme: theme,
                 onTap: onDateTap,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.calendar_today_outlined,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        date != null
-                            ? DateFormat('dd/MM/yyyy').format(date)
-                            : 'DD/MM/YYYY',
-                      ),
-                    ],
-                  ),
-                ),
+                icon: Icons.calendar_today_outlined,
+                value: date != null
+                    ? DateFormat('dd MMM yyyy', 'id_ID').format(date)
+                    : 'Pilih Tanggal',
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: InkWell(
+              flex: 2,
+              child: _buildPickerTile(
+                theme: theme,
                 onTap: onTimeTap,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade300),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.access_time_outlined,
-                        color: Colors.grey,
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(time != null ? time.format(context) : '00.00'),
-                    ],
-                  ),
-                ),
+                icon: Icons.access_time_outlined,
+                value: time != null ? time.format(context) : 'Pilih Waktu',
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildPickerTile({
+    required ThemeData theme,
+    required VoidCallback onTap,
+    required IconData icon,
+    required String value,
+  }) {
+    final colorScheme = theme.colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colorScheme.surfaceContainerHighest),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: colorScheme.onSurfaceVariant, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                value,
+                style: theme.textTheme.bodyLarge,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

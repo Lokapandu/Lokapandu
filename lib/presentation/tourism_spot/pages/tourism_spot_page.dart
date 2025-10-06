@@ -21,20 +21,14 @@ class TourismSpotPage extends StatefulWidget {
 class _TourismSpotPageState extends State<TourismSpotPage> {
   final List<String> _categories = [
     'Semua',
-    'Taman Budaya & Bersejarah',
-    'Pantai & Pesisir',
-    'Pusat Seni & Belanja',
-    'Wisata Alam',
-    'Kafe & Resto',
+    'Taman Budaya',
+    'Pantai',
+    'Alam',
+    'Kuliner',
+    'Sejarah',
+    'Taman Hiburan',
   ];
   String _selectedCategory = 'Semua';
-
-  void _onCategorySelected(String category) {
-    setState(() {
-      _selectedCategory = category;
-    });
-    context.read<TourismSpotNotifier>().filterByCategory(category);
-  }
 
   @override
   void initState() {
@@ -51,8 +45,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // "Tonton" BookmarkProvider untuk mendapatkan status favorit
-    final bookmarkProvider = context.watch<BookmarkProvider>();
 
     return Scaffold(
       /// TODO: REMOVE THIS CODE AFTER IMPLEMENT LOGOUT UI ON SETTINGS SCREEN
@@ -108,7 +100,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
             TourCategoryChips(
               categories: _categories,
               selectedCategory: _selectedCategory,
-              onCategorySelected: _onCategorySelected,
+              onCategorySelected: (category) {
+                setState(() {
+                  _selectedCategory = category;
+                });
+              },
             ),
             const SizedBox(height: 20),
             Expanded(
@@ -168,7 +164,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                     );
                   }
 
-                  final filteredSpots = notifier.tourismSpots;
+                  final filteredSpots = _selectedCategory == 'Semua'
+                      ? notifier.tourismSpots
+                      : notifier.tourismSpots
+                            .where((spot) => spot.category == _selectedCategory)
+                            .toList();
 
                   return GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -187,11 +187,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                         tourismSpot: spot,
                         onTap: () {
                           context.push('/tourism_spot/preview/${spot.id}');
-                        },
-
-                        isFavorited: bookmarkProvider.isBookmarked(spot),
-                        onFavoriteToggle: () {
-                          context.read<BookmarkProvider>().toggleBookmark(spot);
                         },
                       );
                     },

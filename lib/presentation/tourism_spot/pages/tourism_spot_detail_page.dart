@@ -60,9 +60,7 @@ class TourismSpotDetailPage extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     child: FacilitiesSection(facilities: tour.facilities),
                   ),
-                  const SizedBox(
-                    height: 48,
-                  ), 
+                  const SizedBox(height: 48),
                 ],
               ),
             ),
