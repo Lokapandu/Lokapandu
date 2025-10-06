@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lokapandu/app.dart';
+import 'package:lokapandu/brick/repositories/repository.dart';
 import 'package:lokapandu/env/env.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lokapandu/common/services/crashlytics_service.dart';
@@ -11,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'injection.dart' as di;
+import 'package:sqflite/sqflite.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,12 +36,12 @@ void main() async {
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseKey);
 
   // Un-comment when needed, This Repository refers to Brick's repository
-  // await Repository.configure(
-  //   supabaseAnonKey: Env.supabaseKey,
-  //   supabaseUrl: Env.supabaseUrl,
-  //   databaseFactory: databaseFactory,
-  // );
-  // await Repository().initialize();
+  await Repository.configure(
+    supabaseAnonKey: Env.supabaseKey,
+    supabaseUrl: Env.supabaseUrl,
+    databaseFactory: databaseFactory,
+  );
+  await Repository().initialize();
 
   await di.initDependencies();
 
