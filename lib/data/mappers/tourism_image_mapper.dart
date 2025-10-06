@@ -4,7 +4,7 @@ import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
 
 
 extension TourismImageEntityMapper on TourismImage {
-  TourismImageModel toModel() => TourismImageModel(
+  TourismImageModel toBrickModel() => TourismImageModel(
     id: id,
     tourismSpotId: tourismSpotId,
     imageUrl: imageUrl,
@@ -30,5 +30,5 @@ extension TourismImageModelListMapper on List<TourismImageModel> {
 
 extension TourismImageEntityListMapper on List<TourismImage> {
   List<TourismImageModel> toModelList() =>
-      map((entity) => entity.toModel()).toList();
+      map((entity) => entity.toBrickModel()).toList();
 }
