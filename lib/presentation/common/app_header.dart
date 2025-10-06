@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:iconify_design/iconify_design.dart';
 
 class AppHeader extends StatefulWidget {
-  const AppHeader({super.key});
+  final String title;
+  const AppHeader({super.key, required this.title});
 
   @override
   State<AppHeader> createState() => _AppHeaderState();
@@ -56,7 +57,7 @@ class _AppHeaderState extends State<AppHeader> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Temukan wisata',
+                widget.title,
                 style: theme.textTheme.titleLarge?.copyWith(
                   overflow: TextOverflow.ellipsis,
                 ),

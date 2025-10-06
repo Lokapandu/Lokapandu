@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
+import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:lokapandu/presentation/home/widgets/dont_miss_carausel.dart';
 import 'package:lokapandu/presentation/home/widgets/home_header.dart';
 import 'package:lokapandu/presentation/home/widgets/search_bar.dart';
@@ -29,15 +31,17 @@ class _HomeContentState extends State<HomeContent> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
+    final userName =
+        context.read<AuthNotifier>().user?.userMetadata?['full_name'].split(
+          ' ',
+        )[0] ??
+        'User';
 
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.only(top: 20.0, bottom: 40.0),
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.0),
-            child: HomeHeader(),
-          ),
+          AppHeader(title: 'Yuk, jalan-jalan, $userName!'),
           const SizedBox(height: 24),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.0),

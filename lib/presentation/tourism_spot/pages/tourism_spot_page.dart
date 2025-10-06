@@ -93,7 +93,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppHeader(),
+            const AppHeader(title: 'Temukan wisata'),
             const SizedBox(height: 16),
             _buildSearchAndFilter(),
             const SizedBox(height: 16),
