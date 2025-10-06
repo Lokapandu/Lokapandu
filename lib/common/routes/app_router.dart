@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
-import 'package:lokapandu/features/plan/screens/tour_search_sceen.dart';
-
-// Import semua halaman Anda
-import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
-import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
-import 'package:lokapandu/features/home/screens/home_screen.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_page.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_preview_page.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_detail_page.dart';
-import 'package:lokapandu/features/plan/screens/plan_screen.dart';
-import 'package:lokapandu/features/settings/screens/settings_screen.dart';
-import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:lokapandu/features/bookmark/screens/bookmark_screen.dart';
-import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
-import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
+import 'package:lokapandu/presentation/home/screens/home_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -28,16 +15,18 @@ class AppRouter {
       initialLocation: '/home',
       routes: [
         GoRoute(
-          path: '/',
-          name: 'splash',
-          builder: (context, state) => const SplashScreen(),
+          path: SplashRoute().path,
+          name: SplashRoute().routeName,
+          builder: (context, state) => SplashRoute().pageComponent(),
         ),
 
         GoRoute(
-          path: '/auth',
-          name: 'auth',
-          pageBuilder: (context, state) =>
-              PageTransitions.fadeTransition(const AuthScreen(), name: 'auth'),
+          path: AuthRoute().path,
+          name: AuthRoute().routeName,
+          pageBuilder: (context, state) => PageTransitions.fadeTransition(
+            AuthRoute().pageComponent(),
+            name: AuthRoute().routeName,
+          ),
         ),
 
         ShellRoute(
@@ -46,105 +35,105 @@ class AppRouter {
           },
           routes: [
             GoRoute(
-              path: '/home',
-              name: 'home',
+              path: HomeRoute().path,
+              name: HomeRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                const HomeContent(),
-                name: 'home',
+                HomeRoute().pageComponent(),
+                name: HomeRoute().routeName,
               ),
             ),
             GoRoute(
-              path: '/tourism_spot',
-              name: 'tourism_spot',
+              path: TourismSpotRoute().path,
+              name: TourismSpotRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                const TourismSpotPage(),
-                name: 'tourism_spot',
+                TourismSpotRoute().pageComponent(),
+                name: TourismSpotRoute().routeName,
               ),
             ),
             GoRoute(
-              path: '/plan',
-              name: 'plan',
+              path: PlanRoute().path,
+              name: PlanRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                const PlanScreen(),
-                name: 'plan',
+                PlanRoute().pageComponent(),
+                name: PlanRoute().routeName,
               ),
             ),
             GoRoute(
-              path: '/settings',
-              name: 'settings',
+              path: SettingsRoute().path,
+              name: SettingsRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                const SettingsScreen(),
-                name: 'settings',
+                SettingsRoute().pageComponent(),
+                name: SettingsRoute().routeName,
               ),
             ),
           ],
         ),
 
         GoRoute(
-          path: '/tourism_spot/preview/:id',
-          name: 'tourism_spot_preview',
+          path: TourismSpotPreviewRoute().path,
+          name: TourismSpotPreviewRoute().routeName,
           pageBuilder: (context, state) {
             final id = int.parse(state.pathParameters['id']!);
             return PageTransitions.slideFromRightTransition(
-              TourismSpotPreviewPage(id: id),
-              name: 'tourism_spot_preview',
+              TourismSpotPreviewRoute().pageComponent(arguments: id),
+              name: TourismSpotPreviewRoute().routeName,
             );
           },
         ),
         GoRoute(
-          path: '/tourism_spot/detail',
-          name: 'tourism_spot_detail',
+          path: TourismSpotDetailRoute().path,
+          name: TourismSpotDetailRoute().routeName,
           pageBuilder: (context, state) {
             final tour = state.extra as TourismSpot;
             return PageTransitions.scaleTransition(
-              TourismSpotDetailPage(tour: tour),
-              name: 'tourism_spot_detail',
+              TourismSpotDetailRoute().pageComponent(arguments: tour),
+              name: TourismSpotDetailRoute().routeName,
             );
           },
         ),
         GoRoute(
-          path: '/ai_chat',
-          name: 'ai_chat',
+          path: AiChatRoute().path,
+          name: AiChatRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                const AiChatScreen(),
-                name: 'ai_chat',
+                AiChatRoute().pageComponent(),
+                name: AiChatRoute().routeName,
               ),
         ),
         GoRoute(
-          path: '/bookmarks',
-          name: 'bookmarks',
+          path: BookmarksRoute().path,
+          name: BookmarksRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromRightTransition(
-                const BookmarkScreen(),
-                name: 'bookmarks',
+                BookmarksRoute().pageComponent(),
+                name: BookmarksRoute().routeName,
               ),
         ),
         GoRoute(
-          path: '/plan/search-tour',
-          name: 'search_tour',
+          path: PlanSearchRoute().path,
+          name: PlanSearchRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                const TourSearchScreen(),
-                name: 'search_tour',
+                PlanSearchRoute().pageComponent(),
+                name: PlanSearchRoute().routeName,
               ),
         ),
         GoRoute(
-          path: '/plan/add-tour',
-          name: 'add_tour',
+          path: PlanAddRoute().path,
+          name: PlanAddRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                const TourPlanEditorScreen(),
-                name: 'add_tour',
+                PlanAddRoute().pageComponent(),
+                name: PlanAddRoute().routeName,
               ),
         ),
         GoRoute(
-          path: '/plan/add-note',
-          name: 'add_note',
+          path: PlanAddNoteRoute().path,
+          name: PlanAddNoteRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                const NoteEditorScreen(),
-                name: 'add_note',
+                PlanAddNoteRoute().pageComponent(),
+                name: PlanAddNoteRoute().routeName,
               ),
         ),
       ],
