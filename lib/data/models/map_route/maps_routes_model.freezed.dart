@@ -284,7 +284,7 @@ as List<MapsRouteModel>,
 /// @nodoc
 mixin _$MapsRouteModel {
 
- int get distanceMeters; String get duration; MapsRoutePolyline get polyline;
+ int get distanceMeters; String get duration;
 /// Create a copy of MapsRouteModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -297,16 +297,16 @@ $MapsRouteModelCopyWith<MapsRouteModel> get copyWith => _$MapsRouteModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MapsRouteModel&&(identical(other.distanceMeters, distanceMeters) || other.distanceMeters == distanceMeters)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.polyline, polyline) || other.polyline == polyline));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MapsRouteModel&&(identical(other.distanceMeters, distanceMeters) || other.distanceMeters == distanceMeters)&&(identical(other.duration, duration) || other.duration == duration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,distanceMeters,duration,polyline);
+int get hashCode => Object.hash(runtimeType,distanceMeters,duration);
 
 @override
 String toString() {
-  return 'MapsRouteModel(distanceMeters: $distanceMeters, duration: $duration, polyline: $polyline)';
+  return 'MapsRouteModel(distanceMeters: $distanceMeters, duration: $duration)';
 }
 
 
@@ -317,11 +317,11 @@ abstract mixin class $MapsRouteModelCopyWith<$Res>  {
   factory $MapsRouteModelCopyWith(MapsRouteModel value, $Res Function(MapsRouteModel) _then) = _$MapsRouteModelCopyWithImpl;
 @useResult
 $Res call({
- int distanceMeters, String duration, MapsRoutePolyline polyline
+ int distanceMeters, String duration
 });
 
 
-$MapsRoutePolylineCopyWith<$Res> get polyline;
+
 
 }
 /// @nodoc
@@ -334,24 +334,14 @@ class _$MapsRouteModelCopyWithImpl<$Res>
 
 /// Create a copy of MapsRouteModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? distanceMeters = null,Object? duration = null,Object? polyline = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? distanceMeters = null,Object? duration = null,}) {
   return _then(_self.copyWith(
 distanceMeters: null == distanceMeters ? _self.distanceMeters : distanceMeters // ignore: cast_nullable_to_non_nullable
 as int,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
-as String,polyline: null == polyline ? _self.polyline : polyline // ignore: cast_nullable_to_non_nullable
-as MapsRoutePolyline,
+as String,
   ));
 }
-/// Create a copy of MapsRouteModel
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$MapsRoutePolylineCopyWith<$Res> get polyline {
-  
-  return $MapsRoutePolylineCopyWith<$Res>(_self.polyline, (value) {
-    return _then(_self.copyWith(polyline: value));
-  });
-}
+
 }
 
 
@@ -433,10 +423,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int distanceMeters,  String duration,  MapsRoutePolyline polyline)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int distanceMeters,  String duration)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MapsRouteModel() when $default != null:
-return $default(_that.distanceMeters,_that.duration,_that.polyline);case _:
+return $default(_that.distanceMeters,_that.duration);case _:
   return orElse();
 
 }
@@ -454,10 +444,10 @@ return $default(_that.distanceMeters,_that.duration,_that.polyline);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int distanceMeters,  String duration,  MapsRoutePolyline polyline)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int distanceMeters,  String duration)  $default,) {final _that = this;
 switch (_that) {
 case _MapsRouteModel():
-return $default(_that.distanceMeters,_that.duration,_that.polyline);case _:
+return $default(_that.distanceMeters,_that.duration);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -474,10 +464,10 @@ return $default(_that.distanceMeters,_that.duration,_that.polyline);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int distanceMeters,  String duration,  MapsRoutePolyline polyline)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int distanceMeters,  String duration)?  $default,) {final _that = this;
 switch (_that) {
 case _MapsRouteModel() when $default != null:
-return $default(_that.distanceMeters,_that.duration,_that.polyline);case _:
+return $default(_that.distanceMeters,_that.duration);case _:
   return null;
 
 }
@@ -489,12 +479,11 @@ return $default(_that.distanceMeters,_that.duration,_that.polyline);case _:
 @JsonSerializable()
 
 class _MapsRouteModel implements MapsRouteModel {
-  const _MapsRouteModel({required this.distanceMeters, required this.duration, required this.polyline});
+  const _MapsRouteModel({required this.distanceMeters, required this.duration});
   factory _MapsRouteModel.fromJson(Map<String, dynamic> json) => _$MapsRouteModelFromJson(json);
 
 @override final  int distanceMeters;
 @override final  String duration;
-@override final  MapsRoutePolyline polyline;
 
 /// Create a copy of MapsRouteModel
 /// with the given fields replaced by the non-null parameter values.
@@ -509,16 +498,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MapsRouteModel&&(identical(other.distanceMeters, distanceMeters) || other.distanceMeters == distanceMeters)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.polyline, polyline) || other.polyline == polyline));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MapsRouteModel&&(identical(other.distanceMeters, distanceMeters) || other.distanceMeters == distanceMeters)&&(identical(other.duration, duration) || other.duration == duration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,distanceMeters,duration,polyline);
+int get hashCode => Object.hash(runtimeType,distanceMeters,duration);
 
 @override
 String toString() {
-  return 'MapsRouteModel(distanceMeters: $distanceMeters, duration: $duration, polyline: $polyline)';
+  return 'MapsRouteModel(distanceMeters: $distanceMeters, duration: $duration)';
 }
 
 
@@ -529,11 +518,11 @@ abstract mixin class _$MapsRouteModelCopyWith<$Res> implements $MapsRouteModelCo
   factory _$MapsRouteModelCopyWith(_MapsRouteModel value, $Res Function(_MapsRouteModel) _then) = __$MapsRouteModelCopyWithImpl;
 @override @useResult
 $Res call({
- int distanceMeters, String duration, MapsRoutePolyline polyline
+ int distanceMeters, String duration
 });
 
 
-@override $MapsRoutePolylineCopyWith<$Res> get polyline;
+
 
 }
 /// @nodoc
@@ -546,283 +535,10 @@ class __$MapsRouteModelCopyWithImpl<$Res>
 
 /// Create a copy of MapsRouteModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? distanceMeters = null,Object? duration = null,Object? polyline = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? distanceMeters = null,Object? duration = null,}) {
   return _then(_MapsRouteModel(
 distanceMeters: null == distanceMeters ? _self.distanceMeters : distanceMeters // ignore: cast_nullable_to_non_nullable
 as int,duration: null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
-as String,polyline: null == polyline ? _self.polyline : polyline // ignore: cast_nullable_to_non_nullable
-as MapsRoutePolyline,
-  ));
-}
-
-/// Create a copy of MapsRouteModel
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$MapsRoutePolylineCopyWith<$Res> get polyline {
-  
-  return $MapsRoutePolylineCopyWith<$Res>(_self.polyline, (value) {
-    return _then(_self.copyWith(polyline: value));
-  });
-}
-}
-
-
-/// @nodoc
-mixin _$MapsRoutePolyline {
-
- String get encodedPolyline;
-/// Create a copy of MapsRoutePolyline
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$MapsRoutePolylineCopyWith<MapsRoutePolyline> get copyWith => _$MapsRoutePolylineCopyWithImpl<MapsRoutePolyline>(this as MapsRoutePolyline, _$identity);
-
-  /// Serializes this MapsRoutePolyline to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MapsRoutePolyline&&(identical(other.encodedPolyline, encodedPolyline) || other.encodedPolyline == encodedPolyline));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,encodedPolyline);
-
-@override
-String toString() {
-  return 'MapsRoutePolyline(encodedPolyline: $encodedPolyline)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $MapsRoutePolylineCopyWith<$Res>  {
-  factory $MapsRoutePolylineCopyWith(MapsRoutePolyline value, $Res Function(MapsRoutePolyline) _then) = _$MapsRoutePolylineCopyWithImpl;
-@useResult
-$Res call({
- String encodedPolyline
-});
-
-
-
-
-}
-/// @nodoc
-class _$MapsRoutePolylineCopyWithImpl<$Res>
-    implements $MapsRoutePolylineCopyWith<$Res> {
-  _$MapsRoutePolylineCopyWithImpl(this._self, this._then);
-
-  final MapsRoutePolyline _self;
-  final $Res Function(MapsRoutePolyline) _then;
-
-/// Create a copy of MapsRoutePolyline
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? encodedPolyline = null,}) {
-  return _then(_self.copyWith(
-encodedPolyline: null == encodedPolyline ? _self.encodedPolyline : encodedPolyline // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [MapsRoutePolyline].
-extension MapsRoutePolylinePatterns on MapsRoutePolyline {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MapsRoutePolyline value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _MapsRoutePolyline() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MapsRoutePolyline value)  $default,){
-final _that = this;
-switch (_that) {
-case _MapsRoutePolyline():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MapsRoutePolyline value)?  $default,){
-final _that = this;
-switch (_that) {
-case _MapsRoutePolyline() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String encodedPolyline)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _MapsRoutePolyline() when $default != null:
-return $default(_that.encodedPolyline);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String encodedPolyline)  $default,) {final _that = this;
-switch (_that) {
-case _MapsRoutePolyline():
-return $default(_that.encodedPolyline);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String encodedPolyline)?  $default,) {final _that = this;
-switch (_that) {
-case _MapsRoutePolyline() when $default != null:
-return $default(_that.encodedPolyline);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _MapsRoutePolyline implements MapsRoutePolyline {
-  const _MapsRoutePolyline({required this.encodedPolyline});
-  factory _MapsRoutePolyline.fromJson(Map<String, dynamic> json) => _$MapsRoutePolylineFromJson(json);
-
-@override final  String encodedPolyline;
-
-/// Create a copy of MapsRoutePolyline
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$MapsRoutePolylineCopyWith<_MapsRoutePolyline> get copyWith => __$MapsRoutePolylineCopyWithImpl<_MapsRoutePolyline>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$MapsRoutePolylineToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MapsRoutePolyline&&(identical(other.encodedPolyline, encodedPolyline) || other.encodedPolyline == encodedPolyline));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,encodedPolyline);
-
-@override
-String toString() {
-  return 'MapsRoutePolyline(encodedPolyline: $encodedPolyline)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$MapsRoutePolylineCopyWith<$Res> implements $MapsRoutePolylineCopyWith<$Res> {
-  factory _$MapsRoutePolylineCopyWith(_MapsRoutePolyline value, $Res Function(_MapsRoutePolyline) _then) = __$MapsRoutePolylineCopyWithImpl;
-@override @useResult
-$Res call({
- String encodedPolyline
-});
-
-
-
-
-}
-/// @nodoc
-class __$MapsRoutePolylineCopyWithImpl<$Res>
-    implements _$MapsRoutePolylineCopyWith<$Res> {
-  __$MapsRoutePolylineCopyWithImpl(this._self, this._then);
-
-  final _MapsRoutePolyline _self;
-  final $Res Function(_MapsRoutePolyline) _then;
-
-/// Create a copy of MapsRoutePolyline
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? encodedPolyline = null,}) {
-  return _then(_MapsRoutePolyline(
-encodedPolyline: null == encodedPolyline ? _self.encodedPolyline : encodedPolyline // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

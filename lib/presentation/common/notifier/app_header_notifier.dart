@@ -1,26 +1,25 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart'
-    show placemarkFromCoordinates, Placemark;
 import 'package:location/location.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'dart:developer' as dev;
 
 import 'package:lokapandu/common/services/analytics_manager.dart';
+import 'package:lokapandu/common/services/location_service.dart';
 import 'package:lokapandu/domain/entities/weather_entity.dart';
 import 'package:lokapandu/domain/usecases/get_current_weather.dart';
 
 class AppHeaderNotifier extends ChangeNotifier {
-  final Location _location;
+  final LocationService _locationService;
   final AnalyticsManager _analyticsManager;
   final GetCurrentWeather _currentWeather;
 
   AppHeaderNotifier({
-    required Location location,
+    required LocationService locationService,
     required GetCurrentWeather currentWeather,
     required AnalyticsManager analyticsManager,
-  }) : _location = location,
+  }) : _locationService = locationService,
        _currentWeather = currentWeather,
        _analyticsManager = analyticsManager;
 
@@ -41,17 +40,16 @@ class AppHeaderNotifier extends ChangeNotifier {
   Future<void> initialize() async {
     dev.log('Getting location...', name: 'AppHeaderNotifier');
 
-    bool serviceEnabled = await _location.serviceEnabled();
+    // Gunakan method dari service, bukan dari package langsung
+    bool serviceEnabled = await _locationService.isServiceEnabled();
     if (!serviceEnabled) {
-      serviceEnabled = await _location.requestService();
-      if (!serviceEnabled) {
-        return;
-      }
+      serviceEnabled = await _locationService.requestService();
+      if (!serviceEnabled) return;
     }
 
-    _permissionStatus = await _location.hasPermission();
+    _permissionStatus = await _locationService.getPermissionStatus();
     if (_permissionStatus == PermissionStatus.denied) {
-      _permissionStatus = await _location.requestPermission();
+      _permissionStatus = await _locationService.requestPermission();
       await _analyticsManager.trackEvent(
         eventName: 'location_permission_requested',
         parameters: {
@@ -66,14 +64,11 @@ class AppHeaderNotifier extends ChangeNotifier {
       }
     }
 
-    _locationData = await _location.getLocation();
-    List<Placemark> placemarks = await placemarkFromCoordinates(
+    _locationData = await _locationService.getCurrentLocation();
+    _nowLocation = await _locationService.getAddressFromCoordinates(
       _locationData?.latitude ?? 0,
       _locationData?.longitude ?? 0,
     );
-
-    _nowLocation =
-        '${placemarks.first.subAdministrativeArea}, ${placemarks.first.administrativeArea}';
     notifyListeners();
   }
 

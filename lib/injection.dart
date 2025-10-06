@@ -4,10 +4,16 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:lokapandu/data/datasources/weather_remote_data_source.dart';
-import 'package:lokapandu/data/repositories/weather_repository_impl.dart';
+import 'package:lokapandu/common/services/impl/location_service_impl.dart';
+import 'package:lokapandu/common/services/location_service.dart';
+import 'package:lokapandu/common/services/routes_api_port.dart';
+import 'package:lokapandu/common/services/impl/routes_api_gateway.dart';
+import 'package:lokapandu/common/services/impl/weather_api_gateway.dart';
+import 'package:lokapandu/data/datasources/weather_services.dart'
+    hide WeatherApiGateway;
 import 'package:lokapandu/domain/repositories/weather_repository.dart';
 import 'package:lokapandu/domain/usecases/get_current_weather.dart';
+import 'package:lokapandu/domain/usecases/get_distance.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
@@ -82,10 +88,16 @@ Future<void> initDependencies() async {
       supabaseService: locator<SupabaseServiceInterface>(),
     ),
   );
+  locator.registerLazySingleton<LocationService>(
+    () => LocationServiceImpl(locator<Location>()),
+  );
 
   /// Weather remote data source - handles weather API requests
-  locator.registerLazySingleton<WeatherRemoteDataSource>(
-    () => WeatherRemoteDataSourceImpl(client: locator<http.Client>()),
+  locator.registerLazySingleton<WeatherPort>(
+    () => WeatherApiGateway(client: locator<http.Client>()),
+  );
+  locator.registerLazySingleton<RoutesPort>(
+    () => RoutesApiGateway(client: locator<http.Client>()),
   );
 
   /// Repositories - Implement domain contracts and coordinate data sources
@@ -93,9 +105,6 @@ Future<void> initDependencies() async {
     () => TourismSpotRepositorySupabaseImpl(
       remoteDataSource: locator<TourismSpotRemoteDataSource>(),
     ),
-  );
-  locator.registerLazySingleton<WeatherRepository>(
-    () => WeatherRepositoryImpl(dataSource: locator<WeatherRemoteDataSource>()),
   );
 
   // ========================================
@@ -116,7 +125,10 @@ Future<void> initDependencies() async {
     () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
   );
   locator.registerLazySingleton<GetCurrentWeather>(
-    () => GetCurrentWeather(locator<WeatherRepository>()),
+    () => GetCurrentWeather(locator<WeatherPort>()),
+  );
+  locator.registerLazySingleton<GetDistance>(
+    () => GetDistance(locator<RoutesPort>()),
   );
 
   // ========================================
@@ -148,7 +160,7 @@ Future<void> initDependencies() async {
   /// App Header Notifier - manages app header state
   locator.registerFactory<AppHeaderNotifier>(
     () => AppHeaderNotifier(
-      location: locator<Location>(),
+      locationService: locator<LocationService>(),
       analyticsManager: locator<AnalyticsManager>(),
       currentWeather: locator<GetCurrentWeather>(),
     ),

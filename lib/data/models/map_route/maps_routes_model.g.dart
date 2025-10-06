@@ -20,20 +20,10 @@ _MapsRouteModel _$MapsRouteModelFromJson(Map<String, dynamic> json) =>
     _MapsRouteModel(
       distanceMeters: (json['distanceMeters'] as num).toInt(),
       duration: json['duration'] as String,
-      polyline: MapsRoutePolyline.fromJson(
-        json['polyline'] as Map<String, dynamic>,
-      ),
     );
 
 Map<String, dynamic> _$MapsRouteModelToJson(_MapsRouteModel instance) =>
     <String, dynamic>{
       'distanceMeters': instance.distanceMeters,
       'duration': instance.duration,
-      'polyline': instance.polyline,
     };
-
-_MapsRoutePolyline _$MapsRoutePolylineFromJson(Map<String, dynamic> json) =>
-    _MapsRoutePolyline(encodedPolyline: json['encodedPolyline'] as String);
-
-Map<String, dynamic> _$MapsRoutePolylineToJson(_MapsRoutePolyline instance) =>
-    <String, dynamic>{'encodedPolyline': instance.encodedPolyline};

@@ -1,3 +1,4 @@
+import 'package:lokapandu/data/datasources/weather_services.dart';
 import 'package:lokapandu/data/models/weather/weather_model.dart';
 import 'dart:convert';
 
@@ -6,14 +7,10 @@ import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/env/env.dart';
 import 'dart:developer' as dev;
 
-abstract class WeatherRemoteDataSource {
-  Future<WeatherModel> getCurrentWeather(String city);
-}
-
-class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
+class WeatherApiGateway implements WeatherPort {
   final http.Client client;
 
-  WeatherRemoteDataSourceImpl({required this.client});
+  WeatherApiGateway({required this.client});
 
   @override
   Future<WeatherModel> getCurrentWeather(String latLon) async {
