@@ -15,7 +15,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [
     const ChatMessage(
-      text: 'Hai, Ayu Krisna! Ada yang bisa aku bantu di Bali sore ini?',
+      text: 'Hai, Ayu! Ada yang bisa aku bantu di Bali sore ini?',
       isFromUser: false,
     ),
     const ChatMessage(
@@ -80,7 +80,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(), 
+          onPressed: () => context.pop(),
         ),
         title: Text('AI Chat', style: theme.textTheme.titleLarge),
         centerTitle: true,
@@ -92,27 +92,27 @@ class _AiChatScreenState extends State<AiChatScreen> {
             ),
           ),
         ],
-        
+
         elevation: 0,
-        scrolledUnderElevation: 1, 
+        scrolledUnderElevation: 1,
       ),
       body: Column(
-      children: [
-        Expanded(
-          child: ListView.separated(
+        children: [
+          Expanded(
+            child: ListView.separated(
               controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            itemCount: _messages.length,
-            itemBuilder: (context, index) {
-              final message = _messages[index];
-              return ChatBubble(
-                text: message.text,
-                isFromUser: message.isFromUser,
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: _messages.length,
+              itemBuilder: (context, index) {
+                final message = _messages[index];
+                return ChatBubble(
+                  text: message.text,
+                  isFromUser: message.isFromUser,
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+            ),
           ),
-        ),
           _buildMessageInput(theme, colorScheme),
         ],
       ),

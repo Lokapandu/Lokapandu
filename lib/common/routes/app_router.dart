@@ -25,7 +25,7 @@ class AppRouter {
   static GoRouter createRouter() {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: '/',
+      initialLocation: '/home',
       routes: [
         GoRoute(
           path: '/',

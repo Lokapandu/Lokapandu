@@ -85,8 +85,8 @@ class SettingsScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    const String userName = 'Ayu Lestari';
-    const String userEmail = 'ayulestari@example.com';
+    const String userName = 'Ayu';
+    const String userEmail = 'Ayu@example.com';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
