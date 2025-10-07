@@ -65,6 +65,14 @@ class AppHeaderNotifier extends ChangeNotifier {
     }
 
     _locationData = await _locationService.getCurrentLocation();
+    await _analyticsManager.trackEvent(
+      eventName: 'app_header-location_obtained',
+      parameters: {
+        'latitude': _locationData?.latitude.toString() ?? '0',
+        'longitude': _locationData?.longitude.toString() ?? '0',
+        'timestamp': DateTime.now().toIso8601String(),
+      },
+    );
     _nowLocation = await _locationService.getAddressFromCoordinates(
       _locationData?.latitude ?? 0,
       _locationData?.longitude ?? 0,

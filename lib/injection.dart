@@ -9,9 +9,7 @@ import 'package:lokapandu/common/services/location_service.dart';
 import 'package:lokapandu/common/services/routes_api_port.dart';
 import 'package:lokapandu/common/services/impl/routes_api_gateway.dart';
 import 'package:lokapandu/common/services/impl/weather_api_gateway.dart';
-import 'package:lokapandu/data/datasources/weather_services.dart'
-    hide WeatherApiGateway;
-import 'package:lokapandu/domain/repositories/weather_repository.dart';
+import 'package:lokapandu/common/services/weather_api_port.dart';
 import 'package:lokapandu/domain/usecases/get_current_weather.dart';
 import 'package:lokapandu/domain/usecases/get_distance.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
@@ -19,6 +17,8 @@ import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -166,5 +166,15 @@ Future<void> initDependencies() async {
     ),
   );
 
+  /// Tourism Spot Calculation Notifier - manages tourism spot calculation state
+  locator.registerFactory<TourismSpotCalculationNotifier>(
+    () => TourismSpotCalculationNotifier(
+      getDistance: locator<GetDistance>(),
+      analyticsManager: locator<AnalyticsManager>(),
+      locationService: locator<LocationService>(),
+    ),
+  );
+
   locator.registerFactory<BookmarkProvider>(() => BookmarkProvider());
+  locator.registerFactory<ThemeProvider>(() => ThemeProvider());
 }

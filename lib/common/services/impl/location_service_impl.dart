@@ -25,28 +25,22 @@ class LocationServiceImpl implements LocationService {
   }
 
   @override
-  Future<PermissionStatus> getPermissionStatus() {
-    // TODO: implement getPermissionStatus
-    throw UnimplementedError();
+  Future<PermissionStatus> getPermissionStatus() async {
+    return await _location.hasPermission();
   }
 
   @override
-  Future<bool> isServiceEnabled() {
-    // TODO: implement isServiceEnabled
-    throw UnimplementedError();
+  Future<bool> isServiceEnabled() async {
+    return await _location.serviceEnabled();
   }
 
   @override
-  Future<PermissionStatus> requestPermission() {
-    // TODO: implement requestPermission
-    throw UnimplementedError();
+  Future<PermissionStatus> requestPermission() async {
+    return await _location.requestPermission();
   }
 
   @override
-  Future<bool> requestService() {
-    // TODO: implement requestService
-    throw UnimplementedError();
+  Future<bool> requestService() async {
+    return await _location.requestService();
   }
-
-  // ... implementasi method lainnya (isServiceEnabled, requestPermission, dll)
 }

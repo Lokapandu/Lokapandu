@@ -1,9 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
+import 'package:provider/provider.dart';
 
-class HeaderSection extends StatelessWidget {
+class HeaderSection extends StatefulWidget {
   final TourismSpot tour;
   const HeaderSection({super.key, required this.tour});
+
+  @override
+  State<HeaderSection> createState() => _HeaderSectionState();
+}
+
+class _HeaderSectionState extends State<HeaderSection> {
+  final timeNow = TimeOfDay.now();
+  bool isOpen = false;
+
+  bool isTimeOpen = false;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TourismSpotCalculationNotifier>().calculateDistance(
+        LatLng(widget.tour.latitude, widget.tour.longitude),
+      );
+    });
+
+    isOpen =
+        widget.tour.openTime.toTimeOfDay().isBefore(timeNow) &&
+        widget.tour.closeTime.toTimeOfDay().isAfter(timeNow);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +42,7 @@ class HeaderSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            tour.name,
+            widget.tour.name,
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -24,7 +52,7 @@ class HeaderSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${tour.openTime} - ${tour.closeTime}',
+                '${widget.tour.openTime} - ${widget.tour.closeTime}',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -38,7 +66,8 @@ class HeaderSection extends StatelessWidget {
                   color: theme.colorScheme.tertiary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                //TODO: Logic for "Buka" and "Tutup"
+                // TODO: Logic for "Buka" and "Tutup"
+                // Note: apply isOpen to change text
                 child: Text(
                   'Buka',
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -59,12 +88,22 @@ class HeaderSection extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                //TODO: Measure the distance of the tourism spot from user's location
-                child: Text(
-                  '${tour.address}, ${tour.city}, ${tour.province} | ... km dari lokasimu)',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                child: Consumer<TourismSpotCalculationNotifier>(
+                  builder: (context, notifier, child) {
+                    String data = '';
+                    if (notifier.isPermissionGranted()) {
+                      data = notifier.isLoading
+                          ? ''
+                          : '| ${notifier.distance} dari lokasimu';
+                    }
+
+                    return Text(
+                      '${widget.tour.address}, ${widget.tour.city}, ${widget.tour.province} $data',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

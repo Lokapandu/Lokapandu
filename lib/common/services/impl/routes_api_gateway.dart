@@ -18,46 +18,54 @@ class RoutesApiGateway implements RoutesPort {
     required LatLng destination,
   }) async {
     Uri uri = Uri.https(Env.googleRoutesApiUrl, 'directions/v2:computeRoutes');
+    String body = json.encode({
+      'origin': {
+        'location': {
+          'latLng': {
+            'latitude': origin.latitude.toString(),
+            'longitude': origin.longitude.toString(),
+          },
+        },
+      },
+      'destination': {
+        'location': {
+          'latLng': {
+            'latitude': destination.latitude.toString(),
+            'longitude': destination.longitude.toString(),
+          },
+        },
+      },
+      'travelMode': 'DRIVE',
+      'routingPreference': "TRAFFIC_AWARE",
+      'computeAlternativeRoutes': false,
+      'routeModifiers': {
+        'avoidTolls': false,
+        'avoidHighways': false,
+        'avoidFerries': false,
+      },
+      'languageCode': 'en-US',
+      'units': 'METRIC',
+    });
 
     try {
       final response = await client.post(
         uri,
-        body: {
-          'origin': {
-            'location': {
-              'latitude': origin.latitude,
-              'longitude': origin.longitude,
-            },
-          },
-          'destination': {
-            'location': {
-              'latitude': destination.latitude,
-              'longitude': destination.longitude,
-            },
-          },
-          'travelMode': 'DRIVE',
-          'routingPreference': "TRAFFIC_AWARE",
-          'computeAlternativeRoutes': false,
-          'routeModifiers': {
-            'avoidTolls': false,
-            'avoidHighways': false,
-            'avoidFerries': false,
-          },
-          'languageCode': 'en-US',
-          'units': 'METRIC',
-        },
+        body: body,
         headers: {
           'Content-Type': 'application/json',
-          'X-Goog-Api-Key': Env.mapsApiKey,
+          'X-Goog-Api-Key': 'AIzaSyAAE7COwXgnymoY5osw_oaq1leh0FNSRbI',
           'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters',
         },
       );
-
       if (response.statusCode == 200) {
-        return MapsRoutesModel.fromJson(json.decode(response.body));
+        final decoded = json.decode(response.body);
+        if (decoded is Map && decoded.isEmpty) {
+          return MapsRoutesModel(routes: []);
+        }
+        return MapsRoutesModel.fromJson(decoded);
       } else {
         throw ServerException(
-          'Failed to load routes data: ${response.statusCode}',
+          'HTTP:${response.statusCode}: ${json.decode(response.body)['error']['message']}',
         );
       }
     } on FormatException catch (e) {
@@ -65,7 +73,7 @@ class RoutesApiGateway implements RoutesPort {
     } on http.ClientException {
       throw ConnectionException('Failed to connect to the server');
     } catch (e) {
-      throw ServerException('Failed to load weather data: $e');
+      throw ServerException('$e');
     }
   }
 }

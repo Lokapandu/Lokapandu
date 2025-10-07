@@ -1,7 +1,6 @@
-import 'package:lokapandu/data/datasources/weather_services.dart';
 import 'package:lokapandu/data/models/weather/weather_model.dart';
 import 'dart:convert';
-
+import 'package:lokapandu/common/services/weather_api_port.dart';
 import 'package:http/http.dart' as http;
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/env/env.dart';
