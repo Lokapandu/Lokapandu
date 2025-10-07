@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
 import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_page.dart';

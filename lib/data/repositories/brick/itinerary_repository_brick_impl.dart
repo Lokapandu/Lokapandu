@@ -13,8 +13,8 @@ import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/data/mappers/itinerary_mapper.dart';
 import 'package:lokapandu/data/mappers/tourism_image_mapper.dart';
 import 'package:lokapandu/data/mappers/tourism_spot_mapper.dart';
-import 'package:lokapandu/domain/entities/itinerary_entity.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 
 class ItineraryRepositoryImpl implements ItineraryRepository {

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:lokapandu/common/errors/failure.dart';
-import 'package:lokapandu/domain/entities/itinerary_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 
 class GetUserItineraries {

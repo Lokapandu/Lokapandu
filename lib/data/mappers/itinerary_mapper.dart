@@ -1,6 +1,6 @@
 import 'package:lokapandu/brick/models/itinerary.model.dart';
-import 'package:lokapandu/domain/entities/itinerary_entity.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 extension ItineraryEntityMapper on Itinerary {
   ItineraryModel toModel() => ItineraryModel(
