@@ -91,7 +91,9 @@ class TourismSpotCalculationNotifier extends ChangeNotifier {
     distance.fold(
       (l) => dev.log('Error: $l', name: 'TourismSpotCalculationNotifier'),
       (r) {
-        final meters = double.tryParse(r.distanceMeters.toString()) ?? 0;
+        print("Routes: ${r.routes.toString()}");
+        final meters =
+            double.tryParse(r.routes.first.distanceMeters.toString()) ?? 0;
         if (meters < 1000) {
           _distance = '${meters.toInt()} m';
         } else {

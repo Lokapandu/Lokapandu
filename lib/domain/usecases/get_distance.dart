@@ -12,7 +12,7 @@ class GetDistance {
 
   GetDistance(this._gateway);
 
-  Future<Either<Failure, MapsRoute>> execute({
+  Future<Either<Failure, MapsRoutes>> execute({
     required LatLng origin,
     required LatLng destination,
   }) async {

@@ -15,10 +15,4 @@ abstract class Env {
 
   @EnviedField(varName: 'WEATHER_BASE')
   static const String weatherBaseUrl = _Env.weatherBaseUrl;
-
-  @EnviedField(varName: 'MAPS_API_KEY')
-  static const String mapsApiKey = _Env.mapsApiKey;
-
-  @EnviedField(varName: 'GOOGLE_ROUTES_API_URL')
-  static const String googleRoutesApiUrl = _Env.googleRoutesApiUrl;
 }

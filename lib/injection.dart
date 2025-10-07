@@ -97,7 +97,7 @@ Future<void> initDependencies() async {
     () => WeatherApiGateway(client: locator<http.Client>()),
   );
   locator.registerLazySingleton<RoutesPort>(
-    () => RoutesApiGateway(client: locator<http.Client>()),
+    () => RoutesApiGateway(locator<SupabaseClient>()),
   );
 
   /// Repositories - Implement domain contracts and coordinate data sources

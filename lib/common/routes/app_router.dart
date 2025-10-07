@@ -3,33 +3,50 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
+import 'package:lokapandu/features/bookmark/screens/bookmark_screen.dart';
+import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
+import 'package:lokapandu/features/plan/screens/plan_screen.dart';
+import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
+import 'package:lokapandu/features/plan/screens/tour_search_sceen.dart';
+import 'package:lokapandu/features/settings/screens/settings_screen.dart';
+import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
+import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
+import 'package:lokapandu/presentation/home/screens/home_content.dart';
 import 'package:lokapandu/presentation/home/screens/home_screen.dart';
+import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_detail_page.dart';
+import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_page.dart';
+import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_preview_page.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
 
+  static final GlobalKey<NavigatorState> _shellNavigatorKey =
+      GlobalKey<NavigatorState>();
+
   static GoRouter createRouter() {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: TourismSpotRoute().path,
+      initialLocation: HomeRoute().path,
       routes: [
         GoRoute(
           path: SplashRoute().path,
           name: SplashRoute().routeName,
-          builder: (context, state) => SplashRoute().pageComponent(),
+          builder: (context, state) => const SplashScreen(),
         ),
 
         GoRoute(
           path: AuthRoute().path,
           name: AuthRoute().routeName,
           pageBuilder: (context, state) => PageTransitions.fadeTransition(
-            AuthRoute().pageComponent(),
+            const AuthScreen(),
             name: AuthRoute().routeName,
           ),
         ),
 
         ShellRoute(
+          navigatorKey: _shellNavigatorKey,
           builder: (context, state, child) {
             return HomeScreen(child: child);
           },
@@ -38,7 +55,7 @@ class AppRouter {
               path: HomeRoute().path,
               name: HomeRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                HomeRoute().pageComponent(),
+                const HomeContent(),
                 name: HomeRoute().routeName,
               ),
             ),
@@ -46,7 +63,7 @@ class AppRouter {
               path: TourismSpotRoute().path,
               name: TourismSpotRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                TourismSpotRoute().pageComponent(),
+                const TourismSpotPage(),
                 name: TourismSpotRoute().routeName,
               ),
             ),
@@ -54,7 +71,7 @@ class AppRouter {
               path: PlanRoute().path,
               name: PlanRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                PlanRoute().pageComponent(),
+                const PlanScreen(),
                 name: PlanRoute().routeName,
               ),
             ),
@@ -62,7 +79,7 @@ class AppRouter {
               path: SettingsRoute().path,
               name: SettingsRoute().routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
-                SettingsRoute().pageComponent(),
+                const SettingsScreen(),
                 name: SettingsRoute().routeName,
               ),
             ),
@@ -75,18 +92,19 @@ class AppRouter {
           pageBuilder: (context, state) {
             final id = int.parse(state.pathParameters['id']!);
             return PageTransitions.slideFromRightTransition(
-              TourismSpotPreviewRoute().pageComponent(arguments: id),
+              TourismSpotPreviewPage(id: id),
               name: TourismSpotPreviewRoute().routeName,
             );
           },
         ),
+
         GoRoute(
           path: TourismSpotDetailRoute().path,
           name: TourismSpotDetailRoute().routeName,
           pageBuilder: (context, state) {
             final tour = state.extra as TourismSpot;
             return PageTransitions.scaleTransition(
-              TourismSpotDetailRoute().pageComponent(arguments: tour),
+              TourismSpotDetailPage(tour: tour),
               name: TourismSpotDetailRoute().routeName,
             );
           },
@@ -96,7 +114,7 @@ class AppRouter {
           name: AiChatRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                AiChatRoute().pageComponent(),
+                const AiChatScreen(),
                 name: AiChatRoute().routeName,
               ),
         ),
@@ -105,7 +123,7 @@ class AppRouter {
           name: BookmarksRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromRightTransition(
-                BookmarksRoute().pageComponent(),
+                const BookmarkScreen(),
                 name: BookmarksRoute().routeName,
               ),
         ),
@@ -114,7 +132,7 @@ class AppRouter {
           name: PlanSearchRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                PlanSearchRoute().pageComponent(),
+                const TourSearchScreen(),
                 name: PlanSearchRoute().routeName,
               ),
         ),
@@ -123,7 +141,7 @@ class AppRouter {
           name: PlanAddRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                PlanAddRoute().pageComponent(),
+                const TourPlanEditorScreen(),
                 name: PlanAddRoute().routeName,
               ),
         ),
@@ -132,7 +150,7 @@ class AppRouter {
           name: PlanAddNoteRoute().routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
-                PlanAddNoteRoute().pageComponent(),
+                const NoteEditorScreen(),
                 name: PlanAddNoteRoute().routeName,
               ),
         ),

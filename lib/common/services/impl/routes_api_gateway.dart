@@ -5,69 +5,34 @@ import 'package:http/http.dart' as http;
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/common/services/routes_api_port.dart';
 import 'package:lokapandu/data/models/map_route/maps_routes_model.dart';
-import 'package:lokapandu/env/env.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RoutesApiGateway implements RoutesPort {
-  final http.Client client;
+  final SupabaseClient _client;
 
-  RoutesApiGateway({required this.client});
+  RoutesApiGateway(this._client);
 
   @override
   Future<MapsRoutesModel> calculateRoute({
     required LatLng origin,
     required LatLng destination,
   }) async {
-    Uri uri = Uri.https(Env.googleRoutesApiUrl, 'directions/v2:computeRoutes');
-    String body = json.encode({
-      'origin': {
-        'location': {
-          'latLng': {
+    try {
+      final response = await _client.functions.invoke(
+        'calculate-distance',
+        body: json.encode({
+          'origin': {
             'latitude': origin.latitude.toString(),
             'longitude': origin.longitude.toString(),
           },
-        },
-      },
-      'destination': {
-        'location': {
-          'latLng': {
+          'destination': {
             'latitude': destination.latitude.toString(),
             'longitude': destination.longitude.toString(),
           },
-        },
-      },
-      'travelMode': 'DRIVE',
-      'routingPreference': "TRAFFIC_AWARE",
-      'computeAlternativeRoutes': false,
-      'routeModifiers': {
-        'avoidTolls': false,
-        'avoidHighways': false,
-        'avoidFerries': false,
-      },
-      'languageCode': 'en-US',
-      'units': 'METRIC',
-    });
-
-    try {
-      final response = await client.post(
-        uri,
-        body: body,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': 'AIzaSyAAE7COwXgnymoY5osw_oaq1leh0FNSRbI',
-          'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters',
-        },
+        }),
       );
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
-        if (decoded is Map && decoded.isEmpty) {
-          return MapsRoutesModel(routes: []);
-        }
-        return MapsRoutesModel.fromJson(decoded);
-      } else {
-        throw ServerException(
-          'HTTP:${response.statusCode}: ${json.decode(response.body)['error']['message']}',
-        );
-      }
+      
+      return MapsRoutesModel.fromJson(response.data);
     } on FormatException catch (e) {
       throw DataParsingException(e.message);
     } on http.ClientException {

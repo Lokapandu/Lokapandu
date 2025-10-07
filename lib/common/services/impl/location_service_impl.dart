@@ -11,7 +11,10 @@ class LocationServiceImpl implements LocationService {
 
   @override
   Future<LocationData?> getCurrentLocation() async {
-    return await _location.getLocation();
+    if (await getPermissionStatus() == PermissionStatus.granted) {
+      return await _location.getLocation();
+    }
+    return null;
   }
 
   @override

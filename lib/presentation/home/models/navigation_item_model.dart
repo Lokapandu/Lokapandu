@@ -12,22 +12,22 @@ class NavigationItem {
 
 const List<NavigationItem> navigationItems = [
   NavigationItem(
-    path: 'home',
+    path: '/home',
     iconAsset: 'assets/icons/home.svg',
     label: 'Beranda',
   ),
   NavigationItem(
-    path: 'tourism_spot',
+    path: '/tourism_spot',
     iconAsset: 'assets/icons/icon_park.svg',
     label: 'Wisata',
   ),
   NavigationItem(
-    path: 'plan',
+    path: '/plan',
     iconAsset: 'assets/icons/planing.svg',
     label: 'Rencana',
   ),
   NavigationItem(
-    path: 'settings',
+    path: '/settings',
     iconAsset: 'assets/icons/settings.svg',
     label: 'Pengaturan',
   ),

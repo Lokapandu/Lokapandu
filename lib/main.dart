@@ -63,8 +63,7 @@ void main() async {
           create: (_) => di.locator<TourismSpotDetailNotifier>(),
         ),
         ChangeNotifierProvider(
-          create: (_) =>
-              di.locator<TourismSpotCalculationNotifier>(),
+          create: (_) => di.locator<TourismSpotCalculationNotifier>(),
         ),
         ChangeNotifierProvider(create: (_) => di.locator<ThemeProvider>()),
         ChangeNotifierProvider(create: (_) => di.locator<AuthNotifier>()),
