@@ -3,6 +3,7 @@ import 'dart:developer' as developer;
 import 'package:brick_core/query.dart';
 import 'package:dartz/dartz.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:lokapandu/brick/models/itinerary.model.dart';
@@ -153,6 +154,49 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, Unit>> editItinerary(EditItinerary itineraryInput) async {
+    try {
+      final existingItineraryResults = await Repository().getAll<ItineraryModel>(
+        query: Query.where('id', itineraryInput.id),
+      );
+
+      if (existingItineraryResults == null ||
+          existingItineraryResults.isEmpty) {
+        return Future.value(
+          Left(ServerFailure('Itinerary not found')),
+        );
+      }
+
+      final existingItinerary = existingItineraryResults.first;
+
+      final updatedItinerary = ItineraryModel(
+        id: existingItinerary.id,
+        name: itineraryInput.name ?? existingItinerary.name,
+        notes: itineraryInput.notes ?? existingItinerary.notes,
+        startTime: itineraryInput.startTime ?? existingItinerary.startTime,
+        endTime: itineraryInput.endTime ?? existingItinerary.endTime,
+        tourismSpotId:
+            itineraryInput.tourismSpot ?? existingItinerary.tourismSpotId,
+        createdAt: existingItinerary.createdAt,
+      );
+
+      await Repository().upsert<ItineraryModel>(updatedItinerary);
+
+      return Future.value(Right(unit));
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ConnectionFailure('Connection error: ${e.message}')),
+      );
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ServerFailure('Unexpected error: ${e.toString()}')),
+      );
+    }
+  }
+
   Future<List<Itinerary>> _toEntitiesWithRelations(
     List<ItineraryModel> itineraries,
   ) async {
@@ -188,4 +232,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
     return Future.wait(itineraryEntitiesFutures);
   }
+
+  
 }
