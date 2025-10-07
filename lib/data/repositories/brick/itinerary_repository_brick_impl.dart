@@ -197,6 +197,40 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     }
   }
 
+    
+  @override
+  Future<Either<Failure, Unit>> deleteItinerary(String itineraryId) async {
+    try {
+      final existingItineraryResults = await Repository().getOne<ItineraryModel>(
+        query: Query.where('id', itineraryId),
+      );
+
+      if (existingItineraryResults == null) {
+        return Future.value(
+          Left(ServerFailure('Itinerary not found')),
+        );
+      }
+
+      return Repository().deleteOne<ItineraryModel>(existingItineraryResults).then((success) {
+        if (success) {
+          return Right(unit);
+        } else {
+          return Left(ServerFailure('Failed to delete itinerary'));
+        }
+      });
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ConnectionFailure('Connection error: ${e.message}')),
+      );
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ServerFailure('Unexpected error: ${e.toString()}')),
+      );
+    }
+  }
+
   Future<List<Itinerary>> _toEntitiesWithRelations(
     List<ItineraryModel> itineraries,
   ) async {
@@ -232,6 +266,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
     return Future.wait(itineraryEntitiesFutures);
   }
+
 
   
 }

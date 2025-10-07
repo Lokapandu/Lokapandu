@@ -85,4 +85,18 @@ class Repository extends OfflineFirstWithSupabaseRepository {
     );
     return results;
   }
+
+  Future<bool> deleteOne<TModel extends OfflineFirstWithSupabaseModel>(
+    TModel instance, {
+    Query? query,
+    OfflineFirstDeletePolicy policy =
+        OfflineFirstDeletePolicy.optimisticLocal,
+  }) async {
+    final results = await super.delete<TModel>(
+      instance,
+      policy: policy,
+      query: query,
+    );
+    return results;
+  }
 }

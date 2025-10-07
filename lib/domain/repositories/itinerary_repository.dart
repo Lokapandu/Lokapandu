@@ -10,4 +10,5 @@ abstract class ItineraryRepository {
   Future<Either<Failure, Unit>> createItinerary(String userId, CreateItinerary itineraryInput);
   Future<Either<Failure, Unit>> createItineraryNote(String userId, CreateItineraryNote itineraryNoteInput);
   Future<Either<Failure, Unit>> editItinerary(EditItinerary itineraryInput);
+  Future<Either<Failure, Unit>> deleteItinerary(String itineraryId);
 }

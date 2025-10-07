@@ -6,6 +6,7 @@ import 'package:lokapandu/data/repositories/brick/itinerary_repository_brick_imp
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
+import 'package:lokapandu/domain/usecases/itineraries/delete_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/edit_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.dart';
@@ -115,6 +116,9 @@ Future<void> initDependencies() async {
   );
   locator.registerLazySingleton<EditUserItineraries>(
     () => EditUserItineraries(locator<ItineraryRepository>()),
+  );
+  locator.registerLazySingleton<DeleteUserItineraries>(
+    () => DeleteUserItineraries(locator<ItineraryRepository>()),
   );
   // ========================================
   // PRESENTATION LAYER
