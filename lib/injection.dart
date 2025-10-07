@@ -2,9 +2,23 @@ import 'dart:async';
 
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
+import 'package:lokapandu/common/services/impl/location_service_impl.dart';
+import 'package:lokapandu/common/services/location_service.dart';
+import 'package:lokapandu/common/services/routes_api_port.dart';
+import 'package:lokapandu/common/services/impl/routes_api_gateway.dart';
+import 'package:lokapandu/common/services/impl/weather_api_gateway.dart';
+import 'package:lokapandu/common/services/weather_api_port.dart';
+import 'package:lokapandu/domain/usecases/get_current_weather.dart';
+import 'package:lokapandu/domain/usecases/get_distance.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
+import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -17,7 +31,7 @@ import 'package:lokapandu/data/repositories/tourism_spot_repository_supabase_imp
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/common/services/analytics_manager.dart';
 
 final locator = GetIt.instance;
@@ -43,6 +57,12 @@ Future<void> initDependencies() async {
   /// Supabase client - singleton as it manages connection state
   locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
 
+  /// Location service - handles device location permissions
+  locator.registerSingleton<Location>(Location());
+
+  /// HTTP client - used for network requests
+  locator.registerSingleton<http.Client>(http.Client());
+
   // ========================================
   // DATA LAYER
   // ========================================
@@ -54,11 +74,9 @@ Future<void> initDependencies() async {
 
   /// Authentication service - handles Google Sign-In with Supabase
   final googleSignIn = GoogleSignIn.instance;
- 
+
   locator.registerLazySingleton<AuthService>(
-    () => AuthService(
-      googleSignIn: googleSignIn,
-    ),
+    () => AuthService(googleSignIn: googleSignIn),
   );
 
   /// Analytics service - handles Firebase Analytics
@@ -69,6 +87,17 @@ Future<void> initDependencies() async {
     () => TourismSpotRemoteDataSourceImpl(
       supabaseService: locator<SupabaseServiceInterface>(),
     ),
+  );
+  locator.registerLazySingleton<LocationService>(
+    () => LocationServiceImpl(locator<Location>()),
+  );
+
+  /// Weather remote data source - handles weather API requests
+  locator.registerLazySingleton<WeatherPort>(
+    () => WeatherApiGateway(client: locator<http.Client>()),
+  );
+  locator.registerLazySingleton<RoutesPort>(
+    () => RoutesApiGateway(locator<SupabaseClient>()),
   );
 
   /// Repositories - Implement domain contracts and coordinate data sources
@@ -94,6 +123,12 @@ Future<void> initDependencies() async {
   );
   locator.registerLazySingleton<GetTourismSpotsByCategory>(
     () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
+  );
+  locator.registerLazySingleton<GetCurrentWeather>(
+    () => GetCurrentWeather(locator<WeatherPort>()),
+  );
+  locator.registerLazySingleton<GetDistance>(
+    () => GetDistance(locator<RoutesPort>()),
   );
 
   // ========================================
@@ -121,5 +156,25 @@ Future<void> initDependencies() async {
       analyticsManager: locator<AnalyticsManager>(),
     ),
   );
-}
 
+  /// App Header Notifier - manages app header state
+  locator.registerFactory<AppHeaderNotifier>(
+    () => AppHeaderNotifier(
+      locationService: locator<LocationService>(),
+      analyticsManager: locator<AnalyticsManager>(),
+      currentWeather: locator<GetCurrentWeather>(),
+    ),
+  );
+
+  /// Tourism Spot Calculation Notifier - manages tourism spot calculation state
+  locator.registerFactory<TourismSpotCalculationNotifier>(
+    () => TourismSpotCalculationNotifier(
+      getDistance: locator<GetDistance>(),
+      analyticsManager: locator<AnalyticsManager>(),
+      locationService: locator<LocationService>(),
+    ),
+  );
+
+  locator.registerFactory<BookmarkProvider>(() => BookmarkProvider());
+  locator.registerFactory<ThemeProvider>(() => ThemeProvider());
+}

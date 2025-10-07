@@ -1,113 +1,60 @@
-import 'package:flutter/widgets.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
-import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
-import 'package:lokapandu/features/bookmark/screens/bookmark_screen.dart';
-import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
-import 'package:lokapandu/features/plan/screens/plan_screen.dart';
-import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
-import 'package:lokapandu/features/plan/screens/tour_search_sceen.dart';
-import 'package:lokapandu/features/settings/screens/settings_screen.dart';
-import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
-import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
-import 'package:lokapandu/presentation/home/screens/home_content.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_detail_page.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_page.dart';
-import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_preview_page.dart';
-
 sealed class Routing {
   final String path;
   final String routeName;
-  final Widget Function({dynamic arguments}) pageComponent;
 
-  const Routing(this.path, this.routeName, this.pageComponent);
+  const Routing(this.path, this.routeName);
 }
 
 class SplashRoute extends Routing {
-  SplashRoute() : super('/', 'splash', ({dynamic arguments}) => SplashScreen());
+  const SplashRoute() : super('/', 'splash');
 }
 
 class AuthRoute extends Routing {
-  AuthRoute() : super('/auth', 'auth', ({dynamic arguments}) => AuthScreen());
+  const AuthRoute() : super('/auth', 'auth');
 }
 
 class HomeRoute extends Routing {
-  HomeRoute() : super('/home', 'home', ({dynamic arguments}) => HomeContent());
+  const HomeRoute() : super('/home', 'home');
 }
 
 class TourismSpotRoute extends Routing {
-  TourismSpotRoute()
-    : super(
-        '/tourism_spot',
-        'tourism_spot',
-        ({dynamic arguments}) => TourismSpotPage(),
-      );
+  const TourismSpotRoute() : super('/tourism_spot', 'tourism_spot');
 }
 
 class TourismSpotPreviewRoute extends Routing {
-  TourismSpotPreviewRoute()
-    : super(
-        '/tourism_spot/preview/:id',
-        'tourism_spot.preview',
-        ({dynamic arguments}) => TourismSpotPreviewPage(id: arguments as int),
-      );
+  const TourismSpotPreviewRoute()
+    : super('/tourism_spot/preview/:id', 'tourism_spot.preview');
 }
 
 class TourismSpotDetailRoute extends Routing {
-  TourismSpotDetailRoute()
-    : super(
-        '/tourism_spot/detail',
-        'tourism_spot.detail',
-        ({dynamic arguments}) =>
-            TourismSpotDetailPage(tour: arguments as TourismSpot),
-      );
+  const TourismSpotDetailRoute()
+    : super('/tourism_spot/detail', 'tourism_spot.detail');
 }
 
 class SettingsRoute extends Routing {
-  SettingsRoute()
-    : super('/settings', 'settings', ({dynamic arguments}) => SettingsScreen());
+  const SettingsRoute() : super('/settings', 'settings');
 }
 
 class AiChatRoute extends Routing {
-  AiChatRoute()
-    : super('/ai_chat', 'ai_chat', ({dynamic arguments}) => AiChatScreen());
+  const AiChatRoute() : super('/ai_chat', 'ai_chat');
 }
 
 class BookmarksRoute extends Routing {
-  BookmarksRoute()
-    : super(
-        '/bookmarks',
-        'bookmarks',
-        ({dynamic arguments}) => BookmarkScreen(),
-      );
+  const BookmarksRoute() : super('/bookmarks', 'bookmarks');
 }
 
 class PlanRoute extends Routing {
-  PlanRoute() : super('/plan', 'plan', ({dynamic arguments}) => PlanScreen());
+  const PlanRoute() : super('/plan', 'plan');
 }
 
 class PlanSearchRoute extends Routing {
-  PlanSearchRoute()
-    : super(
-        '/plan/search-tour',
-        'plan.search_tour',
-        ({dynamic arguments}) => TourSearchScreen(),
-      );
+  const PlanSearchRoute() : super('/plan/search-tour', 'plan.search_tour');
 }
 
 class PlanAddRoute extends Routing {
-  PlanAddRoute()
-    : super(
-        '/plan/add-tour',
-        'plan.add_tour',
-        ({dynamic arguments}) => TourPlanEditorScreen(),
-      );
+  const PlanAddRoute() : super('/plan/add-tour', 'plan.add_tour');
 }
 
 class PlanAddNoteRoute extends Routing {
-  PlanAddNoteRoute()
-    : super(
-        '/plan/add-note',
-        'plan.add_note',
-        ({dynamic arguments}) => NoteEditorScreen(),
-      );
+  const PlanAddNoteRoute() : super('/plan/add-note', 'plan.add_note');
 }

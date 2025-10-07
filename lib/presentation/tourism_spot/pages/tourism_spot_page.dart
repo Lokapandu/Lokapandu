@@ -7,6 +7,9 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
+import 'dart:developer' as developer;
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});
@@ -44,11 +47,53 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      /// TODO: REMOVE THIS CODE AFTER IMPLEMENT LOGOUT UI ON SETTINGS SCREEN
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          try {
+            // Show loading indicator
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
+            );
+
+            // Perform logout
+            await context.read<AuthNotifier>().signOut();
+
+            // Close loading dialog
+            if (context.mounted) {
+              Navigator.of(context).pop();
+
+              // Navigate to auth screen
+              context.pushReplacementNamed('auth');
+            }
+          } catch (e) {
+            // Close loading dialog if still open
+            if (context.mounted) {
+              Navigator.of(context).pop();
+
+              // Show error message
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Gagal logout!'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+
+              developer.log('Logout failed: $e', name: 'TourismSpotPage');
+            }
+          }
+        },
+        icon: const Icon(Icons.logout),
+        label: const Text('Logout'),
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const AppHeader(),
+            const AppHeader(title: 'Temukan wisata'),
             const SizedBox(height: 16),
             _buildSearchAndFilter(),
             const SizedBox(height: 16),
@@ -136,8 +181,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                           childAspectRatio: 0.9,
                         ),
                     itemBuilder: (context, index) {
-                      final spot = filteredSpots[index] as TourismSpot;
-
+                      final spot = filteredSpots[index];
 
                       return DestinationCard(
                         tourismSpot: spot,
