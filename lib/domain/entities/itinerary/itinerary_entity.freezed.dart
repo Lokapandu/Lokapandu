@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Itinerary {
 
- int get id; String get name; String? get notes; DateTime get startTime; DateTime get endTime; DateTime get createdAt; TourismSpot? get tourismSpot;
+ String get id; String get name; String? get notes; DateTime get startTime; DateTime get endTime; DateTime get createdAt; TourismSpot? get tourismSpot;
 /// Create a copy of Itinerary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $ItineraryCopyWith<$Res>  {
   factory $ItineraryCopyWith(Itinerary value, $Res Function(Itinerary) _then) = _$ItineraryCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, String? notes, DateTime startTime, DateTime endTime, DateTime createdAt, TourismSpot? tourismSpot
+ String id, String name, String? notes, DateTime startTime, DateTime endTime, DateTime createdAt, TourismSpot? tourismSpot
 });
 
 
@@ -65,7 +65,7 @@ class _$ItineraryCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? notes = freezed,Object? startTime = null,Object? endTime = null,Object? createdAt = null,Object? tourismSpot = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String?,startTime: null == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime,endTime: null == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
@@ -168,7 +168,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String? notes,  DateTime startTime,  DateTime endTime,  DateTime createdAt,  TourismSpot? tourismSpot)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? notes,  DateTime startTime,  DateTime endTime,  DateTime createdAt,  TourismSpot? tourismSpot)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Itinerary() when $default != null:
 return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.createdAt,_that.tourismSpot);case _:
@@ -189,7 +189,7 @@ return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String? notes,  DateTime startTime,  DateTime endTime,  DateTime createdAt,  TourismSpot? tourismSpot)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? notes,  DateTime startTime,  DateTime endTime,  DateTime createdAt,  TourismSpot? tourismSpot)  $default,) {final _that = this;
 switch (_that) {
 case _Itinerary():
 return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.createdAt,_that.tourismSpot);case _:
@@ -209,7 +209,7 @@ return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String? notes,  DateTime startTime,  DateTime endTime,  DateTime createdAt,  TourismSpot? tourismSpot)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? notes,  DateTime startTime,  DateTime endTime,  DateTime createdAt,  TourismSpot? tourismSpot)?  $default,) {final _that = this;
 switch (_that) {
 case _Itinerary() when $default != null:
 return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.createdAt,_that.tourismSpot);case _:
@@ -227,7 +227,7 @@ class _Itinerary implements Itinerary {
   const _Itinerary({required this.id, required this.name, this.notes, required this.startTime, required this.endTime, required this.createdAt, this.tourismSpot});
   
 
-@override final  int id;
+@override final  String id;
 @override final  String name;
 @override final  String? notes;
 @override final  DateTime startTime;
@@ -265,7 +265,7 @@ abstract mixin class _$ItineraryCopyWith<$Res> implements $ItineraryCopyWith<$Re
   factory _$ItineraryCopyWith(_Itinerary value, $Res Function(_Itinerary) _then) = __$ItineraryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, String? notes, DateTime startTime, DateTime endTime, DateTime createdAt, TourismSpot? tourismSpot
+ String id, String name, String? notes, DateTime startTime, DateTime endTime, DateTime createdAt, TourismSpot? tourismSpot
 });
 
 
@@ -285,7 +285,7 @@ class __$ItineraryCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? notes = freezed,Object? startTime = null,Object? endTime = null,Object? createdAt = null,Object? tourismSpot = freezed,}) {
   return _then(_Itinerary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String?,startTime: null == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime,endTime: null == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable

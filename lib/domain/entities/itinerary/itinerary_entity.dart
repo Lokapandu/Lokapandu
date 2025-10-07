@@ -5,7 +5,7 @@ part 'itinerary_entity.freezed.dart';
 @freezed
 abstract class Itinerary with _$Itinerary {
   const factory Itinerary({
-    required int id,
+    required String id,
     required String name,
     String? notes,
     required DateTime startTime,

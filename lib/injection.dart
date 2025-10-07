@@ -4,6 +4,8 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:lokapandu/data/repositories/brick/itinerary_repository_brick_impl.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
+import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
+import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
@@ -57,11 +59,9 @@ Future<void> initDependencies() async {
 
   /// Authentication service - handles Google Sign-In with Supabase
   final googleSignIn = GoogleSignIn.instance;
- 
+
   locator.registerLazySingleton<AuthService>(
-    () => AuthService(
-      googleSignIn: googleSignIn,
-    ),
+    () => AuthService(googleSignIn: googleSignIn),
   );
 
   /// Analytics service - handles Firebase Analytics
@@ -82,7 +82,7 @@ Future<void> initDependencies() async {
   );
 
   locator.registerLazySingleton<ItineraryRepository>(
-    () => ItineraryRepositoryImpl()
+    () => ItineraryRepositoryImpl(),
   );
 
   // ========================================
@@ -106,7 +106,13 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<GetUserItineraries>(
     () => GetUserItineraries(locator<ItineraryRepository>()),
   );
+  locator.registerLazySingleton<CreateUserItineraries>(
+    () => CreateUserItineraries(locator<ItineraryRepository>()),
+  );
 
+  locator.registerLazySingleton<CreateUserItinerariesNote>(
+    () => CreateUserItinerariesNote(locator<ItineraryRepository>()),
+  );
   // ========================================
   // PRESENTATION LAYER
   // ========================================
@@ -133,4 +139,3 @@ Future<void> initDependencies() async {
     ),
   );
 }
-

@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:brick_core/query.dart';
 import 'package:dartz/dartz.dart';
+import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:lokapandu/brick/models/itinerary.model.dart';
 import 'package:lokapandu/brick/models/tourism_image.model.dart';
@@ -69,7 +71,88 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     }
   }
 
-  /// Private helper to map itineraries to entities, fetching and attaching relations.
+  @override
+  Future<Either<Failure, Unit>> createItinerary(userId, itineraryInput) async {
+    try {
+      final itineraryModel = ItineraryModel(
+        id: Uuid().v4(),
+        name: itineraryInput.name,
+        notes: itineraryInput.notes,
+        startTime: itineraryInput.startTime,
+        endTime: itineraryInput.endTime,
+        createdAt: DateTime.now(),
+        tourismSpotId: itineraryInput.tourismSpot,
+      );
+
+      final createdModel = await Repository().upsert<ItineraryModel>(
+        itineraryModel,
+      );
+
+      await Repository().upsert<UserItineraryModel>(
+        UserItineraryModel(
+          id: Uuid().v4(),
+          userId: userId,
+          itinerariesId: createdModel.id,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      return Right(unit);
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ConnectionFailure('Connection error: ${e.message}')),
+      );
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ServerFailure('Unexpected error: ${e.toString()}')),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> createItineraryNote(
+    String userId,
+    CreateItineraryNote itineraryNoteInput,
+  ) async {
+    try {
+      final itineraryModel = ItineraryModel(
+        id: Uuid().v4(),
+        name: itineraryNoteInput.name,
+        notes: itineraryNoteInput.notes,
+        startTime: itineraryNoteInput.startTime,
+        endTime: itineraryNoteInput.endTime,
+        createdAt: DateTime.now(),
+      );
+
+      final createdModel = await Repository().upsert<ItineraryModel>(
+        itineraryModel,
+      );
+
+      await Repository().upsert<UserItineraryModel>(
+        UserItineraryModel(
+          id: Uuid().v4(),
+          userId: userId,
+          itinerariesId: createdModel.id,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      return Right(unit);
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ConnectionFailure('Connection error: ${e.message}')),
+      );
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Future.value(
+        Left(ServerFailure('Unexpected error: ${e.toString()}')),
+      );
+    }
+  }
+
   Future<List<Itinerary>> _toEntitiesWithRelations(
     List<ItineraryModel> itineraries,
   ) async {

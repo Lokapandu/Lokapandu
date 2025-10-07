@@ -8,7 +8,7 @@ import 'package:brick_supabase/brick_supabase.dart';
 class ItineraryModel extends OfflineFirstWithSupabaseModel {
   @Supabase(unique: true)
   @Sqlite(index: true, unique: true)
-  final int id;
+  final String id;
 
   final String name;
   final String? notes;

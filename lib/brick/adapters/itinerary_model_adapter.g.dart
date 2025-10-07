@@ -7,7 +7,7 @@ Future<ItineraryModel> _$ItineraryModelFromSupabase(
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return ItineraryModel(
-    id: data['id'] as int,
+    id: data['id'] as String,
     name: data['name'] as String,
     notes: data['notes'] == null ? null : data['notes'] as String?,
     startTime: DateTime.parse(data['start_time'] as String),
@@ -41,7 +41,7 @@ Future<ItineraryModel> _$ItineraryModelFromSqlite(
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return ItineraryModel(
-    id: data['id'] as int,
+    id: data['id'] as String,
     name: data['name'] as String,
     notes: data['notes'] == null ? null : data['notes'] as String?,
     startTime: DateTime.parse(data['start_time'] as String),
@@ -125,7 +125,7 @@ class ItineraryModelAdapter
       association: false,
       columnName: 'id',
       iterable: false,
-      type: int,
+      type: String,
     ),
     'name': const RuntimeSqliteColumnDefinition(
       association: false,

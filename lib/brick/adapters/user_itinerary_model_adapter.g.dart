@@ -7,9 +7,9 @@ Future<UserItineraryModel> _$UserItineraryModelFromSupabase(
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return UserItineraryModel(
-    id: data['id'] as int,
+    id: data['id'] as String,
     userId: data['user_id'] as String,
-    itinerariesId: data['itineraries_id'] as int,
+    itinerariesId: data['itineraries_id'] as String,
     createdAt: DateTime.parse(data['created_at'] as String),
   );
 }
@@ -33,9 +33,9 @@ Future<UserItineraryModel> _$UserItineraryModelFromSqlite(
   OfflineFirstWithSupabaseRepository? repository,
 }) async {
   return UserItineraryModel(
-    id: data['id'] as int,
+    id: data['id'] as String,
     userId: data['user_id'] as String,
-    itinerariesId: data['itineraries_id'] as int,
+    itinerariesId: data['itineraries_id'] as String,
     createdAt: DateTime.parse(data['created_at'] as String),
   )..primaryKey = data['_brick_id'] as int;
 }
@@ -97,7 +97,7 @@ class UserItineraryModelAdapter
       association: false,
       columnName: 'id',
       iterable: false,
-      type: int,
+      type: String,
     ),
     'userId': const RuntimeSqliteColumnDefinition(
       association: false,
@@ -109,7 +109,7 @@ class UserItineraryModelAdapter
       association: false,
       columnName: 'itineraries_id',
       iterable: false,
-      type: int,
+      type: String,
     ),
     'createdAt': const RuntimeSqliteColumnDefinition(
       association: false,
