@@ -50,11 +50,5 @@ class ThemeProvider extends ChangeNotifier {
   Future<void> save() async {
     final prefs = await PrefsStore.instance;
     await prefs.setBool(_key, _themeMode == ThemeMode.dark);
-    await _analyticsManager.trackEvent(
-      eventName: 'theme_saved',
-      parameters: {
-        'theme_mode': _themeMode == ThemeMode.dark ? 'dark' : 'light',
-      },
-    );
   }
 }
