@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
+import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -48,10 +50,8 @@ class SettingsScreen extends StatelessWidget {
               builder: (context, themeProvider, child) {
                 return Switch(
                   value: themeProvider.isDarkMode,
-                  onChanged: (value) {
-                    // FIX: Gunakan context.read di sini
-                    context.read<ThemeProvider>().toggleTheme();
-                  },
+                  onChanged: (value) =>
+                      context.read<ThemeProvider>().toggleTheme(),
                 );
               },
             ),
@@ -70,11 +70,26 @@ class SettingsScreen extends StatelessWidget {
             subtitle: 'Lihat versi dan informasi aplikasi',
             onTap: () {},
           ),
+          const Divider(height: 48, indent: 24, endIndent: 24),
+          SettingsTile(
+            icon: Icons.logout,
+            title: 'Keluar',
+            subtitle: 'Keluar dari akun Anda',
+            onTap: () => _showLogoutConfirmation(context),
+            iconColor: colorScheme.error,
+            titleColor: colorScheme.error,
+          ),
           const SizedBox(height: 40),
           Center(
-            child: Text(
-              'LokaPandu v1.0.0',
-              style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+            child: Consumer<PackageInfoNotifier>(
+              builder: (context, packageInfoNotifier, child) {
+                return Text(
+                  '${packageInfoNotifier.packageInfo?.appName ?? 'LokaPandu'} v${packageInfoNotifier.packageInfo?.version ?? '1.0.0'}',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.outline,
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -89,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
     final User? auth = Supabase.instance.client.auth.currentUser;
 
     final String picture = auth?.userMetadata?['avatar_url'] ?? '';
-    final String userName = auth?.userMetadata?['full_name'] ?? 'User';
+    final String userName = auth?.userMetadata?['full_name'] ?? '';
     final String userEmail = auth?.email ?? 'user@example.com';
 
     return Padding(
@@ -159,5 +174,116 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: colorScheme.outline,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Icon(Icons.logout, size: 48, color: colorScheme.error),
+              const SizedBox(height: 16),
+              Text(
+                'Konfirmasi Keluar',
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Apakah Anda yakin ingin keluar dari akun Anda?',
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text('Batal', style: textTheme.labelLarge),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async => _performLogout(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.error,
+                        foregroundColor: colorScheme.onError,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Keluar',
+                        style: textTheme.labelLarge?.copyWith(
+                          color: colorScheme.onError,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _performLogout(BuildContext context) async {
+    try {
+      await context.read<AuthNotifier>().signOut();
+      // Close loading indicator first
+      if (context.mounted) {
+        Navigator.of(context).pop();
+        context.pushReplacementNamed(Routing.auth.routeName);
+      }
+    } catch (e) {
+      // Close loading indicator if still showing
+      if (context.mounted) {
+        Navigator.of(context).pop();
+
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal keluar: ${e.toString()}'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 }

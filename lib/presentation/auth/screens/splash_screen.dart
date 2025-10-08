@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/services/firebase_analytics_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -129,9 +130,9 @@ class _SplashScreenState extends State<SplashScreen>
       final isLoggedIn = user != null;
 
       if (isLoggedIn) {
-        context.pushReplacementNamed('home');
+        context.pushReplacementNamed(Routing.home.routeName);
       } else {
-        context.pushReplacementNamed('auth');
+        context.pushReplacementNamed(Routing.auth.routeName);
       }
     }
   }
