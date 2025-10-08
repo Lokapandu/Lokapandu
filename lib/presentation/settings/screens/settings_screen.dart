@@ -74,12 +74,6 @@ class SettingsScreen extends StatelessWidget {
           const Divider(height: 48, indent: 24, endIndent: 24),
           _buildSectionTitle(context, 'Lainnya'),
           SettingsTile(
-            icon: Icons.help_outline,
-            title: 'Bantuan & Dukungan',
-            subtitle: 'Hubungi kami jika ada masalah',
-            onTap: () {},
-          ),
-          SettingsTile(
             icon: Icons.info_outline,
             title: 'Tentang Aplikasi',
             subtitle: 'Lihat versi dan informasi aplikasi',

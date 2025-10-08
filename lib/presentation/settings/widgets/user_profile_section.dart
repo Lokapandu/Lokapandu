@@ -55,13 +55,6 @@ class UserProfileHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.edit_outlined,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
             ],
           );
         },
