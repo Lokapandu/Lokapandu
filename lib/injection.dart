@@ -149,6 +149,13 @@ Future<void> initDependencies() async {
     () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
   );
 
+   locator.registerLazySingleton<GetCurrentWeather>(
+    () => GetCurrentWeather(locator<WeatherPort>()),
+  );
+  locator.registerLazySingleton<GetDistance>(
+    () => GetDistance(locator<RoutesPort>()),
+  );
+
   locator.registerLazySingleton<GetUserItineraries>(
     () => GetUserItineraries(locator<ItineraryRepository>()),
   );
