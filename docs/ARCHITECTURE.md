@@ -356,6 +356,67 @@ TourismSpotRemoteDataSource
 SupabaseService
 ```
 
+## 🧭 Navigation dengan Go Router
+
+### Overview
+Aplikasi menggunakan [Go Router](https://pub.dev/packages/go_router) untuk navigation management yang declarative dan type-safe.
+
+### Route Configuration
+```dart
+// lib/common/routes/app_router.dart
+final GoRouter appRouter = GoRouter(
+  initialLocation: '/home',
+  routes: [
+    GoRoute(
+      path: '/home',
+      name: 'home',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/tourism-spot/:id',
+      name: 'tourism-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return TourismSpotDetailScreen(spotId: id);
+      },
+    ),
+    GoRoute(
+      path: '/ai-chat',
+      name: 'ai-chat',
+      builder: (context, state) => const AiChatScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      name: 'settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
+  ],
+  errorBuilder: (context, state) => const NotFoundScreen(),
+);
+```
+
+### Navigation Patterns
+```dart
+// Type-safe navigation
+context.goNamed('tourism-detail', pathParameters: {'id': spotId});
+
+// Navigation dengan data
+context.pushNamed('ai-chat', extra: {'initialMessage': message});
+
+// Back navigation
+context.pop();
+
+// Replace current route
+context.goNamed('home');
+```
+
+### Benefits
+- **Type Safety**: Compile-time route validation
+- **Deep Linking**: Support untuk deep links dan URL navigation
+- **Declarative**: Route configuration yang mudah dibaca
+- **Web Support**: Full support untuk web navigation
+- **State Preservation**: Automatic state preservation saat navigation
+
 ## 📊 State Management
 
 Menggunakan **Provider** pattern untuk state management:
@@ -458,6 +519,78 @@ abstract class Env {
 flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
 
+## 🧱 Brick Offline-First Architecture
+
+### Overview
+Aplikasi menggunakan [Brick](https://github.com/GetDutchie/brick) untuk implementasi offline-first architecture yang memungkinkan aplikasi berfungsi optimal bahkan tanpa koneksi internet.
+
+### Core Components
+
+#### 1. Brick Repository Pattern
+```dart
+// lib/brick/repositories/
+abstract class OfflineFirstRepository<T> {
+  Future<List<T>> get();
+  Future<T?> upsert(T instance);
+  Future<void> delete(T instance);
+}
+```
+
+#### 2. Data Adapters
+```dart
+// lib/brick/adapters/
+class TourismSpotAdapter extends OfflineFirstWithSupabaseAdapter<TourismSpot> {
+  @override
+  final supabaseTableName = 'tourism_spots';
+  
+  @override
+  Future<TourismSpot> fromSupabase(Map<String, dynamic> data) async {
+    // Convert Supabase data to domain entity
+  }
+  
+  @override
+  Future<Map<String, dynamic>> toSupabase(TourismSpot instance) async {
+    // Convert domain entity to Supabase format
+  }
+}
+```
+
+#### 3. Local Database (SQLite)
+- **Automatic Schema Generation**: Brick generates SQLite schema dari model annotations
+- **Migration Support**: Otomatis handle database migrations
+- **Query Optimization**: Built-in query optimization untuk performa
+
+#### 4. Synchronization Strategy
+- **Bidirectional Sync**: Data sync antara local SQLite dan remote Supabase
+- **Conflict Resolution**: Automatic conflict resolution berdasarkan timestamp
+- **Background Sync**: Sync berjalan di background saat ada koneksi
+- **Retry Mechanism**: Automatic retry untuk failed sync operations
+
+### Data Flow dengan Brick
+
+```
+UI Layer (Presentation)
+    ↓
+Use Cases (Domain)
+    ↓
+Brick Repository (Data)
+    ↓
+┌─────────────────┬─────────────────┐
+│   SQLite        │    Supabase     │
+│   (Local)       │    (Remote)     │
+│   - Fast reads  │    - Source of  │
+│   - Offline     │      truth      │
+│   - Cache       │    - Backup     │
+└─────────────────┴─────────────────┘
+```
+
+### Benefits
+- **Performance**: Data lokal memberikan response time yang cepat
+- **Reliability**: Aplikasi tetap berfungsi saat offline
+- **User Experience**: Seamless experience tanpa loading states
+- **Data Consistency**: Automatic sync memastikan data consistency
+- **Scalability**: Efficient data management untuk large datasets
+
 ## 🌐 External Services
 
 ### Supabase Integration
@@ -480,6 +613,12 @@ class SupabaseService {
 }
 ```
 
+- **Database**: PostgreSQL untuk penyimpanan data utama
+- **Authentication**: User management dan session handling
+- **Storage**: File upload untuk gambar dan media
+- **Real-time**: Subscription untuk update data real-time
+- **Brick Integration**: Sebagai remote data source untuk offline-first architecture
+
 ### Firebase AI Integration
 ```dart
 class FirebaseAIService {
@@ -488,6 +627,10 @@ class FirebaseAIService {
   }
 }
 ```
+
+- **Gemini AI**: Untuk rekomendasi wisata dan chat assistant
+- **Analytics**: Tracking user behavior dan app performance
+- **Crashlytics**: Error reporting dan crash analytics
 
 ## 🧪 Testing Strategy
 

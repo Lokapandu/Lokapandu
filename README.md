@@ -19,7 +19,7 @@ Lokapandu adalah aplikasi mobile yang memungkinkan pengguna untuk menemukan dan 
 
 ## 🏗️ Arsitektur
 
-Proyek ini menggunakan **Clean Architecture** dengan pembagian layer sebagai berikut:
+Proyek ini menggunakan **Clean Architecture** dengan **Brick Offline-First Architecture** untuk pembagian layer sebagai berikut:
 
 ```
 lib/
@@ -31,29 +31,37 @@ lib/
 └── injection.dart  # Dependency injection setup
 ```
 
+### 🧱 Brick Offline-First Architecture
+
+Aplikasi ini menggunakan [Brick](https://github.com/GetDutchie/brick) untuk implementasi offline-first:
+
+- **Local Storage**: SQLite untuk penyimpanan data lokal
+- **Remote Sync**: Otomatis sinkronisasi dengan Supabase
+- **Offline Capability**: Aplikasi tetap berfungsi tanpa koneksi internet
+- **Data Consistency**: Automatic conflict resolution dan data merging
+
+**Keuntungan Brick Architecture:**
+- ⚡ Performa tinggi dengan data lokal
+- 🔄 Sinkronisasi otomatis saat online
+- 📱 Pengalaman pengguna yang konsisten
+- 🛡️ Resilient terhadap koneksi yang tidak stabil
+
 ## 🛠️ Tech Stack
 
-### Framework & Language
-- **Flutter** ^3.9.2
-- **Dart** ^3.9.2
-
-### State Management
-- **Provider** ^6.1.5+1
-
-### Backend & Database
-- **Supabase** ^2.10.1 (Database & Authentication)
-- **Firebase Core** ^4.1.0
-- **Firebase AI** ^3.2.0 (AI recommendations)
-
-### Architecture & Utilities
-- **Get It** ^8.2.0 (Dependency Injection)
-- **Dartz** ^0.10.1 (Functional Programming)
-- **Freezed** ^3.2.3 (Code Generation)
-- **JSON Annotation** ^4.9.0 (JSON Serialization)
-
-### Development Tools
-- **Envied** ^1.2.1 (Environment Variables)
-- **Build Runner** ^2.7.1 (Code Generation)
+- **Framework**: Flutter 3.9.2+
+- **Language**: Dart
+- **State Management**: Provider
+- **Navigation**: Go Router
+- **Backend**: Supabase (Database, Authentication, Storage)
+- **Offline-First**: Brick Architecture with SQLite
+- **AI Integration**: Firebase AI (Gemini)
+- **Firebase Services**: Analytics, Crashlytics, Authentication
+- **Architecture**: Clean Architecture + Brick Offline-First
+- **Code Generation**: Freezed, JSON Serialization
+- **Environment Management**: Envied
+- **Dependency Injection**: GetIt
+- **Maps**: Google Maps Flutter
+- **Location Services**: Location & Geocoding
 
 ## 🚀 Instalasi & Setup
 
@@ -127,23 +135,37 @@ lokapandu/
 │   ├── app.dart            # Main app widget
 │   ├── main.dart           # Entry point
 │   ├── injection.dart      # Dependency injection
+│   ├── brick/              # Brick offline-first configuration
+│   │   ├── adapters/       # Data adapters for Brick
+│   │   ├── db/             # SQLite database setup
+│   │   ├── models/         # Brick models
+│   │   └── repositories/   # Brick repository implementations
 │   ├── common/             # Shared utilities
 │   │   ├── failure.dart    # Error handling
 │   │   └── failure.freezed.dart
 │   ├── data/
 │   │   ├── datasources/    # Remote & local data sources
 │   │   ├── models/         # Data models
+│   │   ├── mappers/        # Data mappers
 │   │   └── repositories/   # Repository implementations
 │   ├── domain/
 │   │   ├── entities/       # Business entities
 │   │   ├── repositories/   # Repository contracts
 │   │   └── usecases/       # Business logic
+│   ├── features/           # Feature-based organization
+│   │   ├── ai_chat/        # AI chat feature
+│   │   ├── bookmark/       # Bookmark feature
+│   │   ├── plan/           # Trip planning feature
+│   │   └── tour/           # Tourism feature
 │   ├── env/
 │   │   └── env.dart        # Environment configuration
 │   └── presentation/
-│       ├── pages/          # UI screens
-│       ├── provider/       # State management
-│       └── widgets/        # Reusable UI components
+│       ├── ai_chat/        # AI chat UI
+│       ├── auth/           # Authentication UI
+│       ├── common/         # Shared UI components
+│       ├── home/           # Home screen
+│       ├── settings/       # Settings UI
+│       └── tourism_spot/   # Tourism spot UI
 ├── test/                   # Unit & widget tests
 ├── .env.example           # Environment variables template
 ├── pubspec.yaml           # Dependencies & project config
