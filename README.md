@@ -1,176 +1,199 @@
-[![Codemagic build status](https://api.codemagic.io/apps/68d21507b129bcfa785c9173/68d21507b129bcfa785c9172/status_badge.svg)](https://codemagic.io/app/68d21507b129bcfa785c9173/68d21507b129bcfa785c9172/latest_build)
+[](https://codemagic.io/app/68d21507b129bcfa785c9173/68d21507b129bcfa785c9172/latest_build)
 
 # Lokapandu
 
-Aplikasi Flutter untuk eksplorasi tempat wisata lokal Indonesia dengan integrasi Firebase dan Supabase.
+A Flutter application for exploring local Indonesian tourist attractions with Firebase and Supabase integration.
 
-## 📱 Tentang Aplikasi
+-----
 
-Lokapandu adalah aplikasi mobile yang memungkinkan pengguna untuk menemukan dan mengeksplorasi berbagai tempat wisata lokal di Indonesia. Aplikasi ini dibangun menggunakan Flutter dengan arsitektur Clean Architecture dan mengintegrasikan Firebase AI serta Supabase sebagai backend.
+## 📱 About The App
 
-## ✨ Fitur Utama
+Lokapandu is a mobile application that allows users to discover and explore various local tourist spots in Indonesia. This app is built using Flutter with Clean Architecture and integrates Firebase AI and Supabase as its backend.
 
-- 🗺️ Eksplorasi tempat wisata berdasarkan lokasi
-- 📍 Informasi detail tempat wisata (alamat, jam operasional, fasilitas)
-- 🖼️ Galeri foto tempat wisata
-- 🔗 Integrasi Google Maps
-- 🤖 AI-powered recommendations (Firebase AI)
-- 📱 Responsive design untuk berbagai ukuran layar
+-----
 
-## 🏗️ Arsitektur
+## ✨ Key Features
 
-Proyek ini menggunakan **Clean Architecture** dengan **Brick Offline-First Architecture** untuk pembagian layer sebagai berikut:
+  - 🗺️ Explore tourist attractions based on location
+  - 📍 Detailed information about attractions (address, operating hours, facilities)
+  - 🖼️ Photo gallery for each tourist spot
+  - 🔗 Google Maps integration
+  - 🤖 AI-powered recommendations (Firebase AI)
+  - 📱 Responsive design for various screen sizes
+
+-----
+
+## 🏗️ Architecture
+
+This project uses **Clean Architecture** with **Brick Offline-First Architecture** for the following layer division:
 
 ```
 lib/
 ├── data/           # Data layer (models, repositories, data sources)
 ├── domain/         # Domain layer (entities, repositories, use cases)
 ├── presentation/   # Presentation layer (pages, widgets, providers)
-├── common/         # Shared utilities dan failure handling
-├── env/           # Environment configuration
+├── common/         # Shared utilities and failure handling
+├── env/            # Environment configuration
 └── injection.dart  # Dependency injection setup
 ```
 
 ### 🧱 Brick Offline-First Architecture
 
-Aplikasi ini menggunakan [Brick](https://github.com/GetDutchie/brick) untuk implementasi offline-first:
+This application uses [Brick](https://github.com/GetDutchie/brick) for its offline-first implementation:
 
-- **Local Storage**: SQLite untuk penyimpanan data lokal
-- **Remote Sync**: Otomatis sinkronisasi dengan Supabase
-- **Offline Capability**: Aplikasi tetap berfungsi tanpa koneksi internet
-- **Data Consistency**: Automatic conflict resolution dan data merging
+  - **Local Storage**: SQLite for local data storage
+  - **Remote Sync**: Automatic synchronization with Supabase
+  - **Offline Capability**: The app remains functional without an internet connection
+  - **Data Consistency**: Automatic conflict resolution and data merging
 
-**Keuntungan Brick Architecture:**
-- ⚡ Performa tinggi dengan data lokal
-- 🔄 Sinkronisasi otomatis saat online
-- 📱 Pengalaman pengguna yang konsisten
-- 🛡️ Resilient terhadap koneksi yang tidak stabil
+**Benefits of Brick Architecture:**
+
+  - ⚡ High performance with local data
+  - 🔄 Automatic synchronization when online
+  - 📱 Consistent user experience
+  - 🛡️ Resilient to unstable connections
+
+-----
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Flutter 3.9.2+
-- **Language**: Dart
-- **State Management**: Provider
-- **Navigation**: Go Router
-- **Backend**: Supabase (Database, Authentication, Storage)
-- **Offline-First**: Brick Architecture with SQLite
-- **AI Integration**: Firebase AI (Gemini)
-- **Firebase Services**: Analytics, Crashlytics, Authentication
-- **Architecture**: Clean Architecture + Brick Offline-First
-- **Code Generation**: Freezed, JSON Serialization
-- **Environment Management**: Envied
-- **Dependency Injection**: GetIt
-- **Maps**: Google Maps Flutter
-- **Location Services**: Location & Geocoding
+  - **Framework**: Flutter 3.9.2+
+  - **Language**: Dart
+  - **State Management**: Provider
+  - **Navigation**: Go Router
+  - **Backend**: Supabase (Database, Authentication, Storage)
+  - **Offline-First**: Brick Architecture with SQLite
+  - **AI Integration**: Firebase AI (Gemini)
+  - **Firebase Services**: Analytics, Crashlytics, Authentication
+  - **Architecture**: Clean Architecture + Brick Offline-First
+  - **Code Generation**: Freezed, JSON Serialization
+  - **Environment Management**: Envied
+  - **Dependency Injection**: GetIt
+  - **Maps**: Google Maps Flutter
+  - **Location Services**: Location & Geocoding
 
-## 🚀 Instalasi & Setup
+-----
+
+## 🚀 Installation & Setup
 
 ### Prerequisites
 
-Pastikan Anda telah menginstall:
-- [Flutter SDK](https://flutter.dev/docs/get-started/install) (versi 3.9.2 atau lebih baru)
-- [Dart SDK](https://dart.dev/get-dart) (versi 3.9.2 atau lebih baru)
-- [Android Studio](https://developer.android.com/studio) atau [VS Code](https://code.visualstudio.com/)
-- [Git](https://git-scm.com/)
+Make sure you have installed:
 
-### Langkah Instalasi
+  - [Flutter SDK](https://flutter.dev/docs/get-started/install) (version 3.9.2 or newer)
+  - [Dart SDK](https://dart.dev/get-dart) (version 3.9.2 or newer)
+  - [Android Studio](https://developer.android.com/studio) or [VS Code](https://code.visualstudio.com/)
+  - [Git](https://git-scm.com/)
 
-1. **Clone repository**
-   ```bash
-   git clone https://github.com/your-username/lokapandu.git
-   cd lokapandu
-   ```
+### Installation Steps
 
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
+1.  **Clone the repository**
 
-3. **Setup Environment Variables**
-   ```bash
-   # Copy file .env.example ke .env
-   cp .env.example .env
-   
-   # Edit file .env dan isi dengan konfigurasi Anda
-   SUPABASE_URL=your-supabase-url
-   SUPABASE_KEY=your-supabase-key
-   ```
+    ```bash
+    git clone https://github.com/your-username/lokapandu.git
+    cd lokapandu
+    ```
 
-4. **Setup Firebase**
-   - Buat project baru di [Firebase Console](https://console.firebase.google.com/)
-   - Download `google-services.json` untuk Android dan letakkan di `android/app/`
-   - Download `GoogleService-Info.plist` untuk iOS dan letakkan di `ios/Runner/`
-   - Jalankan Firebase CLI untuk konfigurasi:
-     ```bash
-     firebase login
-     flutterfire configure
-     ```
+2.  **Install dependencies**
 
-5. **Setup Supabase**
-   - Buat project baru di [Supabase](https://supabase.com/)
-   - Dapatkan URL dan anon key dari dashboard Supabase
-   - Update file `.env` dengan kredensial Supabase Anda
+    ```bash
+    flutter pub get
+    ```
 
-6. **Generate Code**
-   ```bash
-   flutter packages pub run build_runner build --delete-conflicting-outputs
-   ```
+3.  **Setup Environment Variables**
 
-7. **Run Application**
-   ```bash
-   # Debug mode
-   flutter run
-   
-   # Release mode
-   flutter run --release
-   ```
+    ```bash
+    # Copy the .env.example file to .env
+    cp .env.example .env
 
-## 📁 Struktur Project
+    # Edit the .env file and fill it with your configuration
+    SUPABASE_URL=your-supabase-url
+    SUPABASE_KEY=your-supabase-key
+    ```
+
+4.  **Setup Firebase**
+
+      - Create a new project in the [Firebase Console](https://console.firebase.google.com/)
+      - Download `google-services.json` for Android and place it in `android/app/`
+      - Download `GoogleService-Info.plist` for iOS and place it in `ios/Runner/`
+      - Run the Firebase CLI for configuration:
+        ```bash
+        firebase login
+        flutterfire configure
+        ```
+
+5.  **Setup Supabase**
+
+      - Create a new project on [Supabase](https://supabase.com/)
+      - Get the URL and anon key from your Supabase dashboard
+      - Update the `.env` file with your Supabase credentials
+
+6.  **Generate Code**
+
+    ```bash
+    flutter packages pub run build_runner build --delete-conflicting-outputs
+    ```
+
+7.  **Run the Application**
+
+    ```bash
+    # Debug mode
+    flutter run
+
+    # Release mode
+    flutter run --release
+    ```
+
+-----
+
+## 📁 Project Structure
 
 ```
 lokapandu/
-├── android/                 # Android-specific files
-├── ios/                     # iOS-specific files
+├── android/                   # Android-specific files
+├── ios/                       # iOS-specific files
 ├── lib/
-│   ├── app.dart            # Main app widget
-│   ├── main.dart           # Entry point
-│   ├── injection.dart      # Dependency injection
-│   ├── brick/              # Brick offline-first configuration
-│   │   ├── adapters/       # Data adapters for Brick
-│   │   ├── db/             # SQLite database setup
-│   │   ├── models/         # Brick models
-│   │   └── repositories/   # Brick repository implementations
-│   ├── common/             # Shared utilities
-│   │   ├── failure.dart    # Error handling
+│   ├── app.dart             # Main app widget
+│   ├── main.dart            # Entry point
+│   ├── injection.dart       # Dependency injection
+│   ├── brick/               # Brick offline-first configuration
+│   │   ├── adapters/        # Data adapters for Brick
+│   │   ├── db/              # SQLite database setup
+│   │   ├── models/          # Brick models
+│   │   └── repositories/    # Brick repository implementations
+│   ├── common/              # Shared utilities
+│   │   ├── failure.dart     # Error handling
 │   │   └── failure.freezed.dart
 │   ├── data/
-│   │   ├── datasources/    # Remote & local data sources
-│   │   ├── models/         # Data models
-│   │   ├── mappers/        # Data mappers
-│   │   └── repositories/   # Repository implementations
+│   │   ├── datasources/     # Remote & local data sources
+│   │   ├── models/          # Data models
+│   │   ├── mappers/         # Data mappers
+│   │   └── repositories/    # Repository implementations
 │   ├── domain/
-│   │   ├── entities/       # Business entities
-│   │   ├── repositories/   # Repository contracts
-│   │   └── usecases/       # Business logic
-│   ├── features/           # Feature-based organization
-│   │   ├── ai_chat/        # AI chat feature
-│   │   ├── bookmark/       # Bookmark feature
-│   │   ├── plan/           # Trip planning feature
-│   │   └── tour/           # Tourism feature
+│   │   ├── entities/        # Business entities
+│   │   ├── repositories/    # Repository contracts
+│   │   └── usecases/        # Business logic
+│   ├── features/            # Feature-based organization
+│   │   ├── ai_chat/         # AI chat feature
+│   │   ├── bookmark/        # Bookmark feature
+│   │   ├── plan/            # Trip planning feature
+│   │   └── tour/            # Tourism feature
 │   ├── env/
-│   │   └── env.dart        # Environment configuration
+│   │   └── env.dart         # Environment configuration
 │   └── presentation/
-│       ├── ai_chat/        # AI chat UI
-│       ├── auth/           # Authentication UI
-│       ├── common/         # Shared UI components
-│       ├── home/           # Home screen
-│       ├── settings/       # Settings UI
-│       └── tourism_spot/   # Tourism spot UI
-├── test/                   # Unit & widget tests
-├── .env.example           # Environment variables template
-├── pubspec.yaml           # Dependencies & project config
-└── README.md              # Project documentation
+│       ├── ai_chat/         # AI chat UI
+│       ├── auth/            # Authentication UI
+│       ├── common/          # Shared UI components
+│       ├── home/            # Home screen
+│       ├── settings/        # Settings UI
+│       └── tourism_spot/    # Tourism spot UI
+├── test/                      # Unit & widget tests
+├── .env.example             # Environment variables template
+├── pubspec.yaml             # Dependencies & project config
+└── README.md                # Project documentation
 ```
+
+-----
 
 ## 🧪 Testing
 
@@ -181,9 +204,11 @@ flutter test
 # Run tests with coverage
 flutter test --coverage
 
-# Run specific test file
+# Run a specific test file
 flutter test test/widget_test.dart
 ```
+
+-----
 
 ## 📱 Build & Deploy
 
@@ -193,7 +218,7 @@ flutter test test/widget_test.dart
 # Build APK
 flutter build apk --release
 
-# Build App Bundle (untuk Google Play Store)
+# Build App Bundle (for Google Play Store)
 flutter build appbundle --release
 ```
 
@@ -204,55 +229,65 @@ flutter build appbundle --release
 flutter build ios --release
 ```
 
+-----
+
 ## 🔧 Development
 
 ### Code Generation
 
-Proyek ini menggunakan code generation untuk model dan serialization:
+This project uses code generation for models and serialization:
 
 ```bash
-# Generate code sekali
+# Generate code once
 flutter packages pub run build_runner build
 
-# Watch mode (auto-generate saat file berubah)
+# Watch mode (auto-generates when files change)
 flutter packages pub run build_runner watch
 
-# Clean dan rebuild
+# Clean and rebuild
 flutter packages pub run build_runner build --delete-conflicting-outputs
 ```
 
 ### Environment Variables
 
-Gunakan file `.env` untuk konfigurasi environment:
+Use the `.env` file for environment configuration:
 
 ```env
 SUPABASE_URL=your-supabase-url
 SUPABASE_KEY=your-supabase-key
 ```
 
+-----
+
 ## 🤝 Contributing
 
-Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk panduan kontribusi.
+Please read [CONTRIBUTING.md](https://www.google.com/search?q=CONTRIBUTING.md) for contribution guidelines.
+
+-----
 
 ## 📄 License
 
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+This project is licensed under the [MIT License](https://www.google.com/search?q=LICENSE).
+
+-----
 
 ## 📞 Support
 
-Jika Anda mengalami masalah atau memiliki pertanyaan:
+If you encounter any issues or have questions:
 
-1. Cek [Issues](https://github.com/your-username/lokapandu/issues) yang sudah ada
-2. Buat issue baru jika belum ada
-3. Hubungi tim development
+1.  Check existing [Issues](https://github.com/your-username/lokapandu/issues)
+2.  Create a new issue if one doesn't already exist
+3.  Contact the development team
+
+-----
 
 ## 🙏 Acknowledgments
 
-- [Flutter Team](https://flutter.dev/) untuk framework yang luar biasa
-- [Supabase](https://supabase.com/) untuk backend-as-a-service
-- [Firebase](https://firebase.google.com/) untuk AI dan analytics
-- Komunitas Flutter Indonesia
+  - [Flutter Team](https://flutter.dev/) for the amazing framework
+  - [Supabase](https://supabase.com/) for the backend-as-a-service
+  - [Firebase](https://firebase.google.com/) for AI and analytics
+  - The Flutter Indonesia Community
 
----
+-----
 
-**Happy Coding! 🚀**
+**Happy Coding\! 🚀**
