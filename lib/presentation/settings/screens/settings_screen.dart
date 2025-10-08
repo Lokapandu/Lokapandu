@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -18,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: colorScheme.surface,
         scrolledUnderElevation: 4.0,
-        shadowColor: theme.shadowColor.withOpacity(0.1),
+        shadowColor: theme.shadowColor.withValues(alpha: .1),
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Text(
@@ -36,7 +38,7 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.bookmark_border,
             title: 'Bookmark',
             subtitle: 'Lihat daftar wisata tersimpan',
-            onTap: () => context.push('/bookmarks'),
+            onTap: () => context.push(Routing.bookmarks.path),
           ),
           SettingsTile(
             icon: Icons.dark_mode_outlined,
@@ -84,24 +86,33 @@ class SettingsScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final User? auth = Supabase.instance.client.auth.currentUser;
 
-    const String userName = 'Ayu';
-    const String userEmail = 'Ayu@example.com';
+    final String picture = auth?.userMetadata?['avatar_url'] ?? '';
+    final String userName = auth?.userMetadata?['full_name'] ?? 'User';
+    final String userEmail = auth?.email ?? 'user@example.com';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 32,
-            backgroundColor: colorScheme.primaryContainer,
-            child: Text(
-              userName.isNotEmpty ? userName[0] : 'U',
-              style: textTheme.headlineSmall?.copyWith(
-                color: colorScheme.onPrimaryContainer,
-              ),
-            ),
-          ),
+          picture.isNotEmpty
+              ? CircleAvatar(
+                  radius: 32,
+                  child: ClipOval(
+                    child: Image.network(picture, fit: BoxFit.cover),
+                  ),
+                )
+              : CircleAvatar(
+                  radius: 32,
+                  backgroundColor: colorScheme.primaryContainer,
+                  child: Text(
+                    userName.isNotEmpty ? userName[0] : 'U',
+                    style: textTheme.headlineSmall?.copyWith(
+                      color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
