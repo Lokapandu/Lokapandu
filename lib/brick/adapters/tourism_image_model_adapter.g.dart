@@ -8,11 +8,7 @@ Future<TourismImageModel> _$TourismImageModelFromSupabase(
 }) async {
   return TourismImageModel(
     id: data['id'] as int,
-    tourismSpot: await TourismSpotModelAdapter().fromSupabase(
-      data['tourism_spot'],
-      provider: provider,
-      repository: repository,
-    ),
+    tourismSpotId: data['tourism_spot_id'] as int,
     label: data['label'] as String,
     imageUrl: data['image_url'] as String,
     createdAt: DateTime.parse(data['created_at'] as String),
@@ -26,11 +22,6 @@ Future<Map<String, dynamic>> _$TourismImageModelToSupabase(
 }) async {
   return {
     'id': instance.id,
-    'tourism_spot': await TourismSpotModelAdapter().toSupabase(
-      instance.tourismSpot,
-      provider: provider,
-      repository: repository,
-    ),
     'tourism_spot_id': instance.tourismSpotId,
     'label': instance.label,
     'image_url': instance.imageUrl,
@@ -45,13 +36,7 @@ Future<TourismImageModel> _$TourismImageModelFromSqlite(
 }) async {
   return TourismImageModel(
     id: data['id'] as int,
-    tourismSpot: (await repository!.getAssociation<TourismSpotModel>(
-      Query.where(
-        'primaryKey',
-        data['tourism_spot_TourismSpotModel_brick_id'] as int,
-        limit1: true,
-      ),
-    ))!.first,
+    tourismSpotId: data['tourism_spot_id'] as int,
     label: data['label'] as String,
     imageUrl: data['image_url'] as String,
     createdAt: DateTime.parse(data['created_at'] as String),
@@ -65,12 +50,7 @@ Future<Map<String, dynamic>> _$TourismImageModelToSqlite(
 }) async {
   return {
     'id': instance.id,
-    'tourism_spot_TourismSpotModel_brick_id':
-        instance.tourismSpot.primaryKey ??
-        await provider.upsert<TourismSpotModel>(
-          instance.tourismSpot,
-          repository: repository,
-        ),
+    'tourism_spot_id': instance.tourismSpotId,
     'label': instance.label,
     'image_url': instance.imageUrl,
     'created_at': instance.createdAt.toIso8601String(),
@@ -91,13 +71,6 @@ class TourismImageModelAdapter
     'id': const RuntimeSupabaseColumnDefinition(
       association: false,
       columnName: 'id',
-    ),
-    'tourismSpot': const RuntimeSupabaseColumnDefinition(
-      association: true,
-      columnName: 'tourism_spot',
-      associationType: TourismSpotModel,
-      associationIsNullable: false,
-      foreignKey: 'tourism_spot_id',
     ),
     'tourismSpotId': const RuntimeSupabaseColumnDefinition(
       association: false,
@@ -134,11 +107,11 @@ class TourismImageModelAdapter
       iterable: false,
       type: int,
     ),
-    'tourismSpot': const RuntimeSqliteColumnDefinition(
-      association: true,
-      columnName: 'tourism_spot_TourismSpotModel_brick_id',
+    'tourismSpotId': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'tourism_spot_id',
       iterable: false,
-      type: TourismSpotModel,
+      type: int,
     ),
     'label': const RuntimeSqliteColumnDefinition(
       association: false,

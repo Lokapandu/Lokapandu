@@ -9,8 +9,8 @@ import 'package:lokapandu/data/mappers/supabase_tourism_image_mapper.dart';
 import 'package:lokapandu/data/mappers/supabase_tourism_spot_mapper.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
 import 'package:lokapandu/data/models/tourism_spot_model.dart';
-import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 
 class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lokapandu/common/errors/failure.dart';
-import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
-import 'package:lokapandu/domain/usecases/get_tourism_spot_detail.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.dart';
 
 class TourismSpotDetailNotifier extends ChangeNotifier {
   final GetTourismSpotDetail _getTourismSpotDetail;
@@ -62,10 +62,11 @@ class TourismSpotDetailNotifier extends ChangeNotifier {
 
   //TODO: Implement more end-user friendly error message. Keep this as is for now.
   void _handleFailure(Failure failure) {
-    failure.when(
+    failure.maybeWhen(
       server: (message) => _errorMessage = 'Server Error: $message',
       connection: (message) => _errorMessage = 'Connection Error: $message',
       database: (message) => _errorMessage = 'Database Error: $message',
+      orElse: () => _errorMessage = 'Unknown Error',
     );
   }
 

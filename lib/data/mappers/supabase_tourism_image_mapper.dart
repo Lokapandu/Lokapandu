@@ -1,12 +1,12 @@
 import 'package:lokapandu/data/models/tourism_image_model.dart';
-import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 // Extension to convert TourismImageModel (data layer) to TourismImage (domain layer)
 extension SupabaseTourismImageModelMapper on TourismImageModel {
-  TourismImage toEntity(TourismSpot tourismSpot) => TourismImage(
+  TourismImage toEntity() => TourismImage(
     id: id,
-    tourismSpot: tourismSpot,
+    tourismSpotId: tourismSpotId,
     label: label,
     imageUrl: imageUrl,
     createdAt: createdAt,
@@ -20,7 +20,7 @@ extension SupabaseTourismImageEntityMapper on TourismImage {
     label: label,
     imageUrl: imageUrl,
     createdAt: createdAt,
-    tourismSpotId: tourismSpot.id,
+    tourismSpotId: tourismSpotId,
   );
 }
 
@@ -32,6 +32,6 @@ extension SupabaseTourismImageModelListMapper on List<TourismImageModel> {
         if (spot == null) {
           throw Exception('Tourism spot not found for image ${image.id}');
         }
-        return image.toEntity(spot);
+        return image.toEntity();
       }).toList();
 }

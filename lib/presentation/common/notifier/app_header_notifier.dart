@@ -162,10 +162,11 @@ class AppHeaderNotifier extends ChangeNotifier {
   }
 
   void _handleFailure(Failure failure) {
-    final errorMessage = failure.when(
+    final errorMessage = failure.maybeWhen(
       server: (String message) => 'Server error: $message',
       connection: (String message) => 'Koneksi bermasalah: $message',
       database: (String message) => 'Database error: $message',
+      orElse: () => 'Error tidak diketahui',
     );
 
     dev.log('🌡️ Weather failure: $errorMessage', name: 'AppHeaderNotifier');

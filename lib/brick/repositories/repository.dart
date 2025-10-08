@@ -57,9 +57,45 @@ class Repository extends OfflineFirstWithSupabaseRepository {
 
   Future<List<TModel>?> getAll<TModel extends OfflineFirstWithSupabaseModel>({
     Query? query,
-    OfflineFirstGetPolicy policy = OfflineFirstGetPolicy.awaitRemote,
+    OfflineFirstGetPolicy policy =
+        OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
   }) async {
     final results = await super.get<TModel>(policy: policy, query: query);
     return results.isNotEmpty ? results : null;
+  }
+
+  Future<TModel?> getOne<TModel extends OfflineFirstWithSupabaseModel>({
+    Query? query,
+    OfflineFirstGetPolicy policy =
+        OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+  }) async {
+    final results = await get<TModel>(policy: policy, query: query);
+    return results.isNotEmpty ? results.first : null;
+  }
+
+  Future<TModel> upsertOne<TModel extends OfflineFirstWithSupabaseModel>(
+    TModel instance, {
+    Query? query,
+    OfflineFirstUpsertPolicy policy = OfflineFirstUpsertPolicy.requireRemote,
+  }) async {
+    final results = await super.upsert<TModel>(
+      instance,
+      policy: policy,
+      query: query,
+    );
+    return results;
+  }
+
+  Future<bool> deleteOne<TModel extends OfflineFirstWithSupabaseModel>(
+    TModel instance, {
+    Query? query,
+    OfflineFirstDeletePolicy policy = OfflineFirstDeletePolicy.requireRemote,
+  }) async {
+    final results = await super.delete<TModel>(
+      instance,
+      policy: policy,
+      query: query,
+    );
+    return results;
   }
 }

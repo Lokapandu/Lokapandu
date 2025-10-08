@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:provider/provider.dart';
 

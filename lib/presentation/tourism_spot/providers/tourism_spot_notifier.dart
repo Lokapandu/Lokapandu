@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lokapandu/common/errors/failure.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
-import 'package:lokapandu/domain/usecases/get_tourism_spot_list.dart';
-import 'package:lokapandu/domain/usecases/search_tourism_spots.dart';
-import 'package:lokapandu/domain/usecases/get_tourism_spots_by_category.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
+import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
+import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
+import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
 
 class TourismSpotNotifier extends ChangeNotifier {
   final GetTourismSpotList _getTourismSpotList;
@@ -94,10 +94,11 @@ class TourismSpotNotifier extends ChangeNotifier {
   }
 
   void _handleFailure(Failure failure) {
-    failure.when(
+    failure.maybeWhen(
       server: (message) => _errorMessage = 'Server Error: $message',
       connection: (message) => _errorMessage = 'Connection Error: $message',
       database: (message) => _errorMessage = 'Database Error: $message',
+      orElse: () => _errorMessage = 'Unknown Error',
     );
   }
 
