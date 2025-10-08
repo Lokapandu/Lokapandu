@@ -1,10 +1,6 @@
 // lib/features/tour_detail/screens/tour_detail_screen.dart
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
-import 'package:provider/provider.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import '../widgets/about_section.dart';
 import '../widgets/action_button_section.dart';
 import '../widgets/facilities_section.dart';

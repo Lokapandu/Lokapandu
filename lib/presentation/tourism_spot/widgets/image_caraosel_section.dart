@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:lokapandu/domain/entities/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
 
 class ImageCarouselSection extends StatelessWidget {
   final List<TourismImage> images;

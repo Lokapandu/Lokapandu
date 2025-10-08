@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
-import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -8,9 +7,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
-import 'dart:developer' as developer;
+
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});
