@@ -10,11 +10,25 @@ import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 
+/// Use case for editing an existing user itinerary.
+///
+/// This class handles the business logic for editing an itinerary,
+/// including fetching the existing data, validating the new data, and
+/// checking for scheduling conflicts.
 class EditUserItineraries {
   final ItineraryRepository repository;
 
   EditUserItineraries(this.repository);
 
+  /// Executes the use case to edit an itinerary.
+  ///
+  /// This method performs several validation checks before attempting to edit
+  /// the itinerary. If any validation fails, it returns a [Failure].
+  /// Otherwise, it calls the repository to edit the itinerary and returns
+  /// a [Unit] on success.
+  ///
+  /// [itineraryInput] The itinerary data to be edited. Only non-null fields
+  /// will be updated.
   Future<Either<Failure, Unit>> execute(EditItinerary itineraryInput) async {
     try {
       final existingItineraryResults = await Repository()

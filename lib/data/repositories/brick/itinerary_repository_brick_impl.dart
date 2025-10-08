@@ -270,7 +270,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       if (itinerary.tourismSpotId != null) {
         final tourismSpotResult = await Repository().getAll<TourismSpotModel>(
           query: Query.where('id', itinerary.tourismSpotId),
-          policy: OfflineFirstGetPolicy.awaitRemote,
+          policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
         );
 
         if (tourismSpotResult != null && tourismSpotResult.isNotEmpty) {
@@ -279,7 +279,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
           final tourismImageResults = await Repository()
               .getAll<TourismImageModel>(
                 query: Query.where('tourismSpotId', tourismSpotModel.id),
-                policy: OfflineFirstGetPolicy.awaitRemote,
+                policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
               );
 
           final tourismImageEntities =
