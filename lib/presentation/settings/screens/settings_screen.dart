@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
+import 'package:lokapandu/presentation/settings/widgets/user_profile_section.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -33,7 +33,7 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         children: [
-          _buildUserProfileHeader(context),
+          UserProfileHeader(),
           const Divider(height: 48, indent: 24, endIndent: 24),
           _buildSectionTitle(context, 'Preferensi'),
           SettingsTile(
@@ -90,72 +90,6 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 );
               },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildUserProfileHeader(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-    final User? auth = Supabase.instance.client.auth.currentUser;
-
-    final String picture = auth?.userMetadata?['avatar_url'] ?? '';
-    final String userName = auth?.userMetadata?['full_name'] ?? '';
-    final String userEmail = auth?.email ?? 'user@example.com';
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Row(
-        children: [
-          picture.isNotEmpty
-              ? CircleAvatar(
-                  radius: 32,
-                  child: ClipOval(
-                    child: Image.network(picture, fit: BoxFit.cover),
-                  ),
-                )
-              : CircleAvatar(
-                  radius: 32,
-                  backgroundColor: colorScheme.primaryContainer,
-                  child: Text(
-                    userName.isNotEmpty ? userName[0] : 'U',
-                    style: textTheme.headlineSmall?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  userName,
-                  style: textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  userEmail,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.edit_outlined,
-              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ],

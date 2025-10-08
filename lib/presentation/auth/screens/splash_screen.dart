@@ -21,15 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    super.initState();
-
-    // Track splash screen page view
-    FirebaseAnalyticsService().trackPageView(
-      screenName: 'splash',
-      screenClass: 'SplashScreen',
-      parameters: {'entry_time': DateTime.now().toIso8601String()},
-    );
-
+    super.initState();   
     // Background zoom animation controller
     _backgroundController = AnimationController(
       duration: const Duration(seconds: 3),
