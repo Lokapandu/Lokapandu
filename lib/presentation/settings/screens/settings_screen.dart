@@ -79,7 +79,6 @@ class SettingsScreen extends StatelessWidget {
             subtitle: 'Lihat versi dan informasi aplikasi',
             onTap: () => context.push('/settings/about'),
           ),
-          const Divider(height: 48, indent: 24, endIndent: 24),
           SettingsTile(
             icon: Icons.logout,
             title: 'Keluar',
@@ -93,7 +92,7 @@ class SettingsScreen extends StatelessWidget {
             child: Consumer<PackageInfoNotifier>(
               builder: (context, packageInfoNotifier, child) {
                 return Text(
-                  '${packageInfoNotifier.packageInfo?.appName ?? 'LokaPandu'} v${packageInfoNotifier.packageInfo?.version ?? '1.0.0'}',
+                  'LokaPandu v${packageInfoNotifier.packageInfo?.version ?? '1.0.0'}',
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.outline,
                   ),
