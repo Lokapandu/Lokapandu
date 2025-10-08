@@ -20,6 +20,28 @@ final schema = Schema(
   generatorVersion: 1,
   tables: <SchemaTable>{
     SchemaTable(
+      'ItineraryModel',
+      columns: <SchemaColumn>{
+        SchemaColumn(
+          '_brick_id',
+          Column.integer,
+          autoincrement: true,
+          nullable: false,
+          isPrimaryKey: true,
+        ),
+        SchemaColumn('id', Column.varchar, unique: true),
+        SchemaColumn('name', Column.varchar),
+        SchemaColumn('notes', Column.varchar),
+        SchemaColumn('start_time', Column.datetime),
+        SchemaColumn('end_time', Column.datetime),
+        SchemaColumn('created_at', Column.datetime),
+        SchemaColumn('tourism_spot_id', Column.integer),
+      },
+      indices: <SchemaIndex>{
+        SchemaIndex(columns: ['id'], unique: true),
+      },
+    ),
+    SchemaTable(
       'TourismImageModel',
       columns: <SchemaColumn>{
         SchemaColumn(
@@ -63,28 +85,6 @@ final schema = Schema(
         SchemaColumn('maps_link', Column.varchar),
         SchemaColumn('facilities', Column.varchar),
         SchemaColumn('created_at', Column.datetime),
-      },
-      indices: <SchemaIndex>{
-        SchemaIndex(columns: ['id'], unique: true),
-      },
-    ),
-    SchemaTable(
-      'ItineraryModel',
-      columns: <SchemaColumn>{
-        SchemaColumn(
-          '_brick_id',
-          Column.integer,
-          autoincrement: true,
-          nullable: false,
-          isPrimaryKey: true,
-        ),
-        SchemaColumn('id', Column.varchar, unique: true),
-        SchemaColumn('name', Column.varchar),
-        SchemaColumn('notes', Column.varchar),
-        SchemaColumn('start_time', Column.datetime),
-        SchemaColumn('end_time', Column.datetime),
-        SchemaColumn('created_at', Column.datetime),
-        SchemaColumn('tourism_spot_id', Column.integer),
       },
       indices: <SchemaIndex>{
         SchemaIndex(columns: ['id'], unique: true),

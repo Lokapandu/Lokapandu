@@ -21,6 +21,125 @@ import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class ItineraryRepositoryImpl implements ItineraryRepository {
+  static const int _bufferTimeMinutes = 1;
+  
+  @override
+  Future<Either<Failure, Itinerary>> getItineraryById(String itineraryId) async {
+    try {
+      final itineraryResults = await Repository().getAll<ItineraryModel>(
+        query: Query.where('id', itineraryId),
+        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      );
+
+      if (itineraryResults == null || itineraryResults.isEmpty) {
+        return Left(ServerFailure('Itinerary not found'));
+      }
+
+      final itineraryModel = itineraryResults.first;
+      final itineraryEntities = await _toEntitiesWithRelations([itineraryModel]);
+      
+      return Right(itineraryEntities.first);
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Left(ConnectionFailure('Connection error: ${e.message}'));
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> getUserIdByItineraryId(String itineraryId) async {
+    try {
+      final userItineraryResults = await Repository().getAll<UserItineraryModel>(
+        query: Query.where('itinerariesId', itineraryId),
+        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      );
+
+      if (userItineraryResults == null || userItineraryResults.isEmpty) {
+        return Left(ServerFailure('User itinerary association not found'));
+      }
+
+      return Right(userItineraryResults.first.userId);
+    } on ConnectionException catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Left(ConnectionFailure('Connection error: ${e.message}'));
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkTourismSpotExists(int tourismSpotId) async {
+    try {
+      final tourismSpotResult = await Repository().getAll<TourismSpotModel>(
+        query: Query.where('id', tourismSpotId),
+      );
+
+      if (tourismSpotResult == null || tourismSpotResult.isEmpty) {
+        return Right(false);
+      }
+
+      return Right(true);
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Left(ServerFailure('Error checking tourism spot: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkSchedulingConflicts(
+    String userId,
+    DateTime startTime,
+    DateTime endTime, [
+    String? excludeItineraryId,
+  ]) async {
+    try {
+      final userItineraryResults = await Repository().getAll<UserItineraryModel>(
+        query: Query.where('userId', userId),
+        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      );
+
+      if (userItineraryResults == null || userItineraryResults.isEmpty) {
+        return Right(false);
+      }
+
+      final itineraryIds = userItineraryResults.map((e) => e.itinerariesId).toList();
+
+      if (itineraryIds.isEmpty) return Right(false);
+
+      final itineraries = <ItineraryModel>[];
+
+      for (final id in itineraryIds) {
+        final result = await Repository().getAll<ItineraryModel>(
+          query: Query.where('id', id),
+        );
+        if (result != null && result.isNotEmpty) {
+          itineraries.add(result.first);
+        }
+      }
+
+      if (itineraries.isEmpty) return Right(false);
+
+      final bufferedStartTime = startTime.subtract(Duration(minutes: _bufferTimeMinutes));
+      final bufferedEndTime = endTime.add(Duration(minutes: _bufferTimeMinutes));
+
+      for (final itinerary in itineraries) {
+        if (excludeItineraryId != null && itinerary.id == excludeItineraryId) continue;
+
+        if (bufferedStartTime.isBefore(itinerary.endTime) &&
+            bufferedEndTime.isAfter(itinerary.startTime)) {
+          return Right(true);
+        }
+      }
+
+      return Right(false);
+    } catch (e) {
+      developer.log(e.toString(), name: "Itinerary Repository");
+      return Left(ServerFailure('Error checking scheduling conflicts: ${e.toString()}'));
+    }
+  }
   @override
   Future<Either<Failure, List<Itinerary>>> getUserItineraries(
     String userId,

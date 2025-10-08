@@ -1,27 +1,28 @@
 import 'package:dartz/dartz.dart';
-import 'package:lokapandu/brick/models/itinerary.model.dart';
-import 'package:lokapandu/brick/models/tourism_spot.model.dart';
-import 'package:lokapandu/brick/models/user_itinerary.model.dart';
-import 'package:lokapandu/brick/repositories/repository.dart';
 import 'dart:developer' as developer;
 import 'package:lokapandu/common/errors/failure.dart';
-import 'package:brick_offline_first/brick_offline_first.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
+import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 
 class ItineraryValidators {
   static const int _maxNameLength = 35;
   static const int _maxNotesLength = 250;
   static const int _bufferTimeMinutes = 1;
 
-  static Either<Failure, Unit> validateTimeRange(DateTime startTime, DateTime endTime) {
+  final ItineraryRepository _repository;
+
+  ItineraryValidators(this._repository);
+  
+
+  Either<Failure, Unit> validateTimeRange(DateTime startTime, DateTime endTime) {
     if (startTime.isAfter(endTime)) {
       return Left(InvalidTimeRangeFailure('Start time must be before end time'));
     }
     return Right(unit);
   }
 
-  static Either<Failure, Unit> validateFutureTime(DateTime startTime) {
+  Either<Failure, Unit> validateFutureTime(DateTime startTime) {    
     final now = DateTime.now();
     if (startTime.isBefore(now)) {
       return Left(ValidationFailure('Start time must be in the future'));
@@ -29,7 +30,7 @@ class ItineraryValidators {
     return Right(unit);
   }
 
-  static Either<Failure, Unit> validateFieldLengths({
+  Either<Failure, Unit> validateFieldLengths({
     required String name,
     String? notes,
   }) {
@@ -48,94 +49,65 @@ class ItineraryValidators {
     return Right(unit);
   }
 
-  static Future<Either<Failure, Unit>> validateTourismSpotExists(int? tourismSpotId) async {
+  Future<Either<Failure, Unit>> validateTourismSpotExists(int? tourismSpotId) async {
     if (tourismSpotId == null) {
       return Right(unit);
     }
 
     try {
-      final tourismSpotResult = await Repository().getAll<TourismSpotModel>(
-        query: Query.where('id', tourismSpotId),
+      final result = await _repository.checkTourismSpotExists(tourismSpotId);
+      
+      return result.fold(
+        (failure) => Left(failure),
+        (exists) => exists 
+            ? Right(unit) 
+            : Left(ValidationFailure('Tourism spot not found'))
       );
-
-      if (tourismSpotResult == null || tourismSpotResult.isEmpty) {
-        return Left(ValidationFailure('Tourism spot not found'));
-      }
-
-      return Right(unit);
     } catch (e) {
-      developer.log(e.toString(), name: "Itinerary Repository");
+      developer.log(e.toString(), name: "Itinerary Validators");
       return Left(ServerFailure('Error validating tourism spot: ${e.toString()}'));
     }
   }
 
-  static Future<Either<Failure, Unit>> checkSchedulingConflicts(
+  Future<Either<Failure, Unit>> checkSchedulingConflicts(
     String userId,
     DateTime startTime,
     DateTime endTime, [
     String? excludeItineraryId,
   ]) async {
     try {
-      final userItineraryResults = await Repository().getAll<UserItineraryModel>(
-        query: Query.where('userId', userId),
-        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      final result = await _repository.checkSchedulingConflicts(
+        userId, 
+        startTime, 
+        endTime,
+        excludeItineraryId
       );
-
-      if (userItineraryResults == null || userItineraryResults.isEmpty) {
-        return Right(unit);
-      }
-
-      final itineraryIds = userItineraryResults.map((e) => e.itinerariesId).toList();
-
-      if (itineraryIds.isEmpty) return Right(unit);
-
-      final itineraries = <ItineraryModel>[];
-
-      for (final id in itineraryIds) {
-        final result = await Repository().getAll<ItineraryModel>(
-          query: Query.where('id', id),
-        );
-        if (result != null && result.isNotEmpty) {
-          itineraries.add(result.first);
-        }
-      }
-
-      developer.log("Total itineraries fetched: ${itineraries.length}", name: "Itinerary Repository");
-
-      if (itineraries.isEmpty) return Right(unit);
-
-      final bufferedStartTime = startTime.subtract(Duration(minutes: _bufferTimeMinutes));
-      final bufferedEndTime = endTime.add(Duration(minutes: _bufferTimeMinutes));
-
-      for (final itinerary in itineraries) {
-        if (excludeItineraryId != null && itinerary.id == excludeItineraryId) continue;
-
-        if (bufferedStartTime.isBefore(itinerary.endTime) &&
-            bufferedEndTime.isAfter(itinerary.startTime)) {
-          return Left(
-            SchedulingConflictFailure(
-              'Cannot add itinerary - scheduling conflict detected. '
-              'Please ensure at least $_bufferTimeMinutes minutes gap between itineraries',
-            ),
-          );
-        }
-      }
-
-      return Right(unit);
+      
+      return result.fold(
+        (failure) => Left(failure),
+        (hasConflict) => hasConflict
+            ? Left(
+                SchedulingConflictFailure(
+                  'Cannot add itinerary - scheduling conflict detected. '
+                  'Please ensure at least $_bufferTimeMinutes minutes gap between itineraries',
+                ),
+              )
+            : Right(unit)
+      );
     } catch (e) {
-      developer.log(e.toString(), name: "Itinerary Repository");
+      developer.log(e.toString(), name: "Itinerary Validators");
       return Left(ServerFailure('Error checking scheduling conflicts: ${e.toString()}'));
     }
   }
 
-  static Either<Failure, Unit> validateRequiredFields(CreateItinerary itineraryInput) {
+  Either<Failure, Unit> validateRequiredFields(CreateItinerary itineraryInput) {
     if (itineraryInput.name.trim().isEmpty) {
       return Left(MissingFieldFailure('Itinerary name is required'));
     }
     return Right(unit);
   }
 
-  static Either<Failure, Unit> validateNoteRequiredFields(CreateItineraryNote itineraryInput) {
+  Either<Failure, Unit> validateNoteRequiredFields(CreateItineraryNote itineraryInput) {
     if (itineraryInput.name.trim().isEmpty) {
       return Left(MissingFieldFailure('Itinerary name is required'));
     } else if (itineraryInput.notes.trim().isEmpty) {

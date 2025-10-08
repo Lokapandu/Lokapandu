@@ -10,8 +10,9 @@ import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 /// including validation of the input data.
 class CreateUserItinerariesNote {
   final ItineraryRepository repository;
+  final ItineraryValidators validators;
 
-  CreateUserItinerariesNote(this.repository);
+  CreateUserItinerariesNote(this.repository, this.validators);
 
   /// Executes the use case to create a new itinerary note.
   ///
@@ -27,12 +28,12 @@ class CreateUserItinerariesNote {
     CreateItineraryNote itineraryInput,
   ) async {
     final requiredFieldsValidation =
-        ItineraryValidators.validateNoteRequiredFields(itineraryInput);
+        validators.validateNoteRequiredFields(itineraryInput);
     if (requiredFieldsValidation.isLeft()) {
       return requiredFieldsValidation;
     }
 
-    final fieldLengthValidation = ItineraryValidators.validateFieldLengths(
+    final fieldLengthValidation = validators.validateFieldLengths(
       name: itineraryInput.name,
       notes: itineraryInput.notes,
     );
@@ -40,14 +41,14 @@ class CreateUserItinerariesNote {
       return fieldLengthValidation;
     }
 
-    final futureTimeValidation = ItineraryValidators.validateFutureTime(
+    final futureTimeValidation = validators.validateFutureTime(
       itineraryInput.startTime,
     );
     if (futureTimeValidation.isLeft()) {
       return futureTimeValidation;
     }
 
-    final timeRangeValidation = ItineraryValidators.validateTimeRange(
+    final timeRangeValidation = validators.validateTimeRange(
       itineraryInput.startTime,
       itineraryInput.endTime,
     );
@@ -55,7 +56,7 @@ class CreateUserItinerariesNote {
       return timeRangeValidation;
     }
 
-    final conflictCheck = await ItineraryValidators.checkSchedulingConflicts(
+    final conflictCheck = await validators.checkSchedulingConflicts(
       userId,
       itineraryInput.startTime,
       itineraryInput.endTime,

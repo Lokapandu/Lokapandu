@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
+import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:lokapandu/common/services/analytics_manager.dart';
@@ -122,6 +123,15 @@ Future<void> initDependencies() async {
   );
 
   // ========================================
+  // VALIDATORS
+  // ========================================
+
+  /// Validators - Handle business rule validations
+  locator.registerLazySingleton<ItineraryValidators>(
+    () => ItineraryValidators(locator<ItineraryRepository>()),
+  );
+
+  // ========================================
   // DOMAIN LAYER
   // ========================================
 
@@ -143,13 +153,22 @@ Future<void> initDependencies() async {
     () => GetUserItineraries(locator<ItineraryRepository>()),
   );
   locator.registerLazySingleton<CreateUserItineraries>(
-    () => CreateUserItineraries(locator<ItineraryRepository>()),
+    () => CreateUserItineraries(
+      locator<ItineraryRepository>(),
+      locator<ItineraryValidators>(),
+    ),
   );
   locator.registerLazySingleton<CreateUserItinerariesNote>(
-    () => CreateUserItinerariesNote(locator<ItineraryRepository>()),
+    () => CreateUserItinerariesNote(
+      locator<ItineraryRepository>(),
+      locator<ItineraryValidators>(),
+    ),
   );
   locator.registerLazySingleton<EditUserItineraries>(
-    () => EditUserItineraries(locator<ItineraryRepository>()),
+    () => EditUserItineraries(
+      locator<ItineraryRepository>(),
+      locator<ItineraryValidators>(),
+    ),
   );
   locator.registerLazySingleton<DeleteUserItineraries>(
     () => DeleteUserItineraries(locator<ItineraryRepository>()),
