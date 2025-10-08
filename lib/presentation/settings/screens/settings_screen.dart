@@ -83,7 +83,7 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.info_outline,
             title: 'Tentang Aplikasi',
             subtitle: 'Lihat versi dan informasi aplikasi',
-            onTap: () {},
+            onTap: () => context.push('/settings/about'),
           ),
           const Divider(height: 48, indent: 24, endIndent: 24),
           SettingsTile(

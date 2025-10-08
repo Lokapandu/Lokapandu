@@ -10,6 +10,7 @@ import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/plan_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_search_sceen.dart';
+import 'package:lokapandu/presentation/settings/screens/about_screen.dart';
 import 'package:lokapandu/presentation/settings/screens/settings_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
@@ -180,6 +181,26 @@ class AppRouter {
                   name: Routing.settings.routeName,
                 );
               },
+              routes: [
+                GoRoute(
+                  path: 'about',
+                  name: Routing.about.routeName,
+                  pageBuilder: (context, state) {
+                    // Track about screen page view
+                    FirebaseAnalyticsService().trackPageView(
+                      screenName: 'about',
+                      screenClass: 'AboutScreen',
+                      parameters: {
+                        'entry_time': DateTime.now().toIso8601String(),
+                      },
+                    );
+                    return PageTransitions.scaleTransition(
+                      const AboutScreen(),
+                      name: Routing.about.routeName,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

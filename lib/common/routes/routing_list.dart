@@ -12,6 +12,7 @@ enum Routing {
     routeName: 'tourism_spot.detail',
   ),
   settings(path: '/settings', routeName: 'settings'),
+  about(path: '/settings/about', routeName: 'about'),
   aiChat(path: '/ai_chat', routeName: 'ai_chat'),
   bookmarks(path: '/bookmarks', routeName: 'bookmarks'),
   plan(path: '/plan', routeName: 'plan'),
