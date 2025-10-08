@@ -19,12 +19,11 @@ class TourismSpotPage extends StatefulWidget {
 class _TourismSpotPageState extends State<TourismSpotPage> {
   final List<String> _categories = [
     'Semua',
-    'Taman Budaya',
-    'Pantai',
-    'Alam',
-    'Kuliner',
-    'Sejarah',
-    'Taman Hiburan',
+    'Taman Budaya & Bersejarah',
+    'Pantai & Pesisir',
+    'Pusat Seni & Belanja',
+    'Wisata Alam',
+    'Kafe & Resto',
   ];
   String _selectedCategory = 'Semua';
 
