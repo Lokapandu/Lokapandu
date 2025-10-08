@@ -129,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen>
       final isLoggedIn = user != null;
 
       if (isLoggedIn) {
-        context.pushReplacementNamed('tourism_spot');
+        context.pushReplacementNamed('home');
       } else {
         context.pushReplacementNamed('auth');
       }

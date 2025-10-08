@@ -10,13 +10,13 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final fullPath = GoRouterState.of(context).fullPath;
+    final isNavigationPane = navigationItems.any(
+      (element) => fullPath == element.path,
+    );
+    final matchedLocation = GoRouterState.of(context).matchedLocation;
     final selectedIndex = navigationItems
-        .map(
-          (item) =>
-              GoRouterState.of(context).matchedLocation.startsWith(item.path),
-        )
+        .map((item) => matchedLocation == item.path)
         .toList()
         .asMap()
         .entries
@@ -27,42 +27,51 @@ class HomeScreen extends StatelessWidget {
         .key;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerHigh,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       body: child,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Transform.translate(
-        offset: const Offset(0, 25),
-        child: InkWell(
-          onTap: () => context.goNamed('ai_chat'),
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FloatingActionButton(
-                onPressed: null,
-                shape: const CircleBorder(),
-                backgroundColor: colorScheme.primary,
-                elevation: 4.0,
-                child: IconifyIcon(
-                  icon: 'ri:chat-ai-fill',
-                  size: 32,
-                  color: Theme.of(context).colorScheme.surface,
-                ),
+      floatingActionButton: isNavigationPane
+          ? _buildAIChatButton(context)
+          : null,
+      bottomNavigationBar: isNavigationPane
+          ? buildBottomNavigation(context, selectedIndex)
+          : null,
+    );
+  }
+
+  Widget _buildAIChatButton(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Transform.translate(
+      offset: const Offset(0, 25),
+      child: InkWell(
+        onTap: () => context.pushNamed('ai_chat'),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const FloatingActionButton(
+              onPressed: null,
+              shape: CircleBorder(),
+              elevation: 4.0,
+              child: IconifyIcon(
+                icon: 'ri:chat-ai-fill',
+                size: 32,
+                color: Colors.white,
               ),
-              const SizedBox(height: 4),
-              Text(
-                'AI Chat',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'AI Chat',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: buildBottomNavigation(context, selectedIndex),
     );
   }
 }

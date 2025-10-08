@@ -9,7 +9,7 @@ import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/plan_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_search_sceen.dart';
-import 'package:lokapandu/features/settings/screens/settings_screen.dart';
+import 'package:lokapandu/presentation/settings/screens/settings_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
 import 'package:lokapandu/presentation/home/screens/home_content.dart';
@@ -28,20 +28,20 @@ class AppRouter {
   static GoRouter createRouter() {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
-      initialLocation: HomeRoute().path,
+      initialLocation: Routing.splash.path,
       routes: [
         GoRoute(
-          path: SplashRoute().path,
-          name: SplashRoute().routeName,
+          path: Routing.splash.path,
+          name: Routing.splash.routeName,
           builder: (context, state) => const SplashScreen(),
         ),
 
         GoRoute(
-          path: AuthRoute().path,
-          name: AuthRoute().routeName,
+          path: Routing.auth.path,
+          name: Routing.auth.routeName,
           pageBuilder: (context, state) => PageTransitions.fadeTransition(
             const AuthScreen(),
-            name: AuthRoute().routeName,
+            name: Routing.auth.routeName,
           ),
         ),
 
@@ -52,106 +52,120 @@ class AppRouter {
           },
           routes: [
             GoRoute(
-              path: HomeRoute().path,
-              name: HomeRoute().routeName,
+              path: Routing.home.path,
+              name: Routing.home.routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
                 const HomeContent(),
-                name: HomeRoute().routeName,
+                name: Routing.home.routeName,
               ),
             ),
             GoRoute(
-              path: TourismSpotRoute().path,
-              name: TourismSpotRoute().routeName,
+              path: Routing.tourismSpot.path,
+              name: Routing.tourismSpot.routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
                 const TourismSpotPage(),
-                name: TourismSpotRoute().routeName,
+                name: Routing.tourismSpot.routeName,
               ),
+              routes: [
+                GoRoute(
+                  path: Routing.tourismSpotPreview.path,
+                  name: Routing.tourismSpotPreview.routeName,
+                  pageBuilder: (context, state) {
+                    final id = int.parse(state.pathParameters['id']!);
+                    return PageTransitions.slideFromRightTransition(
+                      TourismSpotPreviewPage(id: id),
+                      name: Routing.tourismSpotPreview.routeName,
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: Routing.tourismSpotDetail.path,
+                  name: Routing.tourismSpotDetail.routeName,
+                  pageBuilder: (context, state) {
+                    final tour = state.extra as TourismSpot?;
+                    if (tour == null) {
+                      return MaterialPage<void>(
+                        child: Scaffold(
+                          body: Center(
+                            child: Text(
+                              'Tourism spot not found',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    return PageTransitions.scaleTransition(
+                      TourismSpotDetailPage(tour: tour),
+                      name: Routing.tourismSpotDetail.routeName,
+                    );
+                  },
+                ),
+              ],
             ),
             GoRoute(
-              path: PlanRoute().path,
-              name: PlanRoute().routeName,
+              path: Routing.plan.path,
+              name: Routing.plan.routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
                 const PlanScreen(),
-                name: PlanRoute().routeName,
+                name: Routing.plan.routeName,
               ),
             ),
             GoRoute(
-              path: SettingsRoute().path,
-              name: SettingsRoute().routeName,
+              path: Routing.settings.path,
+              name: Routing.settings.routeName,
               pageBuilder: (context, state) => PageTransitions.noTransition(
                 const SettingsScreen(),
-                name: SettingsRoute().routeName,
+                name: Routing.settings.routeName,
               ),
             ),
           ],
         ),
 
         GoRoute(
-          path: TourismSpotPreviewRoute().path,
-          name: TourismSpotPreviewRoute().routeName,
-          pageBuilder: (context, state) {
-            final id = int.parse(state.pathParameters['id']!);
-            return PageTransitions.slideFromRightTransition(
-              TourismSpotPreviewPage(id: id),
-              name: TourismSpotPreviewRoute().routeName,
-            );
-          },
-        ),
-
-        GoRoute(
-          path: TourismSpotDetailRoute().path,
-          name: TourismSpotDetailRoute().routeName,
-          pageBuilder: (context, state) {
-            final tour = state.extra as TourismSpot;
-            return PageTransitions.scaleTransition(
-              TourismSpotDetailPage(tour: tour),
-              name: TourismSpotDetailRoute().routeName,
-            );
-          },
-        ),
-        GoRoute(
-          path: AiChatRoute().path,
-          name: AiChatRoute().routeName,
+          path: Routing.aiChat.path,
+          name: Routing.aiChat.routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
                 const AiChatScreen(),
-                name: AiChatRoute().routeName,
+                name: Routing.aiChat.routeName,
               ),
         ),
         GoRoute(
-          path: BookmarksRoute().path,
-          name: BookmarksRoute().routeName,
+          path: Routing.bookmarks.path,
+          name: Routing.bookmarks.routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromRightTransition(
                 const BookmarkScreen(),
-                name: BookmarksRoute().routeName,
+                name: Routing.bookmarks.routeName,
               ),
         ),
         GoRoute(
-          path: PlanSearchRoute().path,
-          name: PlanSearchRoute().routeName,
+          path: Routing.planSearch.path,
+          name: Routing.planSearch.routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
                 const TourSearchScreen(),
-                name: PlanSearchRoute().routeName,
+                name: Routing.planSearch.routeName,
               ),
         ),
         GoRoute(
-          path: PlanAddRoute().path,
-          name: PlanAddRoute().routeName,
+          path: Routing.planAdd.path,
+          name: Routing.planAdd.routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
                 const TourPlanEditorScreen(),
-                name: PlanAddRoute().routeName,
+                name: Routing.planAdd.routeName,
               ),
         ),
         GoRoute(
-          path: PlanAddNoteRoute().path,
-          name: PlanAddNoteRoute().routeName,
+          path: Routing.planAddNote.path,
+          name: Routing.planAddNote.routeName,
           pageBuilder: (context, state) =>
               PageTransitions.slideFromBottomTransition(
                 const NoteEditorScreen(),
-                name: PlanAddNoteRoute().routeName,
+                name: Routing.planAddNote.routeName,
               ),
         ),
       ],

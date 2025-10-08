@@ -1,60 +1,26 @@
-sealed class Routing {
+enum Routing {
+  splash(path: '/', routeName: 'splash'),
+  auth(path: '/auth', routeName: 'auth'),
+  home(path: '/home', routeName: 'home'),
+  tourismSpot(path: '/tourism_spot', routeName: 'tourism_spot'),
+  tourismSpotPreview(
+    path: 'preview/:id', // inside tourism_spot
+    routeName: 'tourism_spot.preview',
+  ),
+  tourismSpotDetail(
+    path: 'detail', // inside tourism_spot
+    routeName: 'tourism_spot.detail',
+  ),
+  settings(path: '/settings', routeName: 'settings'),
+  aiChat(path: '/ai_chat', routeName: 'ai_chat'),
+  bookmarks(path: '/bookmarks', routeName: 'bookmarks'),
+  plan(path: '/plan', routeName: 'plan'),
+  planSearch(path: '/plan/search-tour', routeName: 'plan.search_tour'),
+  planAdd(path: '/plan/add-tour', routeName: 'plan.add_tour'),
+  planAddNote(path: '/plan/add-note', routeName: 'plan.add_note');
+
   final String path;
   final String routeName;
 
-  const Routing(this.path, this.routeName);
-}
-
-class SplashRoute extends Routing {
-  const SplashRoute() : super('/', 'splash');
-}
-
-class AuthRoute extends Routing {
-  const AuthRoute() : super('/auth', 'auth');
-}
-
-class HomeRoute extends Routing {
-  const HomeRoute() : super('/home', 'home');
-}
-
-class TourismSpotRoute extends Routing {
-  const TourismSpotRoute() : super('/tourism_spot', 'tourism_spot');
-}
-
-class TourismSpotPreviewRoute extends Routing {
-  const TourismSpotPreviewRoute()
-    : super('/tourism_spot/preview/:id', 'tourism_spot.preview');
-}
-
-class TourismSpotDetailRoute extends Routing {
-  const TourismSpotDetailRoute()
-    : super('/tourism_spot/detail', 'tourism_spot.detail');
-}
-
-class SettingsRoute extends Routing {
-  const SettingsRoute() : super('/settings', 'settings');
-}
-
-class AiChatRoute extends Routing {
-  const AiChatRoute() : super('/ai_chat', 'ai_chat');
-}
-
-class BookmarksRoute extends Routing {
-  const BookmarksRoute() : super('/bookmarks', 'bookmarks');
-}
-
-class PlanRoute extends Routing {
-  const PlanRoute() : super('/plan', 'plan');
-}
-
-class PlanSearchRoute extends Routing {
-  const PlanSearchRoute() : super('/plan/search-tour', 'plan.search_tour');
-}
-
-class PlanAddRoute extends Routing {
-  const PlanAddRoute() : super('/plan/add-tour', 'plan.add_tour');
-}
-
-class PlanAddNoteRoute extends Routing {
-  const PlanAddNoteRoute() : super('/plan/add-note', 'plan.add_note');
+  const Routing({required this.path, required this.routeName});
 }

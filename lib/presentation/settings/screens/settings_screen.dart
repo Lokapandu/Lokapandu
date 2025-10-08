@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
