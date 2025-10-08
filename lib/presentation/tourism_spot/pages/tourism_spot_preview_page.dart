@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -130,7 +131,10 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () {
-                              context.push('/tourism_spot/detail', extra: tour);
+                              context.push(
+                                Routing.tourismSpotDetail.fullPath,
+                                extra: tour,
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,

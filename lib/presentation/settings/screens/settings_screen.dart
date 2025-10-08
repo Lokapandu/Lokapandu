@@ -41,7 +41,7 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.bookmark_border,
             title: 'Bookmark',
             subtitle: 'Lihat daftar wisata tersimpan',
-            onTap: () => context.push(Routing.bookmarks.path),
+            onTap: () => context.push(Routing.bookmarks.fullPath),
           ),
           SettingsTile(
             icon: Icons.dark_mode_outlined,
@@ -77,7 +77,7 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.info_outline,
             title: 'Tentang Aplikasi',
             subtitle: 'Lihat versi dan informasi aplikasi',
-            onTap: () => context.push('/settings/about'),
+            onTap: () => context.push(Routing.about.fullPath),
           ),
           SettingsTile(
             icon: Icons.logout,

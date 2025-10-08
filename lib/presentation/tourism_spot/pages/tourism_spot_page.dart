@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:provider/provider.dart';
@@ -144,7 +145,12 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       return DestinationCard(
                         tourismSpot: spot,
                         onTap: () {
-                          context.push('/tourism_spot/preview/${spot.id}');
+                          context.push(
+                            Routing.tourismSpotPreview.fullPath.replaceFirst(
+                              ':id',
+                              spot.id.toString(),
+                            ),
+                          );
                         },
                       );
                     },

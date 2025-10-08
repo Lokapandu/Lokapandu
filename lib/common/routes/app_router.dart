@@ -115,6 +115,35 @@ class AppRouter {
                 const PlanScreen(),
                 name: Routing.plan.routeName,
               ),
+              routes: [
+                GoRoute(
+                  path: Routing.planSearch.path,
+                  name: Routing.planSearch.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromBottomTransition(
+                        const TourSearchScreen(),
+                        name: Routing.planSearch.routeName,
+                      ),
+                ),
+                GoRoute(
+                  path: Routing.planAdd.path,
+                  name: Routing.planAdd.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromBottomTransition(
+                        const TourPlanEditorScreen(),
+                        name: Routing.planAdd.routeName,
+                      ),
+                ),
+                GoRoute(
+                  path: Routing.planAddNote.path,
+                  name: Routing.planAddNote.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromBottomTransition(
+                        const NoteEditorScreen(),
+                        name: Routing.planAddNote.routeName,
+                      ),
+                ),
+              ],
             ),
             GoRoute(
               path: Routing.settings.path,
@@ -127,7 +156,16 @@ class AppRouter {
               },
               routes: [
                 GoRoute(
-                  path: 'about',
+                  path: Routing.bookmarks.path,
+                  name: Routing.bookmarks.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromRightTransition(
+                        const BookmarkScreen(),
+                        name: Routing.bookmarks.routeName,
+                      ),
+                ),
+                GoRoute(
+                  path: Routing.about.path,
                   name: Routing.about.routeName,
                   pageBuilder: (context, state) {
                     return PageTransitions.scaleTransition(
@@ -148,42 +186,6 @@ class AppRouter {
               PageTransitions.slideFromBottomTransition(
                 const AiChatScreen(),
                 name: Routing.aiChat.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.bookmarks.path,
-          name: Routing.bookmarks.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromRightTransition(
-                const BookmarkScreen(),
-                name: Routing.bookmarks.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.planSearch.path,
-          name: Routing.planSearch.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(
-                const TourSearchScreen(),
-                name: Routing.planSearch.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.planAdd.path,
-          name: Routing.planAdd.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(
-                const TourPlanEditorScreen(),
-                name: Routing.planAdd.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.planAddNote.path,
-          name: Routing.planAddNote.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(
-                const NoteEditorScreen(),
-                name: Routing.planAddNote.routeName,
               ),
         ),
       ],
