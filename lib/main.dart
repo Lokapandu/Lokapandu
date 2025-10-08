@@ -11,6 +11,7 @@ import 'package:lokapandu/presentation/settings/providers/package_info_notifier.
 import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
@@ -69,6 +70,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => di.locator<ThemeProvider>()..load(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<AnalyticsProvider>()..load(),
         ),
         ChangeNotifierProvider(create: (_) => di.locator<AuthNotifier>()),
         ChangeNotifierProvider(

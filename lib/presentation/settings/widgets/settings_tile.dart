@@ -34,13 +34,13 @@ class SettingsTile extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: effectiveIconColor.withOpacity(0.1),
+          color: effectiveIconColor.withValues(alpha: .1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: effectiveIconColor),
       ),
       title: Text(
-        title, 
+        title,
         style: textTheme.titleMedium?.copyWith(color: effectiveTitleColor),
       ),
       subtitle: Text(

@@ -432,4 +432,15 @@ class AnalyticsManager {
     'enableDebugFeatures': EnvironmentConfig.enableDebugFeatures,
     'analyticsConfig': _config.toMap(),
   };
+
+  Future<void> setAnalyticsCollectionEnabled(bool analyticsEnabled) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      await _firebaseAnalytics.setAnalyticsCollectionEnabled(analyticsEnabled);
+      _logDebug('Analytics collection enabled: $analyticsEnabled');
+    } catch (e) {
+      _handleError('setAnalyticsCollectionEnabled', e);
+    }
+  }
 }

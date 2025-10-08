@@ -6,6 +6,7 @@ import 'package:lokapandu/presentation/settings/providers/package_info_notifier.
 import 'package:lokapandu/presentation/settings/widgets/user_profile_section.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -52,6 +53,20 @@ class SettingsScreen extends StatelessWidget {
                   value: themeProvider.isDarkMode,
                   onChanged: (value) =>
                       context.read<ThemeProvider>().toggleTheme(),
+                );
+              },
+            ),
+          ),
+          SettingsTile(
+            icon: Icons.analytics_outlined,
+            title: 'Pengumpulan Data Analytics',
+            subtitle: 'Izinkan aplikasi mengumpulkan data penggunaan',
+            trailing: Consumer<AnalyticsProvider>(
+              builder: (context, analyticsProvider, child) {
+                return Switch(
+                  value: analyticsProvider.analyticsEnabled,
+                  onChanged: (value) =>
+                      context.read<AnalyticsProvider>().toggleAnalytics(),
                 );
               },
             ),

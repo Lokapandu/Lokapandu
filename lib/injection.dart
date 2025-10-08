@@ -20,6 +20,7 @@ import 'package:lokapandu/presentation/settings/providers/package_info_notifier.
 import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -180,6 +181,9 @@ Future<void> initDependencies() async {
   locator.registerFactory<BookmarkProvider>(() => BookmarkProvider());
   locator.registerFactory<ThemeProvider>(
     () => ThemeProvider(locator<AnalyticsManager>()),
+  );
+  locator.registerFactory<AnalyticsProvider>(
+    () => AnalyticsProvider(locator<AnalyticsManager>()),
   );
   locator.registerFactory<PackageInfoNotifier>(() => PackageInfoNotifier());
   locator.registerFactory<UserSettingsNotifier>(
