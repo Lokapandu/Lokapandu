@@ -20,15 +20,12 @@ import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart'
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:uuid/uuid.dart';
 
-part 'itinerary_repository_helpers.dart';
-
 class ItineraryRepositoryImpl implements ItineraryRepository {
   @override
   Future<Either<Failure, List<Itinerary>>> getUserItineraries(
     String userId,
   ) async {
     try {
-      // Fetch user itineraries
       final userItineraryResults = await Repository()
           .getAll<UserItineraryModel>(
             query: Query.where('userId', userId),
@@ -39,7 +36,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         return const Right([]);
       }
 
-      // Extract itinerary IDs
       final itineraryIds = userItineraryResults
           .map((e) => e.itinerariesId)
           .toList();
@@ -76,7 +72,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         return const Right([]);
       }
 
-      // Map to entities with relations
       final itineraryEntities = await _toEntitiesWithRelations(itineraries);
 
       return Right(itineraryEntities);
@@ -95,55 +90,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     CreateItinerary itineraryInput,
   ) async {
     try {
-      // Validate required fields
-      final requiredFieldsValidation = _validateRequiredFields(itineraryInput);
-      if (requiredFieldsValidation.isLeft()) {
-        return requiredFieldsValidation;
-      }
-
-      // Validate field lengths
-      final fieldLengthValidation = _validateFieldLengths(
-        name: itineraryInput.name,
-        notes: itineraryInput.notes,
-      );
-      if (fieldLengthValidation.isLeft()) {
-        return fieldLengthValidation;
-      }
-
-      // Validate start time is in the future
-      final futureTimeValidation = _validateFutureTime(
-        itineraryInput.startTime,
-      );
-      if (futureTimeValidation.isLeft()) {
-        return futureTimeValidation;
-      }
-
-      // Validate time range
-      final timeRangeValidation = _validateTimeRange(
-        itineraryInput.startTime,
-        itineraryInput.endTime,
-      );
-      if (timeRangeValidation.isLeft()) {
-        return timeRangeValidation;
-      }
-
-      final tourismSpotValidation = await _validateTourismSpotExists(
-        itineraryInput.tourismSpot,
-      );
-      if (tourismSpotValidation.isLeft()) {
-        return tourismSpotValidation;
-      }
-
-      // Check for scheduling conflicts
-      final conflictCheck = await _checkSchedulingConflicts(
-        userId,
-        itineraryInput.startTime,
-        itineraryInput.endTime,
-      );
-      if (conflictCheck.isLeft()) {
-        return conflictCheck;
-      }
-
       final itineraryModel = ItineraryModel(
         id: Uuid().v4(),
         name: itineraryInput.name,
@@ -171,12 +117,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     } on ConnectionException catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ConnectionFailure('Connection error: ${e.message}'));
-    } on ValidationException catch (e) {
-      developer.log(e.toString(), name: "Itinerary Repository");
-      return Left(ValidationFailure(e.message));
-    } on SchedulingConflictException catch (e) {
-      developer.log(e.toString(), name: "Itinerary Repository");
-      return Left(SchedulingConflictFailure(e.message));
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
@@ -189,50 +129,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     CreateItineraryNote itineraryNoteInput,
   ) async {
     try {
-      // Validate required fields
-      final requiredFieldsValidation = _validateNoteRequiredFields(
-        itineraryNoteInput,
-      );
-      if (requiredFieldsValidation.isLeft()) {
-        return requiredFieldsValidation;
-      }
-
-      // Validate field lengths
-      final fieldLengthValidation = _validateFieldLengths(
-        name: itineraryNoteInput.name,
-        notes: itineraryNoteInput.notes,
-      );
-      if (fieldLengthValidation.isLeft()) {
-        return fieldLengthValidation;
-      }
-
-      // Validate start time is in the future
-      final futureTimeValidation = _validateFutureTime(
-        itineraryNoteInput.startTime,
-      );
-      if (futureTimeValidation.isLeft()) {
-        return futureTimeValidation;
-      }
-
-      // Validate time range
-      final timeRangeValidation = _validateTimeRange(
-        itineraryNoteInput.startTime,
-        itineraryNoteInput.endTime,
-      );
-      if (timeRangeValidation.isLeft()) {
-        return timeRangeValidation;
-      }
-
-      // Check for scheduling conflicts
-      final conflictCheck = await _checkSchedulingConflicts(
-        userId,
-        itineraryNoteInput.startTime,
-        itineraryNoteInput.endTime,
-      );
-      if (conflictCheck.isLeft()) {
-        return conflictCheck;
-      }
-
       final itineraryModel = ItineraryModel(
         id: Uuid().v4(),
         name: itineraryNoteInput.name,
@@ -293,7 +189,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
       final existingItinerary = existingItineraryResults.first;
 
-      // Get the user ID for this itinerary to check conflicts
       final userItineraryResults = await Repository()
           .getAll<UserItineraryModel>(
             query: Query.where('itinerariesId', itineraryInput.id),
@@ -304,9 +199,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         return Left(ServerFailure('User itinerary association not found'));
       }
 
-      final userId = userItineraryResults.first.userId;
-
-      // Determine the final values for validation
       final finalName = itineraryInput.name ?? existingItinerary.name;
       final finalNotes = itineraryInput.notes ?? existingItinerary.notes;
       final finalStartTime =
@@ -314,55 +206,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       final finalEndTime = itineraryInput.endTime ?? existingItinerary.endTime;
       final finalTourismSpotId =
           itineraryInput.tourismSpot ?? existingItinerary.tourismSpotId;
-
-      // Validate field lengths
-      final fieldLengthValidation = _validateFieldLengths(
-        name: finalName,
-        notes: finalNotes,
-      );
-      if (fieldLengthValidation.isLeft()) {
-        return fieldLengthValidation;
-      }
-
-      // Validate tourism spot exists if being updated
-      if (itineraryInput.tourismSpot != null) {
-        final tourismSpotValidation = await _validateTourismSpotExists(
-          itineraryInput.tourismSpot,
-        );
-        if (tourismSpotValidation.isLeft()) {
-          return tourismSpotValidation;
-        }
-      }
-
-      // Validate time range and conflicts if either start or end time is being updated
-      if (itineraryInput.startTime != null || itineraryInput.endTime != null) {
-        // Validate start time is in the future (only if being updated)
-        if (itineraryInput.startTime != null) {
-          final futureTimeValidation = _validateFutureTime(finalStartTime);
-          if (futureTimeValidation.isLeft()) {
-            return futureTimeValidation;
-          }
-        }
-
-        final timeRangeValidation = _validateTimeRange(
-          finalStartTime,
-          finalEndTime,
-        );
-        if (timeRangeValidation.isLeft()) {
-          return timeRangeValidation;
-        }
-
-        // Check for scheduling conflicts with other itineraries
-        final conflictCheck = await _checkSchedulingConflicts(
-          userId,
-          finalStartTime,
-          finalEndTime,
-          itineraryInput.id, // Exclude current itinerary from conflict check
-        );
-        if (conflictCheck.isLeft()) {
-          return conflictCheck;
-        }
-      }
 
       final updatedItinerary = ItineraryModel(
         id: existingItinerary.id,
@@ -380,12 +223,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     } on ConnectionException catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ConnectionFailure('Connection error: ${e.message}'));
-    } on ValidationException catch (e) {
-      developer.log(e.toString(), name: "Itinerary Repository");
-      return Left(ValidationFailure(e.message));
-    } on SchedulingConflictException catch (e) {
-      developer.log(e.toString(), name: "Itinerary Repository");
-      return Left(SchedulingConflictFailure(e.message));
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
@@ -402,30 +239,20 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         return Left(ServerFailure('Itinerary not found'));
       }
 
-      final userItineraryResult = await Repository().getOne<UserItineraryModel>(
-        query: Query.where('itinerariesId', itineraryId),
-      );
-      if (userItineraryResult != null) {
-        final deletedUserItinerary = await Repository()
-            .deleteOne<UserItineraryModel>(userItineraryResult);
-        if (!deletedUserItinerary) {
-          developer.log(
-            'Failed to delete user itinerary association locally for itineraryId: $itineraryId',
-            name: 'Itinerary Repository',
+      final userItineraryResults = await Repository()
+          .getAll<UserItineraryModel>(
+            query: Query.where('itinerariesId', itineraryId),
           );
+
+      if (userItineraryResults != null && userItineraryResults.isNotEmpty) {
+        for (final userItinerary in userItineraryResults) {
+          await Repository().delete<UserItineraryModel>(userItinerary);
         }
-      } else {
-        return Left(ServerFailure('User Itinerary not found'));
       }
-      return Repository()
-          .deleteOne<ItineraryModel>(existingItineraryResults)
-          .then((success) {
-            if (success) {
-              return Right(unit);
-            } else {
-              return Left(ServerFailure('Failed to delete itinerary'));
-            }
-          });
+
+      await Repository().delete<ItineraryModel>(existingItineraryResults);
+
+      return Right(unit);
     } on ConnectionException catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ConnectionFailure('Connection error: ${e.message}'));
@@ -433,5 +260,40 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ServerFailure('Unexpected error: ${e.toString()}'));
     }
+  }
+
+  Future<List<Itinerary>> _toEntitiesWithRelations(
+    List<ItineraryModel> itineraries,
+  ) async {
+    final itineraryEntitiesFutures = itineraries.map((itinerary) async {
+      TourismSpot? tourismSpotEntity;
+      if (itinerary.tourismSpotId != null) {
+        final tourismSpotResult = await Repository().getAll<TourismSpotModel>(
+          query: Query.where('id', itinerary.tourismSpotId),
+          policy: OfflineFirstGetPolicy.awaitRemote,
+        );
+
+        if (tourismSpotResult != null && tourismSpotResult.isNotEmpty) {
+          final tourismSpotModel = tourismSpotResult.first;
+
+          final tourismImageResults = await Repository()
+              .getAll<TourismImageModel>(
+                query: Query.where('tourismSpotId', tourismSpotModel.id),
+                policy: OfflineFirstGetPolicy.awaitRemote,
+              );
+
+          final tourismImageEntities =
+              tourismImageResults?.toEntityList() ?? [];
+
+          tourismSpotEntity = tourismSpotModel.toEntity(
+            images: tourismImageEntities,
+          );
+        }
+      }
+
+      return itinerary.toEntity(tourismSpot: tourismSpotEntity);
+    });
+
+    return Future.wait(itineraryEntitiesFutures);
   }
 }
