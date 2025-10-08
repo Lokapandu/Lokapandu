@@ -228,6 +228,9 @@ class FirebaseAnalyticsService {
       await _analytics.setUserProperty(
         name: name,
         value: value,
+        callOptions: AnalyticsCallOptions(
+          global: true
+        ),
       );
       
       _logDebug('User property set successfully: $name');
