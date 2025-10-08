@@ -79,6 +79,7 @@ Future<Either<Failure, Unit>> _checkSchedulingConflicts(
     // Get all user itineraries
     final userItineraryResults = await Repository().getAll<UserItineraryModel>(
       query: Query.where('userId', userId),
+      policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
     );
 
     if (userItineraryResults == null || userItineraryResults.isEmpty) {
@@ -175,6 +176,7 @@ Future<List<Itinerary>> _toEntitiesWithRelations(
     if (itinerary.tourismSpotId != null) {
       final tourismSpotResult = await Repository().getAll<TourismSpotModel>(
         query: Query.where('id', itinerary.tourismSpotId),
+        policy: OfflineFirstGetPolicy.awaitRemote,
       );
 
       if (tourismSpotResult != null && tourismSpotResult.isNotEmpty) {
@@ -184,6 +186,7 @@ Future<List<Itinerary>> _toEntitiesWithRelations(
         final tourismImageResults = await Repository()
             .getAll<TourismImageModel>(
               query: Query.where('tourismSpotId', tourismSpotModel.id),
+              policy: OfflineFirstGetPolicy.awaitRemote,
             );
 
         final tourismImageEntities = tourismImageResults?.toEntityList() ?? [];

@@ -1,11 +1,7 @@
 import 'dart:developer' as developer;
 
-import 'package:brick_core/query.dart';
+import 'package:brick_offline_first/brick_offline_first.dart';
 import 'package:dartz/dartz.dart';
-import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
-import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
-import 'package:uuid/uuid.dart';
-
 import 'package:lokapandu/brick/models/itinerary.model.dart';
 import 'package:lokapandu/brick/models/tourism_image.model.dart';
 import 'package:lokapandu/brick/models/tourism_spot.model.dart';
@@ -16,10 +12,13 @@ import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/data/mappers/itinerary_mapper.dart';
 import 'package:lokapandu/data/mappers/tourism_image_mapper.dart';
 import 'package:lokapandu/data/mappers/tourism_spot_mapper.dart';
+import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
-import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
+import 'package:uuid/uuid.dart';
 
 part 'itinerary_repository_helpers.dart';
 
@@ -31,7 +30,10 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     try {
       // Fetch user itineraries
       final userItineraryResults = await Repository()
-          .getAll<UserItineraryModel>(query: Query.where('userId', userId));
+          .getAll<UserItineraryModel>(
+            query: Query.where('userId', userId),
+            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+          );
 
       if (userItineraryResults == null || userItineraryResults.isEmpty) {
         return const Right([]);
@@ -61,6 +63,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       for (final id in itineraryIds) {
         final result = await Repository().getAll<ItineraryModel>(
           query: Query.where('id', id),
+          policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
         );
         if (result != null && result.isNotEmpty) {
           itineraries.add(result.first);
@@ -124,7 +127,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         return timeRangeValidation;
       }
 
-      // Validate tourism spot exists if provided
       final tourismSpotValidation = await _validateTourismSpotExists(
         itineraryInput.tourismSpot,
       );
@@ -152,11 +154,11 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         tourismSpotId: itineraryInput.tourismSpot,
       );
 
-      final createdModel = await Repository().upsert<ItineraryModel>(
+      final createdModel = await Repository().upsertOne<ItineraryModel>(
         itineraryModel,
       );
 
-      await Repository().upsert<UserItineraryModel>(
+      await Repository().upsertOne<UserItineraryModel>(
         UserItineraryModel(
           id: Uuid().v4(),
           userId: userId,
@@ -240,11 +242,11 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         createdAt: DateTime.now(),
       );
 
-      final createdModel = await Repository().upsert<ItineraryModel>(
+      final createdModel = await Repository().upsertOne<ItineraryModel>(
         itineraryModel,
       );
 
-      await Repository().upsert<UserItineraryModel>(
+      await Repository().upsertOne<UserItineraryModel>(
         UserItineraryModel(
           id: Uuid().v4(),
           userId: userId,
@@ -275,7 +277,10 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
   ) async {
     try {
       final existingItineraryResults = await Repository()
-          .getAll<ItineraryModel>(query: Query.where('id', itineraryInput.id));
+          .getAll<ItineraryModel>(
+            query: Query.where('id', itineraryInput.id),
+            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+          );
       developer.log(
         "Total fetched: ${existingItineraryResults?.length}",
         name: "Itinerary Repository",
@@ -292,6 +297,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       final userItineraryResults = await Repository()
           .getAll<UserItineraryModel>(
             query: Query.where('itinerariesId', itineraryInput.id),
+            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
           );
 
       if (userItineraryResults == null || userItineraryResults.isEmpty) {
@@ -368,7 +374,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         createdAt: existingItinerary.createdAt,
       );
 
-      await Repository().upsert<ItineraryModel>(updatedItinerary);
+      await Repository().upsertOne<ItineraryModel>(updatedItinerary);
 
       return Right(unit);
     } on ConnectionException catch (e) {
@@ -396,6 +402,21 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         return Left(ServerFailure('Itinerary not found'));
       }
 
+      final userItineraryResult = await Repository().getOne<UserItineraryModel>(
+        query: Query.where('itinerariesId', itineraryId),
+      );
+      if (userItineraryResult != null) {
+        final deletedUserItinerary = await Repository()
+            .deleteOne<UserItineraryModel>(userItineraryResult);
+        if (!deletedUserItinerary) {
+          developer.log(
+            'Failed to delete user itinerary association locally for itineraryId: $itineraryId',
+            name: 'Itinerary Repository',
+          );
+        }
+      } else {
+        return Left(ServerFailure('User Itinerary not found'));
+      }
       return Repository()
           .deleteOne<ItineraryModel>(existingItineraryResults)
           .then((success) {
