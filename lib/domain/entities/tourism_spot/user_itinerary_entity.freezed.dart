@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserItinerary {
 
- int get id; String get userId; int get itinerariesId; DateTime get createdAt;
+ int get id; String get userId; String get itinerariesId; DateTime get createdAt;
 /// Create a copy of UserItinerary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -45,7 +45,7 @@ abstract mixin class $UserItineraryCopyWith<$Res>  {
   factory $UserItineraryCopyWith(UserItinerary value, $Res Function(UserItinerary) _then) = _$UserItineraryCopyWithImpl;
 @useResult
 $Res call({
- int id, String userId, int itinerariesId, DateTime createdAt
+ int id, String userId, String itinerariesId, DateTime createdAt
 });
 
 
@@ -67,7 +67,7 @@ class _$UserItineraryCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,itinerariesId: null == itinerariesId ? _self.itinerariesId : itinerariesId // ignore: cast_nullable_to_non_nullable
-as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -153,7 +153,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String userId,  int itinerariesId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String userId,  String itinerariesId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserItinerary() when $default != null:
 return $default(_that.id,_that.userId,_that.itinerariesId,_that.createdAt);case _:
@@ -174,7 +174,7 @@ return $default(_that.id,_that.userId,_that.itinerariesId,_that.createdAt);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String userId,  int itinerariesId,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String userId,  String itinerariesId,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserItinerary():
 return $default(_that.id,_that.userId,_that.itinerariesId,_that.createdAt);case _:
@@ -194,7 +194,7 @@ return $default(_that.id,_that.userId,_that.itinerariesId,_that.createdAt);case 
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String userId,  int itinerariesId,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String userId,  String itinerariesId,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserItinerary() when $default != null:
 return $default(_that.id,_that.userId,_that.itinerariesId,_that.createdAt);case _:
@@ -214,7 +214,7 @@ class _UserItinerary implements UserItinerary {
 
 @override final  int id;
 @override final  String userId;
-@override final  int itinerariesId;
+@override final  String itinerariesId;
 @override final  DateTime createdAt;
 
 /// Create a copy of UserItinerary
@@ -247,7 +247,7 @@ abstract mixin class _$UserItineraryCopyWith<$Res> implements $UserItineraryCopy
   factory _$UserItineraryCopyWith(_UserItinerary value, $Res Function(_UserItinerary) _then) = __$UserItineraryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String userId, int itinerariesId, DateTime createdAt
+ int id, String userId, String itinerariesId, DateTime createdAt
 });
 
 
@@ -269,7 +269,7 @@ class __$UserItineraryCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,itinerariesId: null == itinerariesId ? _self.itinerariesId : itinerariesId // ignore: cast_nullable_to_non_nullable
-as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }

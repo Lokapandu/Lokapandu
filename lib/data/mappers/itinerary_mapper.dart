@@ -6,7 +6,7 @@ extension ItineraryEntityMapper on Itinerary {
   ItineraryModel toModel() => ItineraryModel(
     id: id,
     name: name,
-    notes: notes ?? '',
+    notes: notes,
     startTime: startTime,
     endTime: endTime,
     createdAt: createdAt,

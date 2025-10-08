@@ -8,7 +8,7 @@ abstract class UserItinerary with _$UserItinerary {
   const factory UserItinerary({
     required int id,
     required String userId,
-    required int itinerariesId,
+    required String itinerariesId,
     required DateTime createdAt,
   }) = _UserItinerary;
 }

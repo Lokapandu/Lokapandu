@@ -308,16 +308,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
       final existingItinerary = existingItineraryResults.first;
 
-      final userItineraryResults = await Repository()
-          .getAll<UserItineraryModel>(
-            query: Query.where('itinerariesId', itineraryInput.id),
-            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
-          );
-
-      if (userItineraryResults == null || userItineraryResults.isEmpty) {
-        return Left(ServerFailure('User itinerary association not found'));
-      }
-
       final finalName = itineraryInput.name ?? existingItinerary.name;
       final finalNotes = itineraryInput.notes ?? existingItinerary.notes;
       final finalStartTime =

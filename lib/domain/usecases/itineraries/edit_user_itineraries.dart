@@ -34,7 +34,10 @@ class EditUserItineraries {
         return Left(ServerFailure('Itinerary not found'));
       }
       
-      final existingItinerary = existingItineraryResult.getOrElse(() => throw Exception('Itinerary not found'));
+      final existingItinerary = existingItineraryResult.fold(
+        (failure) => throw Exception('Itinerary not found'),
+        (itinerary) => itinerary,
+      );
       
       final userIdResult = await repository.getUserIdByItineraryId(itineraryInput.id);
       
@@ -42,7 +45,10 @@ class EditUserItineraries {
         return Left(ServerFailure('User itinerary association not found'));
       }
       
-      final userId = userIdResult.getOrElse(() => throw Exception('User ID not found'));
+      final userId = userIdResult.fold(
+        (failure) => throw Exception('User ID not found'),
+        (id) => id,
+      );
 
       final finalName = itineraryInput.name ?? existingItinerary.name;
       final finalNotes = itineraryInput.notes ?? existingItinerary.notes;
