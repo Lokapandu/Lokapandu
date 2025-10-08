@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
           ? _buildAIChatButton(context)
           : null,
       bottomNavigationBar: isNavigationPane
-          ? buildBottomNavigation(context, selectedIndex)
+          ? LokapanduBottomNavigation(selectedIndex: selectedIndex)
           : null,
     );
   }

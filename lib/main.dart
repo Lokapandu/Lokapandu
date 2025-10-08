@@ -7,8 +7,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:lokapandu/common/services/crashlytics_service.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
+import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
@@ -68,7 +71,16 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => di.locator<ThemeProvider>()..load(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<AnalyticsProvider>()..load(),
+        ),
         ChangeNotifierProvider(create: (_) => di.locator<AuthNotifier>()),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<PackageInfoNotifier>()..init(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<UserSettingsNotifier>()..init(),
+        ),
       ],
       child: const App(),
     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:provider/provider.dart';
@@ -47,48 +48,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      /// TODO: REMOVE THIS CODE AFTER IMPLEMENT LOGOUT UI ON SETTINGS SCREEN
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          try {
-            // Show loading indicator
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) =>
-                  const Center(child: CircularProgressIndicator()),
-            );
-
-            // Perform logout
-            await context.read<AuthNotifier>().signOut();
-
-            // Close loading dialog
-            if (context.mounted) {
-              Navigator.of(context).pop();
-
-              // Navigate to auth screen
-              context.pushReplacementNamed('auth');
-            }
-          } catch (e) {
-            // Close loading dialog if still open
-            if (context.mounted) {
-              Navigator.of(context).pop();
-
-              // Show error message
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Gagal logout!'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-
-              developer.log('Logout failed: $e', name: 'TourismSpotPage');
-            }
-          }
-        },
-        icon: const Icon(Icons.logout),
-        label: const Text('Logout'),
-      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,7 +145,12 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       return DestinationCard(
                         tourismSpot: spot,
                         onTap: () {
-                          context.push('/tourism_spot/preview/${spot.id}');
+                          context.push(
+                            Routing.tourismSpotPreview.fullPath.replaceFirst(
+                              ':id',
+                              spot.id.toString(),
+                            ),
+                          );
                         },
                       );
                     },

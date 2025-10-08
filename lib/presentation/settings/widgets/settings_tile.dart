@@ -6,6 +6,8 @@ class SettingsTile extends StatelessWidget {
   final String subtitle;
   final VoidCallback? onTap;
   final Widget? trailing;
+  final Color? iconColor;
+  final Color? titleColor;
 
   const SettingsTile({
     super.key,
@@ -14,6 +16,8 @@ class SettingsTile extends StatelessWidget {
     required this.subtitle,
     this.onTap,
     this.trailing,
+    this.iconColor,
+    this.titleColor,
   });
 
   @override
@@ -22,17 +26,23 @@ class SettingsTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
+    final effectiveIconColor = iconColor ?? colorScheme.primary;
+    final effectiveTitleColor = titleColor ?? textTheme.titleMedium?.color;
+
     return ListTile(
       onTap: onTap,
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: colorScheme.primary.withOpacity(0.1),
+          color: effectiveIconColor.withValues(alpha: .1),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: colorScheme.primary),
+        child: Icon(icon, color: effectiveIconColor),
       ),
-      title: Text(title, style: textTheme.titleMedium),
+      title: Text(
+        title,
+        style: textTheme.titleMedium?.copyWith(color: effectiveTitleColor),
+      ),
       subtitle: Text(
         subtitle,
         style: textTheme.bodyMedium?.copyWith(

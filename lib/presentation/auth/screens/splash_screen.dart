@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/services/firebase_analytics_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,15 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    super.initState();
-
-    // Track splash screen page view
-    FirebaseAnalyticsService().trackPageView(
-      screenName: 'splash',
-      screenClass: 'SplashScreen',
-      parameters: {'entry_time': DateTime.now().toIso8601String()},
-    );
-
+    super.initState();   
     // Background zoom animation controller
     _backgroundController = AnimationController(
       duration: const Duration(seconds: 3),
@@ -129,9 +122,9 @@ class _SplashScreenState extends State<SplashScreen>
       final isLoggedIn = user != null;
 
       if (isLoggedIn) {
-        context.pushReplacementNamed('home');
+        context.pushReplacementNamed(Routing.home.routeName);
       } else {
-        context.pushReplacementNamed('auth');
+        context.pushReplacementNamed(Routing.auth.routeName);
       }
     }
   }

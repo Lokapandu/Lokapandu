@@ -1,26 +1,32 @@
 enum Routing {
-  splash(path: '/', routeName: 'splash'),
-  auth(path: '/auth', routeName: 'auth'),
-  home(path: '/home', routeName: 'home'),
-  tourismSpot(path: '/tourism_spot', routeName: 'tourism_spot'),
+  splash('/', 'splash'),
+  auth('/auth', 'auth'),
+  home('/home', 'home'),
+  tourismSpot('/tourism_spot', 'tourism_spot'),
   tourismSpotPreview(
-    path: 'preview/:id', // inside tourism_spot
-    routeName: 'tourism_spot.preview',
+    'preview/:id', // inside tourism_spot
+    'tourism_spot.preview',
+    parent: '/tourism_spot',
   ),
   tourismSpotDetail(
-    path: 'detail', // inside tourism_spot
-    routeName: 'tourism_spot.detail',
+    'detail', // inside tourism_spot
+    'tourism_spot.detail',
+    parent: '/tourism_spot',
   ),
-  settings(path: '/settings', routeName: 'settings'),
-  aiChat(path: '/ai_chat', routeName: 'ai_chat'),
-  bookmarks(path: '/bookmarks', routeName: 'bookmarks'),
-  plan(path: '/plan', routeName: 'plan'),
-  planSearch(path: '/plan/search-tour', routeName: 'plan.search_tour'),
-  planAdd(path: '/plan/add-tour', routeName: 'plan.add_tour'),
-  planAddNote(path: '/plan/add-note', routeName: 'plan.add_note');
+  settings('/settings', 'settings'),
+  about('/about', 'about', parent: '/settings'),
+  aiChat('/ai_chat', 'ai_chat'),
+  bookmarks('/bookmarks', 'bookmarks', parent: '/settings'),
+  plan('/plan', 'plan'),
+  planSearch('/search-tour', 'plan.search_tour', parent: '/plan'),
+  planAdd('/add-tour', 'plan.add_tour', parent: '/plan'),
+  planAddNote('/add-note', 'plan.add_note', parent: '/plan');
 
+  final String? parent;
   final String path;
   final String routeName;
 
-  const Routing({required this.path, required this.routeName});
+  const Routing(this.path, this.routeName, {this.parent});
+
+  String get fullPath => parent == null ? path : '$parent$path';
 }

@@ -3,60 +3,107 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/presentation/home/models/navigation_item_model.dart';
 
-Widget buildBottomNavigation(BuildContext context, int selectedIndex) {
-  final theme = Theme.of(context);
-  const double cornerRadius = 30.0;
-  const double strokeWidth = 1.0;
-  final colorScheme = theme.colorScheme;
+class LokapanduBottomNavigation extends StatefulWidget {
+  final int selectedIndex;
+  const LokapanduBottomNavigation({super.key, required this.selectedIndex});
 
-  return ClipRRect(
-    borderRadius: const BorderRadius.only(
-      topLeft: Radius.circular(cornerRadius),
-      topRight: Radius.circular(cornerRadius),
-    ),
-    child: Container(
-      color: colorScheme.outlineVariant,
-      padding: EdgeInsets.all(strokeWidth),
+  @override
+  State<LokapanduBottomNavigation> createState() =>
+      _LokapanduBottomNavigationState();
+}
+
+class _LokapanduBottomNavigationState extends State<LokapanduBottomNavigation>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 1), // Start from bottom (off-screen)
+      end: Offset.zero, // End at normal position
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+
+    // Start the animation when widget is mounted
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    const double cornerRadius = 30.0;
+    const double strokeWidth = 1.0;
+    final colorScheme = theme.colorScheme;
+    
+    return SlideTransition(
+      position: _slideAnimation,
       child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(cornerRadius - strokeWidth),
-          topRight: Radius.circular(cornerRadius - strokeWidth),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(cornerRadius),
+          topRight: Radius.circular(cornerRadius),
         ),
-        child: BottomAppBar(
-          color: colorScheme.surfaceContainer,
-          clipBehavior: Clip.antiAlias,
-          elevation: 2,
-          child: Row(
-            spacing: 2,
-            children: [
-              ...navigationItems
-                  .map(
-                    (item) => NavItem(
-                      item: item,
-                      isSelected:
-                          selectedIndex == navigationItems.indexOf(item),
-                      onTap: () => context.go(item.path),
-                    ),
-                  )
-                  .take(2),
-              // How to give space between items
-              const Expanded(child: SizedBox()),
-              ...navigationItems
-                  .skip(2)
-                  .map(
-                    (item) => NavItem(
-                      item: item,
-                      isSelected:
-                          selectedIndex == navigationItems.indexOf(item),
-                      onTap: () => context.go(item.path),
-                    ),
-                  ),
-            ],
+        child: Container(
+          color: colorScheme.outlineVariant,
+          padding: EdgeInsets.all(strokeWidth),
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(cornerRadius - strokeWidth),
+              topRight: Radius.circular(cornerRadius - strokeWidth),
+            ),
+            child: BottomAppBar(
+              color: colorScheme.surfaceContainer,
+              clipBehavior: Clip.antiAlias,
+              elevation: 2,
+              child: Row(
+                spacing: 2,
+                children: [
+                  ...navigationItems
+                      .map(
+                        (item) => NavItem(
+                          item: item,
+                          isSelected:
+                              widget.selectedIndex ==
+                              navigationItems.indexOf(item),
+                          onTap: () => context.go(item.path),
+                        ),
+                      )
+                      .take(2),
+                  // How to give space between items
+                  const Expanded(child: SizedBox()),
+                  ...navigationItems
+                      .skip(2)
+                      .map(
+                        (item) => NavItem(
+                          item: item,
+                          isSelected:
+                              widget.selectedIndex ==
+                              navigationItems.indexOf(item),
+                          onTap: () => context.go(item.path),
+                        ),
+                      ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 class NavItem extends StatelessWidget {

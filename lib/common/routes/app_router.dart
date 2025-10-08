@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/analytic_page_observer.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
+import 'package:lokapandu/common/services/firebase_analytics_service.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
 import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:lokapandu/features/bookmark/screens/bookmark_screen.dart';
@@ -9,6 +11,7 @@ import 'package:lokapandu/features/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/plan_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_plan_editor_screen.dart';
 import 'package:lokapandu/features/plan/screens/tour_search_sceen.dart';
+import 'package:lokapandu/presentation/settings/screens/about_screen.dart';
 import 'package:lokapandu/presentation/settings/screens/settings_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
@@ -29,6 +32,7 @@ class AppRouter {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: Routing.splash.path,
+      observers: [AnalyticPageObserver()],
       routes: [
         GoRoute(
           path: Routing.splash.path,
@@ -111,14 +115,66 @@ class AppRouter {
                 const PlanScreen(),
                 name: Routing.plan.routeName,
               ),
+              routes: [
+                GoRoute(
+                  path: Routing.planSearch.path,
+                  name: Routing.planSearch.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromBottomTransition(
+                        const TourSearchScreen(),
+                        name: Routing.planSearch.routeName,
+                      ),
+                ),
+                GoRoute(
+                  path: Routing.planAdd.path,
+                  name: Routing.planAdd.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromBottomTransition(
+                        const TourPlanEditorScreen(),
+                        name: Routing.planAdd.routeName,
+                      ),
+                ),
+                GoRoute(
+                  path: Routing.planAddNote.path,
+                  name: Routing.planAddNote.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromBottomTransition(
+                        const NoteEditorScreen(),
+                        name: Routing.planAddNote.routeName,
+                      ),
+                ),
+              ],
             ),
             GoRoute(
               path: Routing.settings.path,
               name: Routing.settings.routeName,
-              pageBuilder: (context, state) => PageTransitions.noTransition(
-                const SettingsScreen(),
-                name: Routing.settings.routeName,
-              ),
+              pageBuilder: (context, state) {
+                return PageTransitions.noTransition(
+                  const SettingsScreen(),
+                  name: Routing.settings.routeName,
+                );
+              },
+              routes: [
+                GoRoute(
+                  path: Routing.bookmarks.path,
+                  name: Routing.bookmarks.routeName,
+                  pageBuilder: (context, state) =>
+                      PageTransitions.slideFromRightTransition(
+                        const BookmarkScreen(),
+                        name: Routing.bookmarks.routeName,
+                      ),
+                ),
+                GoRoute(
+                  path: Routing.about.path,
+                  name: Routing.about.routeName,
+                  pageBuilder: (context, state) {
+                    return PageTransitions.scaleTransition(
+                      const AboutScreen(),
+                      name: Routing.about.routeName,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -130,42 +186,6 @@ class AppRouter {
               PageTransitions.slideFromBottomTransition(
                 const AiChatScreen(),
                 name: Routing.aiChat.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.bookmarks.path,
-          name: Routing.bookmarks.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromRightTransition(
-                const BookmarkScreen(),
-                name: Routing.bookmarks.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.planSearch.path,
-          name: Routing.planSearch.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(
-                const TourSearchScreen(),
-                name: Routing.planSearch.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.planAdd.path,
-          name: Routing.planAdd.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(
-                const TourPlanEditorScreen(),
-                name: Routing.planAdd.routeName,
-              ),
-        ),
-        GoRoute(
-          path: Routing.planAddNote.path,
-          name: Routing.planAddNote.routeName,
-          pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(
-                const NoteEditorScreen(),
-                name: Routing.planAddNote.routeName,
               ),
         ),
       ],
