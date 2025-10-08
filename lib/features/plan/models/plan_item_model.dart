@@ -1,18 +1,16 @@
-// File: lib/features/plan/models/plan_item_model.dart
-
-enum PlanItemType { activity, tour }
+enum PlanItemType { tour, note, activity } // <-- 'activity' ditambahkan
 
 class PlanItem {
-  final PlanItemType type;
   final String title;
   final String timeRange;
-  final String? tourImageUrl; // Hanya untuk tipe 'tour'
-  final String? tourLocation; // Hanya untuk tipe 'tour'
+  final PlanItemType type;
+  final String? tourImageUrl;
+  final String? tourLocation;
 
   const PlanItem({
-    required this.type,
     required this.title,
     required this.timeRange,
+    required this.type,
     this.tourImageUrl,
     this.tourLocation,
   });

@@ -1,6 +1,10 @@
 // lib/features/tour_detail/screens/tour_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lokapandu/domain/entities/tourism_spot_entity.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
+import 'package:provider/provider.dart';
 import '../widgets/about_section.dart';
 import '../widgets/action_button_section.dart';
 import '../widgets/facilities_section.dart';
@@ -20,9 +24,10 @@ class TourismSpotDetailPage extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-         
           TourDetailSliverAppBar(
-            imageUrl: tour.images.isNotEmpty ? tour.images.first.imageUrl : '',
+            imageUrl: tour.images.isNotEmpty
+                ? tour.images.first.imageUrl
+                : '',
           ),
           SliverToBoxAdapter(
             child: Container(
@@ -58,11 +63,11 @@ class TourismSpotDetailPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: FacilitiesSection(facilities: tour.facilities),
+                    child: FacilitiesSection(
+                      facilities: tour.facilities,
+                    ),
                   ),
-                  const SizedBox(
-                    height: 48,
-                  ), 
+                  const SizedBox(height: 48),
                 ],
               ),
             ),

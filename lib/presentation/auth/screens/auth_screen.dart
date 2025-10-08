@@ -1,34 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/auth/widgets/sign_in_error_message.dart';
 import 'package:provider/provider.dart';
-import 'package:lokapandu/common/services/firebase_analytics_service.dart';
-import 'package:lokapandu/presentation/auth/providers/auth_provider.dart';
+import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/common/utils/error_message_helper.dart';
 
-class AuthScreen extends StatefulWidget {
+class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
-
-  @override
-  State<AuthScreen> createState() => _AuthScreenState();
-}
-
-class _AuthScreenState extends State<AuthScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    // Track auth screen page view
-    FirebaseAnalyticsService().trackPageView(
-      screenName: 'auth',
-      screenClass: 'AuthScreen',
-      parameters: {
-        'entry_time': DateTime.now().toIso8601String(),
-        'source': 'splash_screen',
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +26,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   Text(
                     'Lokapandu',
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       color: Theme.of(context).primaryColor,
                     ),
                   ),
@@ -108,6 +88,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           : 'Masuk dengan Google',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         fontWeight: FontWeight.w600,
+                        color: Colors.black,
                       ),
                     ),
                     onPressed: authNotifier.status == AuthStatus.loading
@@ -121,7 +102,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             final success = await authNotifier
                                 .signInWithGoogle();
                             if (success && context.mounted) {
-                              context.goNamed('tourism_spot');
+                              context.goNamed(Routing.home.routeName);
                             }
                           },
                     style: ElevatedButton.styleFrom(

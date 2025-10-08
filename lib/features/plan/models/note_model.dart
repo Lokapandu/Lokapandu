@@ -1,17 +1,19 @@
-// File: lib/features/plan/models/note_model.dart
+import 'package:flutter/material.dart';
 
 class Note {
-  final String? id; // Akan null saat membuat catatan baru
+  final String id;
   final String title;
   final String content;
   final DateTime startTime;
   final DateTime endTime;
+  final Color color;
 
-  const Note({
-    this.id,
+  Note({
+    required this.id,
     required this.title,
     required this.content,
     required this.startTime,
     required this.endTime,
+    this.color = Colors.orange,
   });
 }

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "815598506761-4l8la5k5aj5eeaupigcpis6et4e0innv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.lokapandu.lokapandu",
+            "certificate_hash": "803edb52afd688db4b1d0bdee191fe54e34716bc"
+          }
+        },
+        {
           "client_id": "815598506761-j8c2icgmo1h77a6or9nbu900kdgnltsb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

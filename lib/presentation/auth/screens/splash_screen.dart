@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/services/firebase_analytics_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,15 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    super.initState();
-
-    // Track splash screen page view
-    FirebaseAnalyticsService().trackPageView(
-      screenName: 'splash',
-      screenClass: 'SplashScreen',
-      parameters: {'entry_time': DateTime.now().toIso8601String()},
-    );
-
+    super.initState();   
     // Background zoom animation controller
     _backgroundController = AnimationController(
       duration: const Duration(seconds: 3),
@@ -129,9 +122,9 @@ class _SplashScreenState extends State<SplashScreen>
       final isLoggedIn = user != null;
 
       if (isLoggedIn) {
-        context.pushReplacementNamed('tourism_spot');
+        context.pushReplacementNamed(Routing.home.routeName);
       } else {
-        context.pushReplacementNamed('auth');
+        context.pushReplacementNamed(Routing.auth.routeName);
       }
     }
   }
@@ -196,16 +189,19 @@ class _SplashScreenState extends State<SplashScreen>
                     builder: (context, child) {
                       return Opacity(
                         opacity: _fadeAnimation.value,
-                        child: const Text(
+                        child: Text(
                           'Lokapandu',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(blurRadius: 8.0, color: Colors.black45),
-                            ],
-                          ),
+                          style: Theme.of(context).textTheme.headlineLarge
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 8.0,
+                                    color: Colors.black45,
+                                  ),
+                                ],
+                              ),
                         ),
                       );
                     },
@@ -243,23 +239,19 @@ class _SplashScreenState extends State<SplashScreen>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
+        Text(
           'Selamat Datang',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 32,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            color: Colors.white.withValues(alpha: 0.9),
             fontWeight: FontWeight.bold,
-            shadows: [Shadow(blurRadius: 8.0, color: Colors.black54)],
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Text(
           'Jelajahi dunia dengan Lokapandu\nsebagai pemandu andalanmu',
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             color: Colors.white.withValues(alpha: 0.9),
-            fontSize: 18,
-            height: 1.5,
             shadows: const [Shadow(blurRadius: 6.0, color: Colors.black54)],
           ),
           textAlign: TextAlign.center,

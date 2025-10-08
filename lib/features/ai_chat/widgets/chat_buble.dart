@@ -17,9 +17,8 @@ class ChatBubble extends StatelessWidget {
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
 
-    // --- PERUBAHAN UTAMA ADA DI SINI ---
 
-    // 1. Mengambil warna bubble dari theme
+
     final color = isFromUser ? colorScheme.primary : colorScheme.outlineVariant;
 
     // 2. Mengambil warna teks dari theme

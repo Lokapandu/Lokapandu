@@ -45,6 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+<<<<<<< HEAD
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Aplikasi membutuhkan akses lokasi saat digunakan</string>
+=======
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -58,5 +62,6 @@
 			<string>id.lokapandu.lokapandu</string>
 		</dict>
 	</array>
+>>>>>>> team
 </dict>
 </plist>

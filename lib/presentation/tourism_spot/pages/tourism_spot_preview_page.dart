@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 
 class TourismSpotPreviewPage extends StatefulWidget {
   final int id;
@@ -53,36 +53,6 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
           ),
         ),
         centerTitle: true,
-        // --- FIX: Tombol bookmark dipindahkan ke sini ---
-        actions: [
-          // Gunakan Consumer<BookmarkProvider> untuk mendapatkan status bookmark
-          Consumer<BookmarkProvider>(
-            builder: (context, bookmarkProvider, _) {
-              // Baca data 'tour' dari notifier detail, karena AppBar berada di dalam Consumer utama
-              final tour = context
-                  .read<TourismSpotDetailNotifier>()
-                  .tourismSpot;
-
-              // Jika data tour belum siap, jangan tampilkan tombol
-              if (tour == null) return const SizedBox.shrink();
-
-              final isBookmarked = bookmarkProvider.isBookmarked(tour);
-              return CircleAvatar(
-                backgroundColor: Colors.black.withOpacity(0.4),
-                child: IconButton(
-                  icon: Icon(
-                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: isBookmarked ? colorScheme.primary : Colors.white,
-                  ),
-                  onPressed: () {
-                    bookmarkProvider.toggleBookmark(tour);
-                  },
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 16), // Beri jarak dari tepi kanan
-        ],
       ),
       body: Consumer<TourismSpotDetailNotifier>(
         builder: (context, notifier, child) {
@@ -106,7 +76,6 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                   child: _buildBackgroundImage(context),
                 ),
               ),
-              // --- Tombol bookmark DIHAPUS DARI SINI ---
               Align(
                 alignment: Alignment.bottomCenter,
                 child: ClipRRect(
@@ -162,7 +131,10 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () {
-                              context.push('/tour-detail', extra: tour);
+                              context.push(
+                                Routing.tourismSpotDetail.fullPath,
+                                extra: tour,
+                              );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorScheme.primary,

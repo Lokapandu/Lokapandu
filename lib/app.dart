@@ -3,28 +3,35 @@ import 'package:lokapandu/common/routes/app_router.dart';
 import 'package:lokapandu/common/themes/theme.dart';
 import 'package:lokapandu/common/themes/util.dart';
 import 'package:lokapandu/presentation/common/widgets/error_boundary.dart';
+import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
+  static final _router = AppRouter.createRouter();
+
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
     TextTheme textTheme = createTextTheme(context, "Open Sans", "Nunito");
-
     MaterialTheme theme = MaterialTheme(textTheme);
 
     return ErrorBoundary(
       errorContext: 'App Root',
-      child: MaterialApp.router(
-        title: 'Lokapandu',
-        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-        routerConfig: AppRouter.createRouter(),
-        // Tambahkan navigation observer untuk tracking
-        builder: (context, child) {
-          return ErrorBoundary(
-            errorContext: 'App Builder',
-            child: child ?? const SizedBox.shrink(),
+      child: Builder(
+        builder: (context) {
+          return MaterialApp.router(
+            title: 'Lokapandu',
+            themeMode: context.watch<ThemeProvider>().themeMode,
+            theme: theme.light(),
+            darkTheme: theme.dark(),
+            routerConfig: _router,
+            builder: (context, child) {
+              return ErrorBoundary(
+                errorContext: 'App Builder',
+                child: child ?? const SizedBox.shrink(),
+              );
+            },
           );
         },
       ),
