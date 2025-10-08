@@ -45,3 +45,39 @@ class DataParsingException implements Exception {
   @override
   String toString() => 'DataParsingException: $message';
 }
+
+class ValidationException implements Exception {
+  final String message;
+
+  const ValidationException(this.message);
+
+  @override
+  String toString() => 'ValidationException: $message';
+}
+
+class SchedulingConflictException implements Exception {
+  final String message;
+
+  const SchedulingConflictException(this.message);
+
+  @override
+  String toString() => 'SchedulingConflictException: $message';
+}
+
+class InvalidTimeRangeException implements Exception {
+  final String message;
+
+  const InvalidTimeRangeException(this.message);
+
+  @override
+  String toString() => 'InvalidTimeRangeException: $message';
+}
+
+class MissingFieldException implements Exception {
+  final String message;
+
+  const MissingFieldException(this.message);
+
+  @override
+  String toString() => 'MissingFieldException: $message';
+}
