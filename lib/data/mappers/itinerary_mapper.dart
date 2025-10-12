@@ -10,7 +10,7 @@ extension ItineraryEntityMapper on Itinerary {
     startTime: startTime,
     endTime: endTime,
     createdAt: createdAt,
-    tourismSpotId: tourismSpot?.id,    
+    tourismSpotId: tourismSpot?.id,
   );
 }
 
@@ -22,6 +22,6 @@ extension ItineraryModelMapper on ItineraryModel {
     startTime: startTime,
     endTime: endTime,
     createdAt: createdAt,
-    tourismSpot: tourismSpot,    
+    tourismSpot: tourismSpot,
   );
 }

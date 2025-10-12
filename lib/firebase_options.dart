@@ -63,9 +63,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '815598506761',
     projectId: 'lokapandu-29bc5',
     storageBucket: 'lokapandu-29bc5.firebasestorage.app',
-    androidClientId: '815598506761-j8c2icgmo1h77a6or9nbu900kdgnltsb.apps.googleusercontent.com',
-    iosClientId: '815598506761-ho0ck3e9k89r8v5eutsg1mvhg2o6raup.apps.googleusercontent.com',
+    androidClientId:
+        '815598506761-j8c2icgmo1h77a6or9nbu900kdgnltsb.apps.googleusercontent.com',
+    iosClientId:
+        '815598506761-ho0ck3e9k89r8v5eutsg1mvhg2o6raup.apps.googleusercontent.com',
     iosBundleId: 'id.lokapandu.lokapandu',
   );
-
 }

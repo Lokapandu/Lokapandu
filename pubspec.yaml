@@ -16,6 +16,7 @@ dependencies:
   firebase_core: ^4.1.0
   firebase_crashlytics: ^5.0.0
   firebase_ai: ^3.2.0
+  firebase_messaging: ^16.0.2
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   dartz: ^0.10.1
@@ -54,6 +55,7 @@ dependencies:
   dotted_border: ^2.1.0
   text_scroll: ^0.2.1
   package_info_plus: ^9.0.0
+  flutter_riverpod: ^3.0.3
   
 dev_dependencies:
   flutter_test:

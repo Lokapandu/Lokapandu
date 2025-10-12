@@ -7,13 +7,25 @@ import 'package:brick_offline_first_with_supabase/brick_offline_first_with_supab
 // ignore: unused_import, unused_shown_name, unnecessary_import
 import 'package:brick_sqlite/brick_sqlite.dart';
 // ignore: unused_import, unused_shown_name, unnecessary_import
-import 'package:brick_supabase/brick_supabase.dart';// GENERATED CODE DO NOT EDIT
+import 'package:brick_supabase/brick_supabase.dart'; // GENERATED CODE DO NOT EDIT
 // ignore: unused_import
 import 'dart:convert';
-import 'package:brick_sqlite/brick_sqlite.dart' show SqliteModel, SqliteAdapter, SqliteModelDictionary, RuntimeSqliteColumnDefinition, SqliteProvider;
-import 'package:brick_supabase/brick_supabase.dart' show SupabaseProvider, SupabaseModel, SupabaseAdapter, SupabaseModelDictionary;
+import 'package:brick_sqlite/brick_sqlite.dart'
+    show
+        SqliteModel,
+        SqliteAdapter,
+        SqliteModelDictionary,
+        RuntimeSqliteColumnDefinition,
+        SqliteProvider;
+import 'package:brick_supabase/brick_supabase.dart'
+    show
+        SupabaseProvider,
+        SupabaseModel,
+        SupabaseAdapter,
+        SupabaseModelDictionary;
 // ignore: unused_import, unused_shown_name
-import 'package:brick_offline_first/brick_offline_first.dart' show RuntimeOfflineFirstDefinition;
+import 'package:brick_offline_first/brick_offline_first.dart'
+    show RuntimeOfflineFirstDefinition;
 // ignore: unused_import, unused_shown_name
 import 'package:sqflite_common/sqlite_api.dart' show DatabaseExecutor;
 
@@ -32,7 +44,7 @@ final Map<Type, SupabaseAdapter<SupabaseModel>> supabaseMappings = {
   TourismImageModel: TourismImageModelAdapter(),
   UserItineraryModel: UserItineraryModelAdapter(),
   ItineraryModel: ItineraryModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter()
+  TourismSpotModel: TourismSpotModelAdapter(),
 };
 final supabaseModelDictionary = SupabaseModelDictionary(supabaseMappings);
 
@@ -41,6 +53,6 @@ final Map<Type, SqliteAdapter<SqliteModel>> sqliteMappings = {
   TourismImageModel: TourismImageModelAdapter(),
   UserItineraryModel: UserItineraryModelAdapter(),
   ItineraryModel: ItineraryModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter()
+  TourismSpotModel: TourismSpotModelAdapter(),
 };
 final sqliteModelDictionary = SqliteModelDictionary(sqliteMappings);

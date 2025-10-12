@@ -22,9 +22,11 @@ import 'package:uuid/uuid.dart';
 
 class ItineraryRepositoryImpl implements ItineraryRepository {
   static const int _bufferTimeMinutes = 1;
-  
+
   @override
-  Future<Either<Failure, Itinerary>> getItineraryById(String itineraryId) async {
+  Future<Either<Failure, Itinerary>> getItineraryById(
+    String itineraryId,
+  ) async {
     try {
       final itineraryResults = await Repository().getAll<ItineraryModel>(
         query: Query.where('id', itineraryId),
@@ -36,8 +38,10 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       }
 
       final itineraryModel = itineraryResults.first;
-      final itineraryEntities = await _toEntitiesWithRelations([itineraryModel]);
-      
+      final itineraryEntities = await _toEntitiesWithRelations([
+        itineraryModel,
+      ]);
+
       return Right(itineraryEntities.first);
     } on ConnectionException catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
@@ -49,12 +53,15 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
   }
 
   @override
-  Future<Either<Failure, String>> getUserIdByItineraryId(String itineraryId) async {
+  Future<Either<Failure, String>> getUserIdByItineraryId(
+    String itineraryId,
+  ) async {
     try {
-      final userItineraryResults = await Repository().getAll<UserItineraryModel>(
-        query: Query.where('itinerariesId', itineraryId),
-        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
-      );
+      final userItineraryResults = await Repository()
+          .getAll<UserItineraryModel>(
+            query: Query.where('itinerariesId', itineraryId),
+            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+          );
 
       if (userItineraryResults == null || userItineraryResults.isEmpty) {
         return Left(ServerFailure('User itinerary association not found'));
@@ -71,7 +78,9 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> checkTourismSpotExists(int tourismSpotId) async {
+  Future<Either<Failure, bool>> checkTourismSpotExists(
+    int tourismSpotId,
+  ) async {
     try {
       final tourismSpotResult = await Repository().getAll<TourismSpotModel>(
         query: Query.where('id', tourismSpotId),
@@ -84,7 +93,9 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       return Right(true);
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
-      return Left(ServerFailure('Error checking tourism spot: ${e.toString()}'));
+      return Left(
+        ServerFailure('Error checking tourism spot: ${e.toString()}'),
+      );
     }
   }
 
@@ -96,16 +107,19 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     String? excludeItineraryId,
   ]) async {
     try {
-      final userItineraryResults = await Repository().getAll<UserItineraryModel>(
-        query: Query.where('userId', userId),
-        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
-      );
+      final userItineraryResults = await Repository()
+          .getAll<UserItineraryModel>(
+            query: Query.where('userId', userId),
+            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+          );
 
       if (userItineraryResults == null || userItineraryResults.isEmpty) {
         return Right(false);
       }
 
-      final itineraryIds = userItineraryResults.map((e) => e.itinerariesId).toList();
+      final itineraryIds = userItineraryResults
+          .map((e) => e.itinerariesId)
+          .toList();
 
       if (itineraryIds.isEmpty) return Right(false);
 
@@ -122,11 +136,16 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
       if (itineraries.isEmpty) return Right(false);
 
-      final bufferedStartTime = startTime.subtract(Duration(minutes: _bufferTimeMinutes));
-      final bufferedEndTime = endTime.add(Duration(minutes: _bufferTimeMinutes));
+      final bufferedStartTime = startTime.subtract(
+        Duration(minutes: _bufferTimeMinutes),
+      );
+      final bufferedEndTime = endTime.add(
+        Duration(minutes: _bufferTimeMinutes),
+      );
 
       for (final itinerary in itineraries) {
-        if (excludeItineraryId != null && itinerary.id == excludeItineraryId) continue;
+        if (excludeItineraryId != null && itinerary.id == excludeItineraryId)
+          continue;
 
         if (bufferedStartTime.isBefore(itinerary.endTime) &&
             bufferedEndTime.isAfter(itinerary.startTime)) {
@@ -137,9 +156,12 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       return Right(false);
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
-      return Left(ServerFailure('Error checking scheduling conflicts: ${e.toString()}'));
+      return Left(
+        ServerFailure('Error checking scheduling conflicts: ${e.toString()}'),
+      );
     }
   }
+
   @override
   Future<Either<Failure, List<Itinerary>>> getUserItineraries(
     String userId,

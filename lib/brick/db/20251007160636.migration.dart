@@ -13,12 +13,12 @@ const List<MigrationCommand> _migration_20251007160636_up = [
   DropColumn('id', onTable: 'ItineraryModel'),
   DropColumn('itineraries_id', onTable: 'UserItineraryModel'),
   InsertColumn('id', Column.varchar, onTable: 'ItineraryModel', unique: true),
-  InsertColumn('itineraries_id', Column.varchar, onTable: 'UserItineraryModel')
+  InsertColumn('itineraries_id', Column.varchar, onTable: 'UserItineraryModel'),
 ];
 
 const List<MigrationCommand> _migration_20251007160636_down = [
   DropColumn('id', onTable: 'ItineraryModel'),
-  DropColumn('itineraries_id', onTable: 'UserItineraryModel')
+  DropColumn('itineraries_id', onTable: 'UserItineraryModel'),
 ];
 
 //

@@ -16,10 +16,10 @@ class AnalyticsProvider extends ChangeNotifier {
   Future<void> load() async {
     final prefs = await PrefsStore.instance;
     _analyticsEnabled = prefs.getBool(_key) ?? true; // Default to true
-    
+
     // Apply the setting to the analytics manager
     await _analyticsManager.setAnalyticsCollectionEnabled(_analyticsEnabled);
-    
+
     notifyListeners();
   }
 
@@ -29,17 +29,15 @@ class AnalyticsProvider extends ChangeNotifier {
 
     // Apply the setting to the analytics manager
     await _analyticsManager.setAnalyticsCollectionEnabled(_analyticsEnabled);
-    
+
     // Track this event only if analytics is being enabled
     if (_analyticsEnabled) {
       await _analyticsManager.trackEvent(
         eventName: 'analytics_toggled',
-        parameters: {
-          'analytics_enabled': _analyticsEnabled,
-        },
+        parameters: {'analytics_enabled': _analyticsEnabled},
       );
     }
-    
+
     await save();
   }
 

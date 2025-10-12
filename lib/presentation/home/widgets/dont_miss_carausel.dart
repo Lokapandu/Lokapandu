@@ -18,26 +18,22 @@ class DontMissCarousel extends StatelessWidget {
 
   static final List<_CarouselItem> _carouselItems = [
     _CarouselItem(
-      imageUrl:
-          'assets/images/taman_ujung.jpg', 
+      imageUrl: 'assets/images/taman_ujung.jpg',
       title: 'Taman Ujung',
       location: 'Bali',
     ),
     _CarouselItem(
-      imageUrl:
-          'assets/images/tirta_gangga.jpg', 
+      imageUrl: 'assets/images/tirta_gangga.jpg',
       title: 'Tirta Gangga',
       location: 'Bali',
     ),
     _CarouselItem(
-      imageUrl:
-          'assets/images/taman_ujung.jpg', 
+      imageUrl: 'assets/images/taman_ujung.jpg',
       title: 'Taman Ujung',
       location: 'Bali',
     ),
   ];
 
-  
   Widget _buildCarouselImage(String imageUrl, ColorScheme colorScheme) {
     bool isNetwork = imageUrl.startsWith('http');
 
@@ -55,7 +51,6 @@ class DontMissCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
@@ -67,7 +62,7 @@ class DontMissCarousel extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Text(
             'Jangan Lewatkan Ini!',
-            
+
             style: textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
@@ -95,10 +90,8 @@ class DontMissCarousel extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                   
                     _buildCarouselImage(item.imageUrl, colorScheme),
 
-                  
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -109,11 +102,10 @@ class DontMissCarousel extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           stops: const [0.5, 1.0],
-                  ),
-                ),
+                        ),
+                      ),
                     ),
 
-                  
                     Positioned(
                       bottom: 16,
                       left: 16,
