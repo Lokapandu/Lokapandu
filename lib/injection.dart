@@ -149,7 +149,7 @@ Future<void> initDependencies() async {
     () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
   );
 
-   locator.registerLazySingleton<GetCurrentWeather>(
+  locator.registerLazySingleton<GetCurrentWeather>(
     () => GetCurrentWeather(locator<WeatherPort>()),
   );
   locator.registerLazySingleton<GetDistance>(

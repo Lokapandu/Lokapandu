@@ -2,17 +2,18 @@ import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
 
 class DebugAnalyticsService {
-  static final DebugAnalyticsService _instance = DebugAnalyticsService._internal();
+  static final DebugAnalyticsService _instance =
+      DebugAnalyticsService._internal();
   factory DebugAnalyticsService() => _instance;
   DebugAnalyticsService._internal();
 
   // Store events for debugging purposes
   final List<Map<String, dynamic>> _events = [];
-  
+
   // Debug configuration
   static const String _debugTag = 'DebugAnalytics';
   static const bool _enableConsoleOutput = kDebugMode;
-  
+
   // Allowed pages for tracking (can be expanded)
   static const Set<String> _allowedPages = {'splash', 'auth'};
 
@@ -43,9 +44,10 @@ class DebugAnalyticsService {
     Map<String, Object>? parameters,
   }) async {
     // Extract page from parameters or event name
-    final page = _extractPageFromParameters(parameters) ?? 
-                 _extractPageFromEventName(eventName);
-    
+    final page =
+        _extractPageFromParameters(parameters) ??
+        _extractPageFromEventName(eventName);
+
     if (page != null && !_allowedPages.contains(page)) return;
 
     final event = {
@@ -68,9 +70,10 @@ class DebugAnalyticsService {
     int? value,
     Map<String, Object?>? parameters,
   }) async {
-    final page = _extractPageFromParameters(parameters) ?? 
-                 _extractPageFromAction(action);
-    
+    final page =
+        _extractPageFromParameters(parameters) ??
+        _extractPageFromAction(action);
+
     if (page != null && !_allowedPages.contains(page)) return;
 
     final event = {
@@ -97,9 +100,10 @@ class DebugAnalyticsService {
   }) async {
     final sourcePage = source?.toLowerCase();
     final destPage = destination.toLowerCase();
-    
+
     // Track if either source or destination is in allowed pages
-    if (sourcePage != null && !_allowedPages.contains(sourcePage) &&
+    if (sourcePage != null &&
+        !_allowedPages.contains(sourcePage) &&
         !_allowedPages.contains(destPage)) {
       return;
     }
@@ -126,9 +130,10 @@ class DebugAnalyticsService {
     String? label,
     Map<String, Object>? parameters,
   }) async {
-    final page = _extractPageFromParameters(parameters) ?? 
-                 _extractPageFromCategory(category);
-    
+    final page =
+        _extractPageFromParameters(parameters) ??
+        _extractPageFromCategory(category);
+
     if (page != null && !_allowedPages.contains(page)) return;
 
     final event = {
@@ -154,7 +159,7 @@ class DebugAnalyticsService {
     Map<String, Object>? parameters,
   }) async {
     final page = _extractPageFromParameters(parameters);
-    
+
     if (page != null && !_allowedPages.contains(page)) return;
 
     final event = {
@@ -179,10 +184,10 @@ class DebugAnalyticsService {
         name: _debugTag,
         time: DateTime.now(),
       );
-      
+
       // Log main event details
       final mainDetails = <String>[];
-      
+
       switch (event['type']) {
         case 'page_view':
           mainDetails.add('Screen: ${event['screen_name']}');
@@ -200,11 +205,15 @@ class DebugAnalyticsService {
           }
           break;
         case 'navigation':
-          mainDetails.add('${event['source'] ?? 'Unknown'} -> ${event['destination']}');
+          mainDetails.add(
+            '${event['source'] ?? 'Unknown'} -> ${event['destination']}',
+          );
           mainDetails.add('Method: ${event['method']}');
           break;
         case 'timing':
-          mainDetails.add('${event['category']}.${event['variable']}: ${event['time_ms']}ms');
+          mainDetails.add(
+            '${event['category']}.${event['variable']}: ${event['time_ms']}ms',
+          );
           break;
         case 'error':
           mainDetails.add('Error: ${event['error']}');
@@ -213,31 +222,22 @@ class DebugAnalyticsService {
           }
           break;
       }
-      
+
       if (mainDetails.isNotEmpty) {
-        developer.log(
-          mainDetails.join(' | '),
-          name: _debugTag,
-        );
+        developer.log(mainDetails.join(' | '), name: _debugTag);
       }
-      
+
       // Log parameters if present
-      if (event['parameters'] != null && 
+      if (event['parameters'] != null &&
           (event['parameters'] as Map).isNotEmpty) {
-        developer.log(
-          'Parameters: ${event['parameters']}',
-          name: _debugTag,
-        );
+        developer.log('Parameters: ${event['parameters']}', name: _debugTag);
       }
-      
+
       // Log page context
       if (event['page'] != null) {
-        developer.log(
-          'Page Context: ${event['page']}',
-          name: _debugTag,
-        );
+        developer.log('Page Context: ${event['page']}', name: _debugTag);
       }
-      
+
       developer.log('---', name: _debugTag);
     }
   }
@@ -245,11 +245,12 @@ class DebugAnalyticsService {
   /// Extract page from parameters
   String? _extractPageFromParameters(Map<String, Object?>? parameters) {
     if (parameters == null) return null;
-    
-    final page = parameters['page']?.toString().toLowerCase() ??
-                 parameters['screen']?.toString().toLowerCase() ??
-                 parameters['screen_name']?.toString().toLowerCase();
-    
+
+    final page =
+        parameters['page']?.toString().toLowerCase() ??
+        parameters['screen']?.toString().toLowerCase() ??
+        parameters['screen_name']?.toString().toLowerCase();
+
     return page;
   }
 
@@ -293,7 +294,9 @@ class DebugAnalyticsService {
 
   /// Get events by page
   List<Map<String, dynamic>> getEventsByPage(String page) {
-    return _events.where((event) => event['page'] == page.toLowerCase()).toList();
+    return _events
+        .where((event) => event['page'] == page.toLowerCase())
+        .toList();
   }
 
   /// Get events by type
@@ -315,24 +318,18 @@ class DebugAnalyticsService {
   /// Print summary of all events
   void printSummary() {
     if (kDebugMode && _enableConsoleOutput) {
-      developer.log(
-        '=== DEBUG ANALYTICS SUMMARY ===',
-        name: _debugTag,
-      );
-      
-      developer.log(
-        'Total Events: ${_events.length}',
-        name: _debugTag,
-      );
+      developer.log('=== DEBUG ANALYTICS SUMMARY ===', name: _debugTag);
+
+      developer.log('Total Events: ${_events.length}', name: _debugTag);
 
       // Group by type
       final eventsByType = <String, int>{};
       final eventsByPage = <String, int>{};
-      
+
       for (final event in _events) {
         final type = event['type'] as String? ?? 'unknown';
         final page = event['page'] as String? ?? 'unknown';
-        
+
         eventsByType[type] = (eventsByType[type] ?? 0) + 1;
         eventsByPage[page] = (eventsByPage[page] ?? 0) + 1;
       }
@@ -346,17 +343,17 @@ class DebugAnalyticsService {
       eventsByPage.forEach((page, count) {
         developer.log('  $page: $count', name: _debugTag);
       });
-      
+
       developer.log('=== END SUMMARY ===', name: _debugTag);
     }
   }
 
   /// Get debug status
   bool get isDebugEnabled => _enableConsoleOutput && kDebugMode;
-  
+
   /// Get allowed pages
   Set<String> get allowedPages => Set.unmodifiable(_allowedPages);
-  
+
   /// Get events count
   int get eventsCount => _events.length;
 }

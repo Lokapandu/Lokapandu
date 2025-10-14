@@ -21,9 +21,7 @@ class TourismSpotDetailPage extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           TourDetailSliverAppBar(
-            imageUrl: tour.images.isNotEmpty
-                ? tour.images.first.imageUrl
-                : '',
+            imageUrl: tour.images.isNotEmpty ? tour.images.first.imageUrl : '',
           ),
           SliverToBoxAdapter(
             child: Container(
@@ -59,9 +57,7 @@ class TourismSpotDetailPage extends StatelessWidget {
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: FacilitiesSection(
-                      facilities: tour.facilities,
-                    ),
+                    child: FacilitiesSection(facilities: tour.facilities),
                   ),
                   const SizedBox(height: 48),
                 ],

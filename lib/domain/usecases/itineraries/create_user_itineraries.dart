@@ -57,10 +57,9 @@ class CreateUserItineraries {
       return timeRangeValidation;
     }
 
-    final tourismSpotValidation =
-        await validators.validateTourismSpotExists(
-          itineraryInput.tourismSpot,
-        );
+    final tourismSpotValidation = await validators.validateTourismSpotExists(
+      itineraryInput.tourismSpot,
+    );
     if (tourismSpotValidation.isLeft()) {
       return tourismSpotValidation;
     }

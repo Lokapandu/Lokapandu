@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import '../widgets/settings_tile.dart';
+import 'package:lokapandu/presentation/settings/providers/notification_settings_notifier.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -70,6 +71,23 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
             ),
+          ),
+          Consumer<NotificationSettingsNotifier>(
+            builder: (context, notificationNotifier, child) {
+              return SettingsTile(
+                icon: Icons.notifications_outlined,
+                title: 'Notifikasi',
+                subtitle: notificationNotifier.isNotificationEnabled
+                    ? 'Anda akan menerima informasi terbaru'
+                    : 'Anda tidak akan menerima notifikasi',
+                trailing: Switch(
+                  value: notificationNotifier.isNotificationEnabled,
+                  onChanged: (value) {
+                    notificationNotifier.setNotificationStatus(value);
+                  },
+                ),
+              );
+            },
           ),
           const Divider(height: 48, indent: 24, endIndent: 24),
           _buildSectionTitle(context, 'Lainnya'),

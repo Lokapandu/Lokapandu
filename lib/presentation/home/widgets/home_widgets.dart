@@ -24,14 +24,17 @@ class _LokapanduBottomNavigationState extends State<LokapanduBottomNavigation>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1), // Start from bottom (off-screen)
-      end: Offset.zero, // End at normal position
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+
+    _slideAnimation =
+        Tween<Offset>(
+          begin: const Offset(0, 1), // Start from bottom (off-screen)
+          end: Offset.zero, // End at normal position
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     // Start the animation when widget is mounted
     _animationController.forward();
@@ -49,7 +52,7 @@ class _LokapanduBottomNavigationState extends State<LokapanduBottomNavigation>
     const double cornerRadius = 30.0;
     const double strokeWidth = 1.0;
     final colorScheme = theme.colorScheme;
-    
+
     return SlideTransition(
       position: _slideAnimation,
       child: ClipRRect(
