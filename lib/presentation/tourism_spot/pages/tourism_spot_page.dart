@@ -7,7 +7,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
-
+import 'package:lokapandu/presentation/tourism_spot/widgets/empty_search_state.dart';
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});
@@ -98,25 +98,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
 
                   if (!notifier.hasData) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.location_off_outlined,
-                            size: 64,
-                            color: theme.colorScheme.outline,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Tidak ada wisata ditemukan',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: theme.colorScheme.outline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
+                    return const EmptySearchState();
                   }
 
                   final filteredSpots = _selectedCategory == 'Semua'

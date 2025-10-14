@@ -17,30 +17,30 @@ import 'package:brick_offline_first/brick_offline_first.dart' show RuntimeOfflin
 // ignore: unused_import, unused_shown_name
 import 'package:sqflite_common/sqlite_api.dart' show DatabaseExecutor;
 
-import '../brick/models/itinerary.model.dart';
 import '../brick/models/tourism_image.model.dart';
-import '../brick/models/tourism_spot.model.dart';
 import '../brick/models/user_itinerary.model.dart';
+import '../brick/models/itinerary.model.dart';
+import '../brick/models/tourism_spot.model.dart';
 
-part 'adapters/itinerary_model_adapter.g.dart';
 part 'adapters/tourism_image_model_adapter.g.dart';
-part 'adapters/tourism_spot_model_adapter.g.dart';
 part 'adapters/user_itinerary_model_adapter.g.dart';
+part 'adapters/itinerary_model_adapter.g.dart';
+part 'adapters/tourism_spot_model_adapter.g.dart';
 
 /// Supabase mappings should only be used when initializing a [SupabaseProvider]
 final Map<Type, SupabaseAdapter<SupabaseModel>> supabaseMappings = {
-  ItineraryModel: ItineraryModelAdapter(),
   TourismImageModel: TourismImageModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter(),
-  UserItineraryModel: UserItineraryModelAdapter()
+  UserItineraryModel: UserItineraryModelAdapter(),
+  ItineraryModel: ItineraryModelAdapter(),
+  TourismSpotModel: TourismSpotModelAdapter()
 };
 final supabaseModelDictionary = SupabaseModelDictionary(supabaseMappings);
 
 /// Sqlite mappings should only be used when initializing a [SqliteProvider]
 final Map<Type, SqliteAdapter<SqliteModel>> sqliteMappings = {
-  ItineraryModel: ItineraryModelAdapter(),
   TourismImageModel: TourismImageModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter(),
-  UserItineraryModel: UserItineraryModelAdapter()
+  UserItineraryModel: UserItineraryModelAdapter(),
+  ItineraryModel: ItineraryModelAdapter(),
+  TourismSpotModel: TourismSpotModelAdapter()
 };
 final sqliteModelDictionary = SqliteModelDictionary(sqliteMappings);
