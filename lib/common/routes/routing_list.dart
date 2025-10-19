@@ -4,12 +4,12 @@ enum Routing {
   home('/home', 'home'),
   tourismSpot('/tourism_spot', 'tourism_spot'),
   tourismSpotPreview(
-    'preview/:id', // inside tourism_spot
+    '/preview/:id', // inside tourism_spot
     'tourism_spot.preview',
     parent: '/tourism_spot',
   ),
   tourismSpotDetail(
-    'detail', // inside tourism_spot
+    '/detail', // inside tourism_spot
     'tourism_spot.detail',
     parent: '/tourism_spot',
   ),
