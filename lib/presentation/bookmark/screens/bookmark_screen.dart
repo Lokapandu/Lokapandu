@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lokapandu/features/bookmark/widgets/bookmark_card.dart';
+import 'package:lokapandu/presentation/bookmark/widgets/bookmark_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 
 class BookmarkScreen extends StatelessWidget {
