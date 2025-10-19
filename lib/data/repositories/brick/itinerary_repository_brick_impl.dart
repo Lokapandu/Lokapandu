@@ -144,8 +144,9 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       );
 
       for (final itinerary in itineraries) {
-        if (excludeItineraryId != null && itinerary.id == excludeItineraryId)
+        if (excludeItineraryId != null && itinerary.id == excludeItineraryId) {
           continue;
+        }
 
         if (bufferedStartTime.isBefore(itinerary.endTime) &&
             bufferedEndTime.isAfter(itinerary.startTime)) {

@@ -17,7 +17,7 @@ class CustomSearchBar extends StatelessWidget {
       decoration: InputDecoration(
         hintText: 'Cari wisata, kuliner, atau hotel...',
         hintStyle: textTheme.bodyLarge?.copyWith(
-          color: colorScheme.onSurface.withOpacity(0.5),
+          color: colorScheme.onSurface.withValues(alpha: 0.5),
         ),
         prefixIcon: Icon(Icons.search, color: colorScheme.onSurfaceVariant),
         filled: true,

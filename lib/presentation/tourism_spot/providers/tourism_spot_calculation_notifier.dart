@@ -1,10 +1,11 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:lokapandu/common/analytics.dart';
 import 'package:lokapandu/common/services/location_service.dart';
 import 'package:lokapandu/domain/usecases/get_distance.dart';
-import 'dart:developer' as dev;
 
 class TourismSpotCalculationNotifier extends ChangeNotifier {
   final GetDistance _getDistance;
@@ -91,7 +92,7 @@ class TourismSpotCalculationNotifier extends ChangeNotifier {
     distance.fold(
       (l) => dev.log('Error: $l', name: 'TourismSpotCalculationNotifier'),
       (r) {
-        print("Routes: ${r.routes.toString()}");
+        dev.log("Routes: ${r.routes.toString()}");
         final meters =
             double.tryParse(r.routes.first.distanceMeters.toString()) ?? 0;
         if (meters < 1000) {

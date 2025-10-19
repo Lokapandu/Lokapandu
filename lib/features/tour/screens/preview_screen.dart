@@ -1,10 +1,12 @@
 // File: lib/features/tour/screens/tour_preview_screen.dart
 
 import 'dart:ui';
-import 'package:flutter/material.dart';
+
 import 'package:cached_network_image/cached_network_image.dart'; // <-- Tambahkan import
-import '../models/tour_model.dart';
+import 'package:flutter/material.dart';
+
 import '../detail_screen/tour_detail_screen.dart';
+import '../models/tour_model.dart';
 
 class TourPreviewScreen extends StatelessWidget {
   final Tour tour;
@@ -58,12 +60,14 @@ class TourPreviewScreen extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.35),
+                    color: Colors.black.withValues(alpha: 0.35),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.2),
+                    ),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

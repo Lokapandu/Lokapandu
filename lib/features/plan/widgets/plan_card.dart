@@ -1,6 +1,7 @@
 // File: lib/features/plan/widgets/plan_card.dart
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
 import '../models/plan_item_model.dart';
 
 class PlanCard extends StatelessWidget {
@@ -41,7 +42,9 @@ class PlanCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
-        side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
       ),
       elevation: 0,
       color: colorScheme.surface,

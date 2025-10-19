@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:provider/provider.dart';
 
 class BookmarkCard extends StatelessWidget {
   final TourismSpot spot;
@@ -24,7 +24,9 @@ class BookmarkCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.0),
-        side: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+        side: BorderSide(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
       ),
       elevation: 0,
       child: InkWell(

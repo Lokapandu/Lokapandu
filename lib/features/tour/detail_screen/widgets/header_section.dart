@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/tour_model.dart';
 
 class HeaderSection extends StatelessWidget {
@@ -30,7 +31,7 @@ class HeaderSection extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(

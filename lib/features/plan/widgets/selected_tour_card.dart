@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/material.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 class SelectedTourCard extends StatelessWidget {
@@ -33,7 +33,7 @@ class SelectedTourCard extends StatelessWidget {
           child: Container(
             height: 80,
             decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.05),
+              color: colorScheme.primary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(

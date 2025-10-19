@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+
 import '../models/tour_model.dart';
 import '../screens/preview_screen.dart';
 
@@ -28,7 +29,7 @@ class TourGridCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.0),
         ),
         elevation: 3.0,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -74,7 +75,7 @@ class TourGridCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(Icons.bookmark_border, size: 20),

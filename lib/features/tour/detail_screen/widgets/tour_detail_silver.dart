@@ -15,7 +15,7 @@ class TourDetailSliverAppBar extends StatelessWidget {
       leading: Container(
         margin: const EdgeInsets.only(left: 8, top: 8),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withValues(alpha: 0.3),
           shape: BoxShape.circle,
         ),
         child: IconButton(
@@ -36,9 +36,9 @@ class TourDetailSliverAppBar extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.5),
+                    Colors.black.withValues(alpha: 0.5),
                     Colors.transparent,
-                    Colors.black.withOpacity(0.3),
+                    Colors.black.withValues(alpha: 0.3),
                   ],
                   stops: const [0.0, 0.4, 1.0],
                 ),
