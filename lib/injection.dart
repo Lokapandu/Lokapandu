@@ -4,8 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/common/services/impl/location_service_impl.dart';
 import 'package:lokapandu/common/services/impl/routes_api_gateway.dart';
@@ -44,6 +42,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final locator = GetIt.instance;
 
@@ -198,7 +197,7 @@ Future<void> initDependencies() async {
     () => TourismSpotDetailNotifier(locator<GetTourismSpotDetail>()),
   );
 
-  /// Authentication provider - manages auth state
+  /// Authentication providers - manages auth state
   locator.registerFactory<AuthNotifier>(
     () => AuthNotifier(
       authService: locator<AuthService>(),

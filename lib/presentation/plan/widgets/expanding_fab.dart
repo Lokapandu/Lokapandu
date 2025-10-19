@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:lokapandu/presentation/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/tour_plan_editor_screen.dart';
 
 class _FabOption extends StatelessWidget {
   const _FabOption({required this.icon, required this.label, this.onTap});
+
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
@@ -17,7 +17,10 @@ class _FabOption extends StatelessWidget {
     return FloatingActionButton.extended(
       onPressed: onTap,
       heroTag: null,
-      label: Text(label, style: theme.textTheme.labelLarge),
+      label: Text(
+        label,
+        style: theme.textTheme.labelLarge?.copyWith(color: Colors.white),
+      ),
       icon: Icon(icon, size: 20),
       backgroundColor: colorScheme.primary,
       foregroundColor: colorScheme.onPrimary,

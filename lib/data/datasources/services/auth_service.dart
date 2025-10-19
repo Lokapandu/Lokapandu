@@ -108,7 +108,7 @@ class AuthService {
       'name': user.userMetadata?['full_name'] ?? user.userMetadata?['name'],
       'avatar_url':
           user.userMetadata?['avatar_url'] ?? user.userMetadata?['picture'],
-      'provider': user.appMetadata['provider'],
+      'providers': user.appMetadata['providers'],
     };
   }
 

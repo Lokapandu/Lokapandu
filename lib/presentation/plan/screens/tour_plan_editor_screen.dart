@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/plan/models/plan_item_model.dart';
 import 'package:lokapandu/presentation/plan/widgets/selected_tour_card.dart';
 
 class TourPlanEditorScreen extends StatefulWidget {
   final PlanItem? planItem;
+  final TourismSpot? tourismSpot;
 
-  const TourPlanEditorScreen({super.key, this.planItem});
+  const TourPlanEditorScreen({super.key, this.planItem, this.tourismSpot});
 
   @override
   State<TourPlanEditorScreen> createState() => _TourPlanEditorScreenState();
@@ -29,11 +28,14 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   @override
   void initState() {
     super.initState();
+
+    _selectedTour = widget.tourismSpot;
+
     if (isEditing) {
       // TODO: Logika untuk mengisi data saat mode edit
     } else {
-      _selectedDate = DateTime(2025, 10, 3);
-      _titleController.text = 'Jelajah Air Terjun di Sekitar Ngoro';
+      _selectedDate = DateTime.now();
+      _titleController.text = '';
     }
   }
 
@@ -55,13 +57,13 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     }
   }
 
-  Future<void> _selectDate() async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      locale: const Locale('id', 'ID'),
+      locale: Locale('id'),
     );
     if (picked != null && picked != _selectedDate) {
       setState(() {
@@ -123,6 +125,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
             ),
             const SizedBox(height: 24),
             _buildDateTimeField(
+              context,
               theme: theme,
               label: 'Tanggal',
               value: _selectedDate != null
@@ -132,13 +135,14 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                     ).format(_selectedDate!)
                   : 'Pilih Tanggal',
               icon: Icons.calendar_today_outlined,
-              onTap: _selectDate,
+              onTap: () => _selectDate(context),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: _buildDateTimeField(
+                    context,
                     theme: theme,
                     label: 'Waktu Mulai',
                     value: _startTime?.format(context) ?? 'Pilih Waktu',
@@ -149,6 +153,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildDateTimeField(
+                    context,
                     theme: theme,
                     label: 'Waktu Selesai',
                     value: _endTime?.format(context) ?? 'Pilih Waktu',
@@ -239,7 +244,8 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     );
   }
 
-  Widget _buildDateTimeField({
+  Widget _buildDateTimeField(
+    BuildContext context, {
     required ThemeData theme,
     required String label,
     required String value,
@@ -247,37 +253,41 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     required VoidCallback onTap,
   }) {
     final colorScheme = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colorScheme.surfaceContainerHighest),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: colorScheme.onSurfaceVariant, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    value,
-                    style: theme.textTheme.bodyLarge,
-                    overflow: TextOverflow.ellipsis,
+    return Localizations.override(
+      context: context,
+      locale: const Locale('id'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colorScheme.surfaceContainerHighest),
+              ),
+              child: Row(
+                children: [
+                  Icon(icon, color: colorScheme.onSurfaceVariant, size: 20),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      value,
+                      style: theme.textTheme.bodyLarge,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

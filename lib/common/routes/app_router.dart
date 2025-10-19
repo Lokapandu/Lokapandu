@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-
 import 'package:lokapandu/common/routes/analytic_page_observer.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
@@ -129,11 +127,14 @@ class AppRouter {
                 GoRoute(
                   path: Routing.planAdd.path,
                   name: Routing.planAdd.routeName,
-                  pageBuilder: (context, state) =>
-                      PageTransitions.slideFromBottomTransition(
-                        const TourPlanEditorScreen(),
-                        name: Routing.planAdd.routeName,
-                      ),
+                  pageBuilder: (context, state) {
+                    final tour = state.extra as TourismSpot?;
+
+                    return PageTransitions.slideFromBottomTransition(
+                      TourPlanEditorScreen(tourismSpot: tour),
+                      name: Routing.planAdd.routeName,
+                    );
+                  },
                 ),
                 GoRoute(
                   path: Routing.planAddNote.path,

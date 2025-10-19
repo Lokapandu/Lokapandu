@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'package:provider/provider.dart';
-
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:provider/provider.dart';
 
 class ActionButtonsSection extends StatelessWidget {
   final TourismSpot tour;
@@ -43,7 +43,9 @@ class ActionButtonsSection extends StatelessWidget {
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.add_location_alt_outlined),
                   label: const Text('Tambah Rencana'),
-                  onPressed: () {},
+                  onPressed: () {
+                    context.push(Routing.planAdd.fullPath, extra: tour);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,

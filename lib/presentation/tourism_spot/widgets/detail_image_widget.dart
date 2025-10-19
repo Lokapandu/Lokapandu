@@ -42,7 +42,7 @@ class DetailImageWidget extends StatelessWidget {
           Container(
             height: 20,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(15),
                 topRight: Radius.circular(15),
