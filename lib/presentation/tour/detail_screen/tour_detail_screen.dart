@@ -2,14 +2,14 @@
 
 import 'package:flutter/material.dart';
 
-import '../detail_screen/widgets/about_section.dart';
-import '../detail_screen/widgets/facilities_section.dart';
-import '../detail_screen/widgets/header_section.dart';
-import '../detail_screen/widgets/image_caraosel_section.dart';
-import '../detail_screen/widgets/location_map_section.dart';
-import '../detail_screen/widgets/tour_detail_silver.dart';
 import '../models/tour_model.dart';
+import 'widgets/about_section.dart';
 import 'widgets/action_button_section.dart';
+import 'widgets/facilities_section.dart';
+import 'widgets/header_section.dart';
+import 'widgets/image_caraosel_section.dart';
+import 'widgets/location_map_section.dart';
+import 'widgets/tour_detail_silver.dart';
 
 class TourDetailScreen extends StatelessWidget {
   final Tour tour;
