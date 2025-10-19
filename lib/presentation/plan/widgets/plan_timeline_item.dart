@@ -1,5 +1,3 @@
-// File: lib/features/plan/widgets/plan_timeline_item.dart
-
 import 'package:flutter/material.dart';
 import '../models/plan_item_model.dart';
 import 'plan_card.dart';
@@ -17,8 +15,6 @@ class PlanTimelineItem extends StatelessWidget {
         return colorScheme.tertiary;
       case PlanItemType.activity:
         return colorScheme.secondary;
-      default:
-        return colorScheme.outline;
     }
   }
 

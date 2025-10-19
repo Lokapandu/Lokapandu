@@ -54,7 +54,7 @@ class _PlanScreenState extends State<PlanScreen> {
         elevation: 0,
         // Efek bayangan saat di-scroll
         scrolledUnderElevation: 4.0,
-        shadowColor: theme.shadowColor.withOpacity(0.1),
+        shadowColor: theme.shadowColor.withValues(alpha: 0.1),
         centerTitle: false,
         automaticallyImplyLeading: false,
         title: Text(

@@ -93,7 +93,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         backgroundColor: colorScheme.surface,
         elevation: 0,
         scrolledUnderElevation: 4.0,
-        shadowColor: theme.shadowColor.withOpacity(0.1),
+        shadowColor: theme.shadowColor.withValues(alpha: 0.1),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
           onPressed: () => context.pop(),
@@ -190,7 +190,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: theme.textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withOpacity(0.5),
+              color: colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             filled: true,
             fillColor: colorScheme.surface,

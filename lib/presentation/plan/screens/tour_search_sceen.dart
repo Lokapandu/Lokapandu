@@ -75,7 +75,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
         title: const Text('Cari Wisata'),
         backgroundColor: colorScheme.surface,
         scrolledUnderElevation: 4.0,
-        shadowColor: theme.shadowColor.withOpacity(0.1),
+        shadowColor: theme.shadowColor.withValues(alpha: 0.1),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -101,7 +101,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
               decoration: InputDecoration(
                 hintText: 'Cari wisata di sekitar Ngoro...',
                 hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.onSurface.withOpacity(0.5),
+                  color: colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
                 prefixIcon: Icon(
                   Icons.search,
