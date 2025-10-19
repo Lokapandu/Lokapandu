@@ -9,7 +9,6 @@ import '../models/tour_model.dart';
 
 import 'package:cached_network_image/cached_network_image.dart'; // <-- Tambahkan import
 
-
 class TourPreviewScreen extends StatelessWidget {
   final Tour tour;
   const TourPreviewScreen({super.key, required this.tour});
