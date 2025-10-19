@@ -24,7 +24,8 @@ library;
 // Configuration
 export 'config/environment_config.dart';
 export 'config/firebase_debug_config.dart';
+
+// Core Services
 export 'services/analytics_manager.dart';
 export 'services/debug_analytics_service.dart';
-// Core Services
 export 'services/firebase_analytics_service.dart';
