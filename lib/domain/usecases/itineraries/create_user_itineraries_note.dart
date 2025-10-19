@@ -27,8 +27,9 @@ class CreateUserItinerariesNote {
     String userId,
     CreateItineraryNote itineraryInput,
   ) async {
-    final requiredFieldsValidation =
-        validators.validateNoteRequiredFields(itineraryInput);
+    final requiredFieldsValidation = validators.validateNoteRequiredFields(
+      itineraryInput,
+    );
     if (requiredFieldsValidation.isLeft()) {
       return requiredFieldsValidation;
     }

@@ -61,11 +61,11 @@ class UpcomingTourCard extends StatelessWidget {
                   )
                 : Image.asset(
                     // Fallback untuk gambar lokal
-              imageUrl,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-            ),
+                    imageUrl,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                  ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -100,7 +100,7 @@ class UpcomingTourCard extends StatelessWidget {
 
                     Expanded(
                       child: Text(
-                      location,
+                        location,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.outline,
                         ),
@@ -118,7 +118,7 @@ class UpcomingTourCard extends StatelessWidget {
 
                     Expanded(
                       child: Text(
-                      time,
+                        time,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.outline,
                         ),

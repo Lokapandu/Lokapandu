@@ -29,7 +29,7 @@ class EnvironmentConfig {
       case 'production':
         return FirebaseAnalyticsConfig.production();
       default:
-        return kDebugMode 
+        return kDebugMode
             ? FirebaseAnalyticsConfig.development()
             : FirebaseAnalyticsConfig.production();
     }
@@ -130,11 +130,7 @@ class FirebaseAnalyticsConfig {
 }
 
 /// App flavor configuration
-enum AppFlavor {
-  development,
-  staging,
-  production,
-}
+enum AppFlavor { development, staging, production }
 
 /// App flavor helper
 class FlavorConfig {

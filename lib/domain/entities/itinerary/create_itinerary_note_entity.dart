@@ -8,6 +8,5 @@ abstract class CreateItineraryNote with _$CreateItineraryNote {
     required String notes,
     required DateTime startTime,
     required DateTime endTime,
-
   }) = _CreateItineraryNote;
 }

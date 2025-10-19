@@ -39,44 +39,44 @@ class SearchResultCard extends StatelessWidget {
       color: colorScheme.surface,
       child: InkWell(
         onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12.0),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
                 // mengunakan CachedNetworkImage untuk gambar dari internet
                 child: CachedNetworkImage(
                   imageUrl: primaryImage,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                   placeholder: (context, url) =>
                       Container(color: colorScheme.surfaceContainerHighest),
                   errorWidget: (context, url, error) =>
                       const Icon(Icons.broken_image),
+                ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
                       spot.name,
                       style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
                         Icon(
                           Icons.location_on_outlined,
-                        size: 14,
+                          size: 14,
                           color: colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: 4),
+                        ),
+                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             location,
@@ -84,14 +84,14 @@ class SearchResultCard extends StatelessWidget {
                               color: colorScheme.onSurfaceVariant,
                             ),
                             overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
+              const SizedBox(width: 8),
               Icon(
                 isSelected
                     ? Icons.radio_button_checked
@@ -99,9 +99,9 @@ class SearchResultCard extends StatelessWidget {
                 color: isSelected ? colorScheme.primary : colorScheme.outline,
                 size: 28,
               ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

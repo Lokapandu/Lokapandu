@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void initState() {
-    super.initState();   
+    super.initState();
     // Background zoom animation controller
     _backgroundController = AnimationController(
       duration: const Duration(seconds: 3),

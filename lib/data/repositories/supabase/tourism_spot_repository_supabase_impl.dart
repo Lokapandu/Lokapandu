@@ -119,7 +119,7 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
       if (spotsMap.containsKey(image.tourismSpotId)) {
         imagesMap
             .putIfAbsent(image.tourismSpotId, () => [])
-            .add(image.toEntity(spotsMap[image.tourismSpotId]!));
+            .add(image.toEntity());
       }
     }
 

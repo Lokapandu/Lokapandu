@@ -6,11 +6,9 @@ class BookmarkProvider extends ChangeNotifier {
 
   List<TourismSpot> get bookmarkedSpots => _bookmarkedSpots;
 
-
   bool isBookmarked(TourismSpot spot) {
     return _bookmarkedSpots.any((item) => item.id == spot.id);
   }
-
 
   void toggleBookmark(TourismSpot spot) {
     if (isBookmarked(spot)) {

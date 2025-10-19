@@ -37,8 +37,8 @@ class CrashlyticsNavigationObserver extends NavigatorObserver {
     Route<dynamic>? previousRoute,
   ) {
     final routeName = _getRouteName(route);
-    final previousRouteName = previousRoute != null 
-        ? _getRouteName(previousRoute) 
+    final previousRouteName = previousRoute != null
+        ? _getRouteName(previousRoute)
         : 'none';
 
     // Log navigation action
@@ -57,10 +57,7 @@ class CrashlyticsNavigationObserver extends NavigatorObserver {
     // Use ErrorHandler for consistent logging
     ErrorHandler.logNavigation(
       routeName,
-      arguments: {
-        'action': action,
-        'previous_route': previousRouteName,
-      },
+      arguments: {'action': action, 'previous_route': previousRouteName},
     );
   }
 
@@ -68,7 +65,7 @@ class CrashlyticsNavigationObserver extends NavigatorObserver {
     if (route.settings.name != null) {
       return route.settings.name!;
     }
-    
+
     // Fallback untuk route tanpa nama
     return route.runtimeType.toString();
   }

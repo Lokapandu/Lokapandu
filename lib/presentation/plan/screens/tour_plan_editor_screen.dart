@@ -219,7 +219,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
               color: colorScheme.onSurface.withOpacity(0.5),
             ),
             filled: true,
-    
+
             fillColor: colorScheme.surface,
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

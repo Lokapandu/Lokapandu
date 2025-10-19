@@ -9,7 +9,7 @@ sealed class AppHeaderState {
 /// State ketika sedang loading - "Saya sedang bekerja"
 final class AppHeaderLoading extends AppHeaderState {
   final String message;
-  
+
   const AppHeaderLoading({this.message = 'Memuat data...'});
 }
 
@@ -18,13 +18,13 @@ final class AppHeaderSuccess extends AppHeaderState {
   final String location;
   final Weather? weather;
   final bool isWeatherLoading;
-  
+
   const AppHeaderSuccess({
     required this.location,
     this.weather,
     this.isWeatherLoading = false,
   });
-  
+
   /// Copy with method untuk update state secara immutable
   AppHeaderSuccess copyWith({
     String? location,
@@ -43,11 +43,8 @@ final class AppHeaderSuccess extends AppHeaderState {
 final class AppHeaderError extends AppHeaderState {
   final String message;
   final String? technicalDetails;
-  
-  const AppHeaderError({
-    required this.message,
-    this.technicalDetails,
-  });
+
+  const AppHeaderError({required this.message, this.technicalDetails});
 }
 
 /// State khusus untuk permission denied
@@ -55,13 +52,13 @@ final class AppHeaderPermissionDenied extends AppHeaderState {
   final String fallbackLocation;
   final Weather? weather;
   final bool isWeatherLoading;
-  
+
   const AppHeaderPermissionDenied({
     this.fallbackLocation = 'Bali, Indonesia',
     this.weather,
     this.isWeatherLoading = false,
   });
-  
+
   AppHeaderPermissionDenied copyWith({
     String? fallbackLocation,
     Weather? weather,

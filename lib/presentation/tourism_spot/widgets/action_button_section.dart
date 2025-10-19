@@ -35,12 +35,11 @@ class ActionButtonsSection extends StatelessWidget {
           return Row(
             children: [
               Expanded(
-                flex: 3, 
+                flex: 3,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.add_location_alt_outlined),
                   label: const Text('Tambah Rencana'),
-                  onPressed: () {
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
@@ -56,7 +55,7 @@ class ActionButtonsSection extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                flex: 1, 
+                flex: 1,
                 child: OutlinedButton(
                   onPressed: () {
                     bookmarkProvider.toggleBookmark(tour);

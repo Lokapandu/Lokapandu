@@ -31,7 +31,7 @@ class RoutesApiGateway implements RoutesPort {
           },
         }),
       );
-      
+
       return MapsRoutesModel.fromJson(response.data);
     } on FormatException catch (e) {
       throw DataParsingException(e.message);

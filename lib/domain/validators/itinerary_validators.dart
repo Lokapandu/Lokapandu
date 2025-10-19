@@ -13,16 +13,20 @@ class ItineraryValidators {
   final ItineraryRepository _repository;
 
   ItineraryValidators(this._repository);
-  
 
-  Either<Failure, Unit> validateTimeRange(DateTime startTime, DateTime endTime) {
+  Either<Failure, Unit> validateTimeRange(
+    DateTime startTime,
+    DateTime endTime,
+  ) {
     if (startTime.isAfter(endTime)) {
-      return Left(InvalidTimeRangeFailure('Start time must be before end time'));
+      return Left(
+        InvalidTimeRangeFailure('Start time must be before end time'),
+      );
     }
     return Right(unit);
   }
 
-  Either<Failure, Unit> validateFutureTime(DateTime startTime) {    
+  Either<Failure, Unit> validateFutureTime(DateTime startTime) {
     final now = DateTime.now();
     if (startTime.isBefore(now)) {
       return Left(ValidationFailure('Start time must be in the future'));
@@ -49,23 +53,27 @@ class ItineraryValidators {
     return Right(unit);
   }
 
-  Future<Either<Failure, Unit>> validateTourismSpotExists(int? tourismSpotId) async {
+  Future<Either<Failure, Unit>> validateTourismSpotExists(
+    int? tourismSpotId,
+  ) async {
     if (tourismSpotId == null) {
       return Right(unit);
     }
 
     try {
       final result = await _repository.checkTourismSpotExists(tourismSpotId);
-      
+
       return result.fold(
         (failure) => Left(failure),
-        (exists) => exists 
-            ? Right(unit) 
-            : Left(ValidationFailure('Tourism spot not found'))
+        (exists) => exists
+            ? Right(unit)
+            : Left(ValidationFailure('Tourism spot not found')),
       );
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Validators");
-      return Left(ServerFailure('Error validating tourism spot: ${e.toString()}'));
+      return Left(
+        ServerFailure('Error validating tourism spot: ${e.toString()}'),
+      );
     }
   }
 
@@ -77,12 +85,12 @@ class ItineraryValidators {
   ]) async {
     try {
       final result = await _repository.checkSchedulingConflicts(
-        userId, 
-        startTime, 
+        userId,
+        startTime,
         endTime,
-        excludeItineraryId
+        excludeItineraryId,
       );
-      
+
       return result.fold(
         (failure) => Left(failure),
         (hasConflict) => hasConflict
@@ -92,11 +100,13 @@ class ItineraryValidators {
                   'Please ensure at least $_bufferTimeMinutes minutes gap between itineraries',
                 ),
               )
-            : Right(unit)
+            : Right(unit),
       );
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Validators");
-      return Left(ServerFailure('Error checking scheduling conflicts: ${e.toString()}'));
+      return Left(
+        ServerFailure('Error checking scheduling conflicts: ${e.toString()}'),
+      );
     }
   }
 
@@ -107,7 +117,9 @@ class ItineraryValidators {
     return Right(unit);
   }
 
-  Either<Failure, Unit> validateNoteRequiredFields(CreateItineraryNote itineraryInput) {
+  Either<Failure, Unit> validateNoteRequiredFields(
+    CreateItineraryNote itineraryInput,
+  ) {
     if (itineraryInput.name.trim().isEmpty) {
       return Left(MissingFieldFailure('Itinerary name is required'));
     } else if (itineraryInput.notes.trim().isEmpty) {

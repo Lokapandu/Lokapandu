@@ -21,12 +21,16 @@ import 'firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'injection.dart' as di;
 import 'package:sqflite/sqflite.dart';
+import 'package:lokapandu/common/services/notification_service.dart';
+import 'package:lokapandu/presentation/settings/providers/notification_settings_notifier.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await NotificationService().initialize();
 
   // Initialize Firebase Crashlytics
   await CrashlyticsService.initialize();
@@ -83,6 +87,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => di.locator<UserSettingsNotifier>()..init(),
         ),
+        ChangeNotifierProvider(create: (_) => NotificationSettingsNotifier()),
       ],
       child: const App(),
     ),
