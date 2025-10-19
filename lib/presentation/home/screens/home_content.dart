@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
+
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:lokapandu/presentation/home/widgets/dont_miss_carausel.dart';
 import 'package:lokapandu/presentation/home/widgets/search_bar.dart';
 import 'package:lokapandu/presentation/home/widgets/upcoming_tour_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
-import 'package:provider/provider.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});

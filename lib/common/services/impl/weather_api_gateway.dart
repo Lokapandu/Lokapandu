@@ -1,10 +1,12 @@
-import 'package:lokapandu/data/models/weather/weather_model.dart';
 import 'dart:convert';
-import 'package:lokapandu/common/services/weather_api_port.dart';
-import 'package:http/http.dart' as http;
-import 'package:lokapandu/common/errors/exceptions.dart';
-import 'package:lokapandu/env/env.dart';
 import 'dart:developer' as dev;
+
+import 'package:http/http.dart' as http;
+
+import 'package:lokapandu/common/errors/exceptions.dart';
+import 'package:lokapandu/common/services/weather_api_port.dart';
+import 'package:lokapandu/data/models/weather/weather_model.dart';
+import 'package:lokapandu/env/env.dart';
 
 class WeatherApiGateway implements WeatherPort {
   final http.Client client;

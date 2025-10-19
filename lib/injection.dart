@@ -4,7 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:lokapandu/common/services/analytics_manager.dart';
@@ -34,6 +33,7 @@ import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
+import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'facility_icon.dart';
+
 import '../models/facility_model.dart';
+import 'facility_icon.dart';
 
 class FacilitiesSection extends StatelessWidget {
   final String facilities;

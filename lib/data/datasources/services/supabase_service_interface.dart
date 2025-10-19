@@ -1,5 +1,5 @@
-import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
+import 'package:lokapandu/data/models/tourism_spot_model.dart';
 
 abstract class SupabaseServiceInterface {
   /// Retrieves all tourism spots from the database.

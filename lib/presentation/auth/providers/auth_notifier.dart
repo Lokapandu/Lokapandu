@@ -1,9 +1,12 @@
-import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:lokapandu/data/datasources/services/auth_service.dart';
-import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'dart:async';
 import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:lokapandu/common/services/analytics_manager.dart';
+import 'package:lokapandu/data/datasources/services/auth_service.dart';
 
 /// Authentication state enum
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }

@@ -2,11 +2,13 @@
 
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart'; // <-- Tambahkan import
 import 'package:flutter/material.dart';
 
 import '../detail_screen/tour_detail_screen.dart';
 import '../models/tour_model.dart';
+
+import 'package:cached_network_image/cached_network_image.dart'; // <-- Tambahkan import
+
 
 class TourPreviewScreen extends StatelessWidget {
   final Tour tour;

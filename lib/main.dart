@@ -1,28 +1,30 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:lokapandu/app.dart';
-import 'package:lokapandu/brick/repositories/repository.dart';
-import 'package:lokapandu/env/env.dart';
+import 'package:flutter/material.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'package:lokapandu/app.dart';
+import 'package:lokapandu/brick/repositories/repository.dart';
 import 'package:lokapandu/common/services/crashlytics_service.dart';
+import 'package:lokapandu/common/services/notification_service.dart';
+import 'package:lokapandu/env/env.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/notification_settings_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
+import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
-import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
-import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
-import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'injection.dart' as di;
-import 'package:sqflite/sqflite.dart';
-import 'package:lokapandu/common/services/notification_service.dart';
-import 'package:lokapandu/presentation/settings/providers/notification_settings_notifier.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

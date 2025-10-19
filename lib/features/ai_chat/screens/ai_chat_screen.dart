@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; // Import GoRouter untuk navigasi
+
 import '../models/chat_message_model.dart';
 import '../widgets/chat_buble.dart';
+
+import 'package:go_router/go_router.dart'; // Import GoRouter untuk navigasi
 
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});

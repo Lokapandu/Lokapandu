@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
 
 part 'tourism_spot_entity.freezed.dart';
