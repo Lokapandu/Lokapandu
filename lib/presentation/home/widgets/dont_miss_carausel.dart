@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 class _CarouselItem {
   final String imageUrl;
@@ -86,7 +86,7 @@ class DontMissCarousel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 elevation: 4,
-                shadowColor: colorScheme.shadow.withOpacity(0.1),
+                shadowColor: colorScheme.shadow.withValues(alpha: 0.1),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -97,7 +97,7 @@ class DontMissCarousel extends StatelessWidget {
                         gradient: LinearGradient(
                           colors: [
                             Colors.transparent,
-                            colorScheme.scrim.withOpacity(0.8),
+                            colorScheme.scrim.withValues(alpha: 0.8),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -124,7 +124,9 @@ class DontMissCarousel extends StatelessWidget {
                           Text(
                             item.location,
                             style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onPrimary.withOpacity(0.9),
+                              color: colorScheme.onPrimary.withValues(
+                                alpha: 0.9,
+                              ),
                             ),
                           ),
                         ],

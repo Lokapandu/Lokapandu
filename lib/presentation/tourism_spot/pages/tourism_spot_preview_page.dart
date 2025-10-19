@@ -1,10 +1,11 @@
 import 'dart:ui';
-import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart';
-import 'package:lokapandu/common/routes/routing_list.dart';
-import 'package:provider/provider.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
+import 'package:provider/provider.dart';
 
 class TourismSpotPreviewPage extends StatefulWidget {
   final int id;
@@ -89,13 +90,13 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                       width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withOpacity(0.25),
+                        color: colorScheme.surface.withValues(alpha: 0.25),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         ),
                         border: Border.all(
-                          color: colorScheme.onSurface.withOpacity(0.2),
+                          color: colorScheme.onSurface.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Column(
@@ -169,11 +170,7 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
 
   Widget _buildBackgroundImage(BuildContext context) {
     final notifier = context.watch<TourismSpotDetailNotifier>();
-    final selectedImage =
-        notifier.selectedImage ??
-        (notifier.tourismSpot?.images.isNotEmpty == true
-            ? notifier.tourismSpot!.images.first.imageUrl
-            : '');
+    final selectedImage = notifier.selectedImage;
 
     if (selectedImage.isEmpty) {
       return Container(

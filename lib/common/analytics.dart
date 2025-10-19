@@ -19,12 +19,13 @@
 /// await AnalyticsManager().trackEvent(eventName: 'button_click');
 /// await AnalyticsManager().trackUserAction(action: 'login');
 /// ```
-
-// Core Services
-export 'services/firebase_analytics_service.dart';
-export 'services/debug_analytics_service.dart';
-export 'services/analytics_manager.dart';
+library;
 
 // Configuration
 export 'config/environment_config.dart';
 export 'config/firebase_debug_config.dart';
+
+// Core Services
+export 'services/analytics_manager.dart';
+export 'services/debug_analytics_service.dart';
+export 'services/firebase_analytics_service.dart';

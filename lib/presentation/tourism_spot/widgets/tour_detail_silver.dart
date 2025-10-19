@@ -1,6 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class TourDetailSliverAppBar extends StatelessWidget {
   final String imageUrl;
@@ -40,7 +40,7 @@ class TourDetailSliverAppBar extends StatelessWidget {
               top: MediaQuery.of(context).padding.top + 8,
               left: 16,
               child: CircleAvatar(
-                backgroundColor: colorScheme.scrim.withOpacity(0.4),
+                backgroundColor: colorScheme.scrim.withValues(alpha: 0.4),
                 child: IconButton(
                   icon: Icon(Icons.arrow_back, color: colorScheme.onPrimary),
                   onPressed: () => context.pop(),
@@ -53,7 +53,7 @@ class TourDetailSliverAppBar extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    colorScheme.scrim.withOpacity(0.6),
+                    colorScheme.scrim.withValues(alpha: 0.6),
                     Colors.transparent,
                   ],
                   stops: const [0.0, 0.5],

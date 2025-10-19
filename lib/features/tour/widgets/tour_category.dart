@@ -30,7 +30,8 @@ class TourCategoryChips extends StatelessWidget {
               selected: isSelected,
               onSelected: (selected) => onCategorySelected(category),
               backgroundColor: Colors.white,
-              selectedColor: const Color(0xFF008080).withOpacity(0.1),
+              // TODO: Change with color theme, don't hardcode
+              selectedColor: const Color(0xFF008080).withValues(alpha: 0.1),
               labelStyle: TextStyle(
                 color: isSelected ? const Color(0xFF008080) : Colors.black54,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

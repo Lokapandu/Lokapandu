@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../models/plan_item_model.dart';
-import '../widgets/plan_timeline_item.dart';
 import '../widgets/expanding_fab.dart';
+import '../widgets/plan_timeline_item.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});
@@ -54,7 +55,7 @@ class _PlanScreenState extends State<PlanScreen> {
         elevation: 0,
         // Efek bayangan saat di-scroll
         scrolledUnderElevation: 4.0,
-        shadowColor: theme.shadowColor.withOpacity(0.1),
+        shadowColor: theme.shadowColor.withValues(alpha: 0.1),
         centerTitle: false,
         automaticallyImplyLeading: false,
         title: Text(

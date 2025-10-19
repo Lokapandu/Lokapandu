@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../models/tour_model.dart';
 import '../../widgets/facility_icon.dart';
 
@@ -51,7 +52,8 @@ class FacilitiesSection extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: const Color(0xFF008080).withOpacity(0.1),
+                  // TODO: Change with approved theme color, don't hardcode
+                  color: const Color(0xFF008080).withValues(alpha: 0.1),
                 ),
                 child: Center(
                   child: Text(
