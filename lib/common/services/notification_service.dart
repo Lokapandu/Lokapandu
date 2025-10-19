@@ -1,5 +1,7 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:lokapandu/common/utils/prefs_store.dart';
 
 class NotificationService {

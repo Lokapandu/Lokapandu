@@ -1,6 +1,8 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class FirebaseAnalyticsService {
   static final FirebaseAnalyticsService _instance =

@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import 'package:iconify_design/iconify_design.dart';
+import 'package:provider/provider.dart';
+import 'package:text_scroll/text_scroll.dart';
+
 import 'package:lokapandu/domain/entities/weather_entity.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_state.dart';
-import 'package:provider/provider.dart';
-import 'package:text_scroll/text_scroll.dart';
 
 class AppHeader extends StatefulWidget {
   final String title;

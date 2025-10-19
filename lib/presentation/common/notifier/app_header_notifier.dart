@@ -1,10 +1,11 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:location/location.dart';
-import 'package:lokapandu/common/errors/failure.dart';
 import 'dart:developer' as dev;
 
+import 'package:flutter/material.dart';
+
+import 'package:location/location.dart';
+
+import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/common/services/location_service.dart';
 import 'package:lokapandu/domain/entities/weather_entity.dart';

@@ -1,5 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
+
+import 'package:flutter/foundation.dart';
 
 class DebugAnalyticsService {
   static final DebugAnalyticsService _instance =

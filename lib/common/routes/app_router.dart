@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
+
 import 'package:lokapandu/common/routes/analytic_page_observer.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
 import 'package:lokapandu/features/bookmark/screens/bookmark_screen.dart';
+import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
+import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
+import 'package:lokapandu/presentation/home/screens/home_content.dart';
+import 'package:lokapandu/presentation/home/screens/home_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/plan_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/tour_plan_editor_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/tour_search_sceen.dart';
 import 'package:lokapandu/presentation/settings/screens/about_screen.dart';
 import 'package:lokapandu/presentation/settings/screens/settings_screen.dart';
-import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
-import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
-import 'package:lokapandu/presentation/home/screens/home_content.dart';
-import 'package:lokapandu/presentation/home/screens/home_screen.dart';
 import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_detail_page.dart';
 import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_page.dart';
 import 'package:lokapandu/presentation/tourism_spot/pages/tourism_spot_preview_page.dart';

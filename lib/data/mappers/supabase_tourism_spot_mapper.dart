@@ -1,6 +1,6 @@
 import 'package:lokapandu/data/models/tourism_spot_model.dart';
-import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 // Extension to convert TourismSpotModel (data layer) to TourismSpot (domain layer)
 extension SupabaseTourismSpotModelMapper on TourismSpotModel {

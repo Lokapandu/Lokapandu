@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
-import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
-import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
-import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/empty_search_state.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});

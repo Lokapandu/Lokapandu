@@ -62,6 +62,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
   brick_offline_first_with_supabase_build: ^2.0.0
+  import_sorter: ^4.6.0
 
   # downgrade
   envied_generator: ^1.1.1
@@ -74,3 +75,11 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+
+import_sorter:
+  emojis: true
+  comments: false
+  ignored_files:
+    - (\\|\/)?(\w+(\\|\/))*\w+\.g\.dart
+    - (\\|\/)?(\w+(\\|\/))*\w+\.migration\.dart
+    - (\\|\/)?(\w+(\\|\/))*\w+.freezed.dart

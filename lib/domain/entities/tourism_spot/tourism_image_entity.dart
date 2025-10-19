@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'tourism_image_entity.freezed.dart';
 
 @freezed

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 class BookmarkProvider extends ChangeNotifier {

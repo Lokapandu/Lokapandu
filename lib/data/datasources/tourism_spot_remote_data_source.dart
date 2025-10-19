@@ -1,5 +1,5 @@
-import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
+import 'package:lokapandu/data/models/tourism_spot_model.dart';
 
 // Abstract interface that defines contract for remote data source operations
 abstract class TourismSpotRemoteDataSource {

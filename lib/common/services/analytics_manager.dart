@@ -1,10 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
 
-import 'firebase_analytics_service.dart';
-import 'debug_analytics_service.dart';
+import 'package:flutter/foundation.dart';
+
 import '../config/environment_config.dart';
 import '../config/firebase_debug_config.dart';
+import 'debug_analytics_service.dart';
+import 'firebase_analytics_service.dart';
 
 /// Analytics Manager
 /// Centralized service that manages both Firebase Analytics and Debug Analytics

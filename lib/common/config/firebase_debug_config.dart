@@ -1,7 +1,8 @@
+import 'dart:developer' as developer;
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'dart:developer' as developer;
 
 /// Firebase Analytics Debug Configuration
 /// Handles platform-specific debug mode setup for Firebase Analytics

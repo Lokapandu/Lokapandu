@@ -1,7 +1,8 @@
 // MAPPER FOR TOURISM SPOT ENTITY AND MODEL FROM BRICK'S MODEL
+
 import 'package:lokapandu/brick/models/tourism_spot.model.dart';
-import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 extension TourismSpotEntityMapper on TourismSpot {
   TourismSpotModel toBrickModel() => TourismSpotModel(

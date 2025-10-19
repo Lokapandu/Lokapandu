@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'create_itinerary_note_entity.freezed.dart';
 
 @freezed
