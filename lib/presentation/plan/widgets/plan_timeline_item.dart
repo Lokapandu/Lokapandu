@@ -1,5 +1,3 @@
-// File: lib/features/plan/widgets/plan_timeline_item.dart
-
 import 'package:flutter/material.dart';
 
 import '../models/plan_item_model.dart';

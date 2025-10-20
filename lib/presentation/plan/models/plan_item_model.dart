@@ -4,6 +4,7 @@ enum PlanItemType { tour, note, activity } // <-- 'activity' ditambahkan
 
 class PlanItem {
   final String title;
+  final DateTime date;
   final String timeRange;
   final PlanItemType type;
   final String? tourImageUrl;
@@ -11,6 +12,7 @@ class PlanItem {
 
   const PlanItem({
     required this.title,
+    required this.date,
     required this.timeRange,
     required this.type,
     this.tourImageUrl,
@@ -20,11 +22,18 @@ class PlanItem {
 
 extension PlanItemFromItinerary on Itinerary {
   PlanItem toPlanItem() {
+    final startMinute = startTime.minute < 10
+        ? startTime.minute * 10
+        : startTime.minute;
+    final endMinute = endTime.minute < 10
+        ? endTime.minute * 10
+        : endTime.minute;
     final timeRange =
-        '${startTime.hour}:${startTime.minute} - ${endTime.hour}:${endTime.minute}';
+        '${startTime.hour}:$startMinute - ${endTime.hour}:$endMinute';
     final tourImageUrl = tourismSpot?.images.first.imageUrl;
     return PlanItem(
       title: name,
+      date: startTime,
       timeRange: timeRange,
       type: tourImageUrl != null ? PlanItemType.tour : PlanItemType.activity,
       tourImageUrl: tourImageUrl,

@@ -1,8 +1,5 @@
-// File: lib/features/plan/widgets/plan_card.dart
-
-import 'package:flutter/material.dart';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 
 import '../models/plan_item_model.dart';
 
@@ -11,6 +8,7 @@ class PlanCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const PlanCard({super.key, required this.item, this.onTap});
+
   Widget _buildImage(String imageUrl, ColorScheme colorScheme) {
     bool isNetwork = imageUrl.startsWith('http');
 
@@ -37,78 +35,70 @@ class PlanCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-
-    return Card(
-      //  Mengunakan styling dari theme
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-        side: BorderSide(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: colorScheme.primary, width: 0.8),
+          left: BorderSide(color: colorScheme.primary, width: 5),
+          right: BorderSide(color: colorScheme.primary, width: 0.8),
+          bottom: BorderSide(color: colorScheme.primary, width: 0.8),
         ),
       ),
-      elevation: 0,
-      color: colorScheme.surface,
-      child: InkWell(
-        onTap: onTap, // Hubungkan dengan callback
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.title,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(item.title, style: textTheme.titleMedium),
+          ),
+          SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(item.timeRange, style: textTheme.bodySmall),
+          ),
+          SizedBox(height: 4),
+          if (item.type == PlanItemType.tour && item.tourImageUrl != null) ...[
+            ListTile(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: colorScheme.outline),
+              ),
+              tileColor: colorScheme.surfaceContainerHigh,
+              contentPadding: const EdgeInsets.all(8.0),
+              leading: _buildImage(item.tourImageUrl!, colorScheme),
+              title: Text(
+                item.tourLocation!,
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              if (item.type == PlanItemType.tour) ...[
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    if (item.tourImageUrl != null)
-                      _buildImage(item.tourImageUrl!, colorScheme)
-                    else
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: Icon(
-                          Icons.image_not_supported_outlined,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
+              subtitle: Row(
+                children: [
+                  Icon(
+                    Icons.near_me_outlined,
+                    size: 14,
+                    color: Color(0xFFA5A5A5),
+                  ),
+                  SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      "Klik untuk lihat detail wisata",
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Color(0xFFA5A5A5),
                       ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.tourLocation ?? 'Lokasi tidak tersedia',
-                            style: textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Klik untuk lihat detail',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.outline,
-                            ),
-                          ),
-                        ],
-                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-        ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
