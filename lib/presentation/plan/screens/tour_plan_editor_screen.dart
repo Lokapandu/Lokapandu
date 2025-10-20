@@ -25,10 +25,10 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<TourPlanEditorNotifier>().resetState();
     // Schedule state changes after the current build frame is complete
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = context.read<TourPlanEditorNotifier>();
+      notifier.resetState();
       notifier.selectedTour = widget.tourismSpot;
 
       if (widget.id != null) {
