@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
@@ -25,7 +24,6 @@ class CreateUserItinerariesNote {
   /// [userId] The ID of the user creating the itinerary note.
   /// [itineraryInput] The itinerary note data to be created.
   Future<Either<Failure, Unit>> execute(
-    String userId,
     CreateItineraryNote itineraryInput,
   ) async {
     final requiredFieldsValidation = validators.validateNoteRequiredFields(
@@ -59,7 +57,7 @@ class CreateUserItinerariesNote {
     }
 
     final conflictCheck = await validators.checkSchedulingConflicts(
-      userId,
+      itineraryInput.userId,
       itineraryInput.startTime,
       itineraryInput.endTime,
     );
@@ -67,6 +65,6 @@ class CreateUserItinerariesNote {
       return conflictCheck;
     }
 
-    return await repository.createItineraryNote(userId, itineraryInput);
+    return await repository.createItineraryNote(itineraryInput);
   }
 }

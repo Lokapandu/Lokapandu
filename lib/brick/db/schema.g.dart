@@ -7,6 +7,7 @@ part '20251007160636.migration.dart';
 part '20251007161732.migration.dart';
 part '20251019141339.migration.dart';
 part '20251020040008.migration.dart';
+part '20251020104345.migration.dart';
 
 /// All intelligently-generated migrations from all `@Migratable` classes on disk
 final migrations = <Migration>{
@@ -16,11 +17,12 @@ final migrations = <Migration>{
   const Migration20251007161732(),
   const Migration20251019141339(),
   const Migration20251020040008(),
+  const Migration20251020104345(),
 };
 
 /// A consumable database structure including the latest generated migration.
 final schema = Schema(
-  20251020040008,
+  20251020104345,
   generatorVersion: 1,
   tables: <SchemaTable>{
     SchemaTable(
@@ -36,8 +38,8 @@ final schema = Schema(
         SchemaColumn('id', Column.varchar, unique: true),
         SchemaColumn('name', Column.varchar),
         SchemaColumn('notes', Column.varchar),
-        SchemaColumn('start_time', Column.varchar),
-        SchemaColumn('end_time', Column.varchar),
+        SchemaColumn('start_time', Column.datetime),
+        SchemaColumn('end_time', Column.datetime),
         SchemaColumn('created_at', Column.datetime),
         SchemaColumn('tourism_spot_id', Column.integer),
         SchemaColumn('user_id', Column.varchar),

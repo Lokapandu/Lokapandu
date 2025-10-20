@@ -128,52 +128,43 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(widget.label, style: textTheme.titleMedium),
-        const SizedBox(height: 8),
-        TextFormField(
-          maxLines: 1,
-          controller: _controller,
-          style: textTheme.bodyLarge,
-          decoration: InputDecoration(
-            prefixIcon: Icon(widget.icon),
-            hintText: widget.hint,
-            hintStyle: textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            filled: true,
-            fillColor: colorScheme.surface,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: colorScheme.surfaceContainerHighest,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colorScheme.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colorScheme.error, width: 2),
-            ),
-            errorStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-          readOnly: true,
-          onTap: () => _selectDateTime(context),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return '${widget.label} diperlukan!';
-            }
-            return null;
-          },
-          onSaved: (value) => _controller.text = value!,
+    return TextFormField(
+      maxLines: 1,
+      controller: _controller,
+      style: textTheme.bodyLarge,
+      decoration: InputDecoration(
+        prefixIcon: Icon(widget.icon),
+        hintText: widget.hint,
+        hintStyle: textTheme.bodyLarge?.copyWith(
+          color: colorScheme.onSurface.withValues(alpha: 0.5),
         ),
-      ],
+        filled: true,
+        fillColor: colorScheme.surface,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.surfaceContainerHighest),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.error, width: 2),
+        ),
+        errorStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.error,
+        ),
+      ),
+      readOnly: true,
+      onTap: () => _selectDateTime(context),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '${widget.label} diperlukan!';
+        }
+        return null;
+      },
+      onSaved: (value) => _controller.text = value!,
     );
   }
 }

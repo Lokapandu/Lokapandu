@@ -44,7 +44,6 @@ class SettingsScreen extends StatelessWidget {
             title: 'Bookmark',
             subtitle: 'Lihat daftar wisata tersimpan',
             onTap: () {
-              print('Route to: ${Routing.bookmarks.fullPath}');
               context.push(Routing.bookmarks.fullPath);
             },
           ),

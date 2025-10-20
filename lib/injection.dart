@@ -27,6 +27,7 @@ import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_no
 import 'package:lokapandu/domain/usecases/itineraries/delete_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/edit_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itineraries.dart';
+import 'package:lokapandu/domain/usecases/itineraries/get_user_itinerary_by_id.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
@@ -180,6 +181,9 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<DeleteUserItineraries>(
     () => DeleteUserItineraries(locator<ItineraryRepository>()),
   );
+  locator.registerLazySingleton<GetUserItineraryById>(
+    () => GetUserItineraryById(locator<ItineraryRepository>()),
+  );
   // ========================================
   // PRESENTATION LAYER
   // ========================================
@@ -236,6 +240,11 @@ Future<void> initDependencies() async {
     () => UserSettingsNotifier(locator<SupabaseClient>()),
   );
   locator.registerFactory<TourPlanEditorNotifier>(
-    () => TourPlanEditorNotifier(locator<CreateUserItineraries>()),
+    () => TourPlanEditorNotifier(
+      analyticsManager: locator<AnalyticsManager>(),
+      useCase: locator<CreateUserItineraries>(),
+      getItineraryUseCase: locator<GetUserItineraryById>(),
+      createItineraryUseCase: locator<CreateUserItinerariesNote>(),
+    ),
   );
 }

@@ -1,93 +1,75 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-
-import '../models/note_model.dart';
+import 'package:lokapandu/common/utils/string_to_timeofday.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
+import 'package:provider/provider.dart';
 
 class NoteEditorScreen extends StatefulWidget {
-  final Note? note;
+  final String? id;
 
-  const NoteEditorScreen({super.key, this.note});
+  const NoteEditorScreen({super.key, this.id});
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
 }
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
-  final _titleController = TextEditingController();
-  final _contentController = TextEditingController();
-  DateTime? _startDate;
-  TimeOfDay? _startTime;
-  DateTime? _endDate;
-  TimeOfDay? _endTime;
-
-  bool get isEditing => widget.note != null;
+  final _formKey = GlobalKey<FormState>();
+  bool isEditing = false;
 
   @override
   void initState() {
     super.initState();
-    if (isEditing) {
-      _titleController.text = widget.note!.title;
-      _contentController.text = widget.note!.content;
-      _startDate = widget.note!.startTime;
-      _startTime = TimeOfDay.fromDateTime(widget.note!.startTime);
-      _endDate = widget.note!.endTime;
-      _endTime = TimeOfDay.fromDateTime(widget.note!.endTime);
-    } else {
-      // Mengisi data baru dengan konteks saat ini
-      _startDate = DateTime(2025, 10, 3);
-      _endDate = DateTime(2025, 10, 3);
-      _titleController.text = 'Makan siang di dekat Candi Jedong';
-    }
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _contentController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context, bool isStart) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: (isStart ? _startDate : _endDate) ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      locale: const Locale('id', 'ID'),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStart) {
-          _startDate = picked;
-        } else {
-          _endDate = picked;
-        }
+    final notifier = context.read<TourPlanEditorNotifier>();
+    if (widget.id != null) {
+      isEditing = true;
+      Future.microtask(() {
+        notifier.getPlanById(widget.id!);
       });
     }
   }
 
-  Future<void> _selectTime(BuildContext context, bool isStart) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: (isStart ? _startTime : _endTime) ?? TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStart) {
-          _startTime = picked;
-        } else {
-          _endTime = picked;
-        }
-      });
-    }
+  Future<void> _proceedSaveNote(notifier) async {
+    context.pop();
   }
+
+  InputDecoration textInputDecoration(BuildContext context, String hint) =>
+      InputDecoration(
+        hintText: hint,
+        hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+        filled: true,
+
+        fillColor: Theme.of(context).colorScheme.surface,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+            width: 2,
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerHigh,
@@ -109,184 +91,128 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTextField(
-              theme: theme,
-              label: 'Judul Catatan',
-              controller: _titleController,
-              hint: 'Contoh: Beli oleh-oleh khas Bali',
-            ),
-            const SizedBox(height: 24),
-            _buildDateTimePicker(
-              theme: theme,
-              label: 'Waktu Mulai',
-              date: _startDate,
-              time: _startTime,
-              onDateTap: () => _selectDate(context, true),
-              onTimeTap: () => _selectTime(context, true),
-            ),
-            const SizedBox(height: 24),
-            _buildDateTimePicker(
-              theme: theme,
-              label: 'Waktu Selesai',
-              date: _endDate,
-              time: _endTime,
-              onDateTap: () => _selectDate(context, false),
-              onTimeTap: () => _selectTime(context, false),
-            ),
-            const SizedBox(height: 24),
-            _buildTextField(
-              theme: theme,
-              label: 'Detail Catatan',
-              controller: _contentController,
-              hint: 'Tulis detail catatan di sini...',
-              maxLines: 5,
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                // TODO: Logika untuk menyimpan data
-                context.pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+        padding: const EdgeInsets.all(24.0),
+        child: Consumer<TourPlanEditorNotifier>(
+          builder: (context, notifier, child) {
+            return Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUnfocus,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Judul Catatan', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    maxLines: 1,
+                    style: textTheme.bodyLarge,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Judul Catatan tidak boleh kosong!';
+                      }
+                      return null;
+                    },
+                    decoration: textInputDecoration(
+                      context,
+                      'Contoh: Beli oleh-oleh khas Bali',
+                    ),
+                    onSaved: (value) => notifier.name = value ?? '',
+                  ),
+                  const SizedBox(height: 24),
+                  Text("Waktu Mulai", style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: DateTimeFormField(
+                          label: "Tanggal Mulai",
+                          hint: "dd MM YYYY",
+                          icon: Icons.calendar_today_outlined,
+                          mode: DateTimeInputMode.date,
+                          initialDateTime: notifier.date,
+                          onDateTimeSelected: (date) => notifier.date = date,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: DateTimeFormField(
+                          label: "Waktu Mulai",
+                          hint: "HH:mm",
+                          icon: Icons.access_time_outlined,
+                          mode: DateTimeInputMode.time,
+                          initialDateTime: notifier.startTime?.toDateTime(),
+                          onDateTimeSelected: (date) =>
+                              notifier.startTime = date?.toTimeOfDay(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text("Waktu Selesai", style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: DateTimeFormField(
+                          label: "Tanggal Selesai",
+                          hint: "dd MM YYYY",
+                          icon: Icons.calendar_today_outlined,
+                          mode: DateTimeInputMode.date,
+                          initialDateTime: notifier.endDate,
+                          onDateTimeSelected: (date) => notifier.endDate = date,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: DateTimeFormField(
+                          label: "Waktu Selesai",
+                          hint: "HH:mm",
+                          icon: Icons.access_time_outlined,
+                          mode: DateTimeInputMode.time,
+                          initialDateTime: notifier.startTime?.toDateTime(),
+                          onDateTimeSelected: (date) =>
+                              notifier.startTime = date?.toTimeOfDay(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Text('Catatan', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    maxLines: 4,
+                    style: textTheme.bodyLarge,
+                    decoration: textInputDecoration(
+                      context,
+                      'Tulis catatan di sini (opsional)',
+                    ),
+                    onSaved: (value) => notifier.notes = value ?? '',
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton(
+                    onPressed: () => _proceedSaveNote(notifier),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: colorScheme.onPrimary,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      'Simpan Catatan',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              child: Text(
-                'Simpan Catatan',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required ThemeData theme,
-    required String label,
-    required TextEditingController controller,
-    required String hint,
-    int maxLines = 1,
-  }) {
-    final colorScheme = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          maxLines: maxLines,
-          style: theme.textTheme.bodyLarge,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: theme.textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            filled: true,
-            fillColor: colorScheme.surface,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: colorScheme.surfaceContainerHighest,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colorScheme.primary, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateTimePicker({
-    required ThemeData theme,
-    required String label,
-    DateTime? date,
-    TimeOfDay? time,
-    required VoidCallback onDateTap,
-    required VoidCallback onTimeTap,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: _buildPickerTile(
-                theme: theme,
-                onTap: onDateTap,
-                icon: Icons.calendar_today_outlined,
-                value: date != null
-                    ? DateFormat('dd MMM yyyy', 'id_ID').format(date)
-                    : 'Pilih Tanggal',
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              flex: 2,
-              child: _buildPickerTile(
-                theme: theme,
-                onTap: onTimeTap,
-                icon: Icons.access_time_outlined,
-                value: time != null ? time.format(context) : 'Pilih Waktu',
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPickerTile({
-    required ThemeData theme,
-    required VoidCallback onTap,
-    required IconData icon,
-    required String value,
-  }) {
-    final colorScheme = theme.colorScheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        decoration: BoxDecoration(
-          color: colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: colorScheme.surfaceContainerHighest),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: colorScheme.onSurfaceVariant, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                value,
-                style: theme.textTheme.bodyLarge,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

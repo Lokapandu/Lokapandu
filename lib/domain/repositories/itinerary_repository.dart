@@ -11,7 +11,6 @@ abstract class ItineraryRepository {
   Future<Either<Failure, Unit>> createItinerary(CreateItinerary itineraryInput);
 
   Future<Either<Failure, Unit>> createItineraryNote(
-    String userId,
     CreateItineraryNote itineraryNoteInput,
   );
 

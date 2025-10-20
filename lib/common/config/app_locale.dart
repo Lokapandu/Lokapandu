@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 mixin AppLocale {
   static const String title = 'title';
   static const String thisIs = 'thisIs';

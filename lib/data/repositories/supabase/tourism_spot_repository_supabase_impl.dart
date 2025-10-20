@@ -2,7 +2,6 @@ import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
@@ -50,8 +49,10 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   }
 
   @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
-    return _executeSpotListCall(() => _remoteDataSource.getTourismSpots());
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots(
+    String? query,
+  ) async {
+    return _executeSpotListCall(() => _remoteDataSource.getTourismSpots(query: query));
   }
 
   @override

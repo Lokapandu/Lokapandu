@@ -9,7 +9,7 @@ class GetTourismSpotList {
 
   GetTourismSpotList(this.repository);
 
-  Future<Either<Failure, List<TourismSpot>>> execute() async {
-    return await repository.getTourismSpots();
+  Future<Either<Failure, List<TourismSpot>>> execute({String? query}) async {
+    return await repository.getTourismSpots(query);
   }
 }

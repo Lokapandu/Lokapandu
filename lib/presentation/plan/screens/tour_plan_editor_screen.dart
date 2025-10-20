@@ -3,17 +3,16 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
-import 'package:lokapandu/presentation/plan/models/plan_item_model.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:lokapandu/presentation/plan/widgets/selected_tour_card.dart';
 import 'package:provider/provider.dart';
 
 class TourPlanEditorScreen extends StatefulWidget {
-  final PlanItem? planItem;
+  final String? id;
   final TourismSpot? tourismSpot;
 
-  const TourPlanEditorScreen({super.key, this.planItem, this.tourismSpot});
+  const TourPlanEditorScreen({super.key, this.id, this.tourismSpot});
 
   @override
   State<TourPlanEditorScreen> createState() => _TourPlanEditorScreenState();
@@ -21,8 +20,7 @@ class TourPlanEditorScreen extends StatefulWidget {
 
 class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  bool get isEditing => widget.planItem != null;
+  bool isEditing = false;
 
   @override
   void initState() {
@@ -33,13 +31,11 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
       final notifier = context.read<TourPlanEditorNotifier>();
       notifier.selectedTour = widget.tourismSpot;
 
-      if (isEditing) {
-        // TODO: Logika untuk mengisi data saat mode edit
-        // Misalnya:
-        // notifier.setName(widget.planItem!.name);
-        // notifier.setDate(widget.planItem!.startTime); // Anggap planItem punya properti ini
-      } else {
-        notifier.date = DateTime.now();
+      if (widget.id != null) {
+        isEditing = true;
+        Future.microtask(() {
+          notifier.getPlanById(widget.id!);
+        });
       }
     });
   }
@@ -66,7 +62,6 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
       if (mounted) {
         result.fold(
           (failure) {
-            print('ADA ERROR INI: $failure');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Gagal: ${failure.message}')),
             );
@@ -170,6 +165,8 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                     onSaved: (value) => notifier.name = value ?? '',
                   ),
                   const SizedBox(height: 24),
+                  Text("Tanggal", style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
                   DateTimeFormField(
                     label: 'Tanggal',
                     hint: 'Pilih Tanggal',
@@ -182,26 +179,40 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: DateTimeFormField(
-                          label: "Waktu Mulai",
-                          hint: 'HH:mm',
-                          icon: Icons.access_time_outlined,
-                          mode: DateTimeInputMode.time,
-                          initialDateTime: notifier.startTime?.toDateTime(),
-                          onDateTimeSelected: (date) =>
-                              notifier.startTime = date?.toTimeOfDay(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Waktu Mulai", style: textTheme.titleMedium),
+                            const SizedBox(height: 8),
+                            DateTimeFormField(
+                              label: "Waktu Mulai",
+                              hint: 'HH:mm',
+                              icon: Icons.access_time_outlined,
+                              mode: DateTimeInputMode.time,
+                              initialDateTime: notifier.startTime?.toDateTime(),
+                              onDateTimeSelected: (date) =>
+                                  notifier.startTime = date?.toTimeOfDay(),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: DateTimeFormField(
-                          label: "Waktu Selesai",
-                          hint: 'HH:mm',
-                          icon: Icons.access_time_outlined,
-                          mode: DateTimeInputMode.time,
-                          initialDateTime: notifier.endTime?.toDateTime(),
-                          onDateTimeSelected: (date) =>
-                              notifier.endTime = date?.toTimeOfDay(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Waktu Selesai", style: textTheme.titleMedium),
+                            const SizedBox(height: 8),
+                            DateTimeFormField(
+                              label: "Waktu Selesai",
+                              hint: 'HH:mm',
+                              icon: Icons.access_time_outlined,
+                              mode: DateTimeInputMode.time,
+                              initialDateTime: notifier.endTime?.toDateTime(),
+                              onDateTimeSelected: (date) =>
+                                  notifier.endTime = date?.toTimeOfDay(),
+                            ),
+                          ],
                         ),
                       ),
                     ],

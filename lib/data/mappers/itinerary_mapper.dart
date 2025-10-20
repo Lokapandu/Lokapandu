@@ -7,8 +7,8 @@ extension ItineraryEntityMapper on Itinerary {
     id: id,
     name: name,
     notes: notes,
-    startTime: startTime.toIso8601String(),
-    endTime: endTime.toIso8601String(),
+    startTime: startTime,
+    endTime: endTime,
     createdAt: createdAt,
     tourismSpotId: tourismSpot?.id,
     userId: userId,
@@ -16,14 +16,16 @@ extension ItineraryEntityMapper on Itinerary {
 }
 
 extension ItineraryModelMapper on ItineraryModel {
-  Itinerary toEntity({TourismSpot? tourismSpot}) => Itinerary(
-    id: id,
-    name: name,
-    notes: notes,
-    startTime: DateTime.parse(startTime),
-    endTime: DateTime.parse(endTime),
-    createdAt: createdAt,
-    tourismSpot: tourismSpot,
-    userId: userId,
-  );
+  Itinerary toEntity({TourismSpot? tourismSpot}) {
+    return Itinerary(
+      id: id,
+      name: name,
+      notes: notes,
+      startTime: startTime,
+      endTime: endTime,
+      createdAt: createdAt,
+      tourismSpot: tourismSpot,
+      userId: userId,
+    );
+  }
 }

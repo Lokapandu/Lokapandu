@@ -16,9 +16,9 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
 
   // Method to fetch all tourism spots with comprehensive error handling
   @override
-  Future<List<TourismSpotModel>> getTourismSpots() async {
+  Future<List<TourismSpotModel>> getTourismSpots({String? query}) async {
     try {
-      return await _supabaseService.getAllTourismSpots();
+      return await _supabaseService.getAllTourismSpots(query: query);
     } on SupabaseException {
       rethrow;
     } on ServerException {

@@ -5,7 +5,6 @@ import 'package:dartz/dartz.dart';
 import 'package:lokapandu/brick/models/itinerary.model.dart';
 import 'package:lokapandu/brick/models/tourism_image.model.dart';
 import 'package:lokapandu/brick/models/tourism_spot.model.dart';
-import 'package:lokapandu/brick/models/user_itinerary.model.dart';
 import 'package:lokapandu/brick/repositories/repository.dart';
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/common/errors/failure.dart';
@@ -55,17 +54,16 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     String itineraryId,
   ) async {
     try {
-      final userItineraryResults = await Repository()
-          .getAll<UserItineraryModel>(
-            query: Query.where('itinerariesId', itineraryId),
-            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
-          );
+      final itineraryResults = await Repository().getAll<ItineraryModel>(
+        query: Query.where('id', itineraryId),
+        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      );
 
-      if (userItineraryResults == null || userItineraryResults.isEmpty) {
+      if (itineraryResults == null || itineraryResults.isEmpty) {
         return Left(ServerFailure('User itinerary association not found'));
       }
 
-      return Right(userItineraryResults.first.userId);
+      return Right(itineraryResults.first.userId);
     } on ConnectionException catch (e) {
       developer.log(e.toString(), name: "Itinerary Repository");
       return Left(ConnectionFailure('Connection error: ${e.message}'));
@@ -105,19 +103,16 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     String? excludeItineraryId,
   ]) async {
     try {
-      final userItineraryResults = await Repository()
-          .getAll<UserItineraryModel>(
-            query: Query.where('userId', userId),
-            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
-          );
+      final userItineraryResults = await Repository().getAll<ItineraryModel>(
+        query: Query.where('userId', userId),
+        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      );
 
       if (userItineraryResults == null || userItineraryResults.isEmpty) {
         return Right(false);
       }
 
-      final itineraryIds = userItineraryResults
-          .map((e) => e.itinerariesId)
-          .toList();
+      final itineraryIds = userItineraryResults.map((e) => e.id).toList();
 
       if (itineraryIds.isEmpty) return Right(false);
 
@@ -139,8 +134,8 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
           continue;
         }
 
-        if (startTime.isBefore(DateTime.parse(itinerary.endTime)) &&
-            endTime.isAfter((DateTime.parse(itinerary.startTime)))) {
+        if (startTime.isBefore(itinerary.endTime) &&
+            endTime.isAfter((itinerary.startTime))) {
           return Right(true);
         }
       }
@@ -159,19 +154,16 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     String userId,
   ) async {
     try {
-      final userItineraryResults = await Repository()
-          .getAll<UserItineraryModel>(
-            query: Query.where('userId', userId),
-            policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
-          );
+      final userItineraryResults = await Repository().getAll<ItineraryModel>(
+        query: Query.where('userId', userId),
+        policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
+      );
 
       if (userItineraryResults == null || userItineraryResults.isEmpty) {
         return const Right([]);
       }
 
-      final itineraryIds = userItineraryResults
-          .map((e) => e.itinerariesId)
-          .toList();
+      final itineraryIds = userItineraryResults.map((e) => e.id).toList();
 
       developer.log(
         "Total itinerary IDs: ${itineraryIds.length}",
@@ -226,15 +218,14 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         id: Uuid().v4(),
         name: itineraryInput.name,
         notes: itineraryInput.notes,
-        startTime: itineraryInput.startTime.toIso8601String(),
-        endTime: itineraryInput.endTime.toIso8601String(),
+        startTime: itineraryInput.startTime,
+        endTime: itineraryInput.endTime,
         createdAt: DateTime.now(),
         tourismSpotId: itineraryInput.tourismSpot,
         userId: itineraryInput.userId,
       );
 
-      // await Repository().upsertOne<ItineraryModel>(itineraryModel);
-      await Future.delayed(const Duration(seconds: 2));
+      await Repository().upsertOne<ItineraryModel>(itineraryModel);
 
       return Right(unit);
     } on ConnectionException catch (e) {
@@ -248,7 +239,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
   @override
   Future<Either<Failure, Unit>> createItineraryNote(
-    String userId,
     CreateItineraryNote itineraryNoteInput,
   ) async {
     try {
@@ -256,24 +246,13 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         id: Uuid().v4(),
         name: itineraryNoteInput.name,
         notes: itineraryNoteInput.notes,
-        startTime: itineraryNoteInput.startTime.toIso8601String(),
-        endTime: itineraryNoteInput.endTime.toIso8601String(),
+        startTime: itineraryNoteInput.startTime,
+        endTime: itineraryNoteInput.endTime,
         createdAt: DateTime.now(),
         userId: itineraryNoteInput.userId,
       );
 
-      final createdModel = await Repository().upsertOne<ItineraryModel>(
-        itineraryModel,
-      );
-
-      await Repository().upsertOne<UserItineraryModel>(
-        UserItineraryModel(
-          id: Uuid().v4(),
-          userId: userId,
-          itinerariesId: createdModel.id,
-          createdAt: DateTime.now(),
-        ),
-      );
+      await Repository().upsertOne<ItineraryModel>(itineraryModel);
 
       return Right(unit);
     } on ConnectionException catch (e) {
@@ -316,11 +295,8 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       final finalName = itineraryInput.name ?? existingItinerary.name;
       final finalNotes = itineraryInput.notes ?? existingItinerary.notes;
       final finalStartTime =
-          itineraryInput.startTime?.toIso8601String() ??
-          existingItinerary.startTime;
-      final finalEndTime =
-          itineraryInput.endTime?.toIso8601String() ??
-          existingItinerary.endTime;
+          itineraryInput.startTime ?? existingItinerary.startTime;
+      final finalEndTime = itineraryInput.endTime ?? existingItinerary.endTime;
       final finalTourismSpotId =
           itineraryInput.tourismSpot ?? existingItinerary.tourismSpotId;
       final finalUserId = itineraryInput.userId ?? existingItinerary.userId;
@@ -356,17 +332,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
       if (existingItineraryResults == null) {
         return Left(ServerFailure('Itinerary not found'));
-      }
-
-      final userItineraryResults = await Repository()
-          .getAll<UserItineraryModel>(
-            query: Query.where('itinerariesId', itineraryId),
-          );
-
-      if (userItineraryResults != null && userItineraryResults.isNotEmpty) {
-        for (final userItinerary in userItineraryResults) {
-          await Repository().delete<UserItineraryModel>(userItinerary);
-        }
       }
 
       await Repository().delete<ItineraryModel>(existingItineraryResults);
