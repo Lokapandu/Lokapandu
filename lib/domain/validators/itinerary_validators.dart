@@ -1,7 +1,6 @@
 import 'dart:developer' as developer;
 
 import 'package:dartz/dartz.dart';
-
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';

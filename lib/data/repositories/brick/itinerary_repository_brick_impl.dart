@@ -2,8 +2,6 @@ import 'dart:developer' as developer;
 
 import 'package:brick_offline_first/brick_offline_first.dart';
 import 'package:dartz/dartz.dart';
-import 'package:uuid/uuid.dart';
-
 import 'package:lokapandu/brick/models/itinerary.model.dart';
 import 'package:lokapandu/brick/models/tourism_image.model.dart';
 import 'package:lokapandu/brick/models/tourism_spot.model.dart';
@@ -20,10 +18,9 @@ import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
+import 'package:uuid/uuid.dart';
 
 class ItineraryRepositoryImpl implements ItineraryRepository {
-  static const int _bufferTimeMinutes = 1;
-
   @override
   Future<Either<Failure, Itinerary>> getItineraryById(
     String itineraryId,
@@ -137,20 +134,13 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
       if (itineraries.isEmpty) return Right(false);
 
-      final bufferedStartTime = startTime.subtract(
-        Duration(minutes: _bufferTimeMinutes),
-      );
-      final bufferedEndTime = endTime.add(
-        Duration(minutes: _bufferTimeMinutes),
-      );
-
       for (final itinerary in itineraries) {
         if (excludeItineraryId != null && itinerary.id == excludeItineraryId) {
           continue;
         }
 
-        if (bufferedStartTime.isBefore(itinerary.endTime) &&
-            bufferedEndTime.isAfter(itinerary.startTime)) {
+        if (startTime.isBefore(DateTime.parse(itinerary.endTime)) &&
+            endTime.isAfter((DateTime.parse(itinerary.startTime)))) {
           return Right(true);
         }
       }
@@ -237,8 +227,8 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         id: Uuid().v4(),
         name: itineraryInput.name,
         notes: itineraryInput.notes,
-        startTime: itineraryInput.startTime,
-        endTime: itineraryInput.endTime,
+        startTime: itineraryInput.startTime.toIso8601String(),
+        endTime: itineraryInput.endTime.toIso8601String(),
         createdAt: DateTime.now(),
         tourismSpotId: itineraryInput.tourismSpot,
       );
@@ -276,8 +266,8 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         id: Uuid().v4(),
         name: itineraryNoteInput.name,
         notes: itineraryNoteInput.notes,
-        startTime: itineraryNoteInput.startTime,
-        endTime: itineraryNoteInput.endTime,
+        startTime: itineraryNoteInput.startTime.toIso8601String(),
+        endTime: itineraryNoteInput.endTime.toIso8601String(),
         createdAt: DateTime.now(),
       );
 
@@ -335,8 +325,11 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
       final finalName = itineraryInput.name ?? existingItinerary.name;
       final finalNotes = itineraryInput.notes ?? existingItinerary.notes;
       final finalStartTime =
-          itineraryInput.startTime ?? existingItinerary.startTime;
-      final finalEndTime = itineraryInput.endTime ?? existingItinerary.endTime;
+          itineraryInput.startTime?.toIso8601String() ??
+          existingItinerary.startTime;
+      final finalEndTime =
+          itineraryInput.endTime?.toIso8601String() ??
+          existingItinerary.endTime;
       final finalTourismSpotId =
           itineraryInput.tourismSpot ?? existingItinerary.tourismSpotId;
 

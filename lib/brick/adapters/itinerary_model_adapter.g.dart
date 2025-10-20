@@ -10,8 +10,8 @@ Future<ItineraryModel> _$ItineraryModelFromSupabase(
     id: data['id'] as String,
     name: data['name'] as String,
     notes: data['notes'] == null ? null : data['notes'] as String?,
-    startTime: DateTime.parse(data['start_time'] as String),
-    endTime: DateTime.parse(data['end_time'] as String),
+    startTime: data['start_time'] as String,
+    endTime: data['end_time'] as String,
     createdAt: DateTime.parse(data['created_at'] as String),
     tourismSpotId: data['tourism_spot_id'] == null
         ? null
@@ -28,8 +28,8 @@ Future<Map<String, dynamic>> _$ItineraryModelToSupabase(
     'id': instance.id,
     'name': instance.name,
     'notes': instance.notes,
-    'start_time': instance.startTime.toIso8601String(),
-    'end_time': instance.endTime.toIso8601String(),
+    'start_time': instance.startTime,
+    'end_time': instance.endTime,
     'created_at': instance.createdAt.toIso8601String(),
     'tourism_spot_id': instance.tourismSpotId,
   };
@@ -44,8 +44,8 @@ Future<ItineraryModel> _$ItineraryModelFromSqlite(
     id: data['id'] as String,
     name: data['name'] as String,
     notes: data['notes'] == null ? null : data['notes'] as String?,
-    startTime: DateTime.parse(data['start_time'] as String),
-    endTime: DateTime.parse(data['end_time'] as String),
+    startTime: data['start_time'] as String,
+    endTime: data['end_time'] as String,
     createdAt: DateTime.parse(data['created_at'] as String),
     tourismSpotId: data['tourism_spot_id'] == null
         ? null
@@ -62,8 +62,8 @@ Future<Map<String, dynamic>> _$ItineraryModelToSqlite(
     'id': instance.id,
     'name': instance.name,
     'notes': instance.notes,
-    'start_time': instance.startTime.toIso8601String(),
-    'end_time': instance.endTime.toIso8601String(),
+    'start_time': instance.startTime,
+    'end_time': instance.endTime,
     'created_at': instance.createdAt.toIso8601String(),
     'tourism_spot_id': instance.tourismSpotId,
   };
@@ -143,13 +143,13 @@ class ItineraryModelAdapter
       association: false,
       columnName: 'start_time',
       iterable: false,
-      type: DateTime,
+      type: String,
     ),
     'endTime': const RuntimeSqliteColumnDefinition(
       association: false,
       columnName: 'end_time',
       iterable: false,
-      type: DateTime,
+      type: String,
     ),
     'createdAt': const RuntimeSqliteColumnDefinition(
       association: false,

@@ -34,6 +34,7 @@ import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dar
 import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
@@ -233,5 +234,8 @@ Future<void> initDependencies() async {
   locator.registerFactory<PackageInfoNotifier>(() => PackageInfoNotifier());
   locator.registerFactory<UserSettingsNotifier>(
     () => UserSettingsNotifier(locator<SupabaseClient>()),
+  );
+  locator.registerFactory<TourPlanEditorNotifier>(
+    () => TourPlanEditorNotifier(locator<CreateUserItineraries>()),
   );
 }

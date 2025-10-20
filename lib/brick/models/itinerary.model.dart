@@ -12,8 +12,8 @@ class ItineraryModel extends OfflineFirstWithSupabaseModel {
 
   final String name;
   final String? notes;
-  final DateTime startTime;
-  final DateTime endTime;
+  final String startTime;
+  final String endTime;
   final DateTime createdAt;
 
   final int? tourismSpotId;
