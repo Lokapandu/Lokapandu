@@ -10,11 +10,11 @@ part of 'schema.g.dart';
 // The migration version must **always** mirror the file name
 
 const List<MigrationCommand> _migration_20251020040008_up = [
-  InsertColumn('user_id', Column.varchar, onTable: 'ItineraryModel')
+  InsertColumn('user_id', Column.varchar, onTable: 'ItineraryModel'),
 ];
 
 const List<MigrationCommand> _migration_20251020040008_down = [
-  DropColumn('user_id', onTable: 'ItineraryModel')
+  DropColumn('user_id', onTable: 'ItineraryModel'),
 ];
 
 //

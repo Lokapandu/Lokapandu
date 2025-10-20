@@ -13,12 +13,12 @@ const List<MigrationCommand> _migration_20251020104345_up = [
   DropColumn('start_time', onTable: 'ItineraryModel'),
   DropColumn('end_time', onTable: 'ItineraryModel'),
   InsertColumn('start_time', Column.datetime, onTable: 'ItineraryModel'),
-  InsertColumn('end_time', Column.datetime, onTable: 'ItineraryModel')
+  InsertColumn('end_time', Column.datetime, onTable: 'ItineraryModel'),
 ];
 
 const List<MigrationCommand> _migration_20251020104345_down = [
   DropColumn('start_time', onTable: 'ItineraryModel'),
-  DropColumn('end_time', onTable: 'ItineraryModel')
+  DropColumn('end_time', onTable: 'ItineraryModel'),
 ];
 
 //

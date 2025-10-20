@@ -30,4 +30,3 @@ extension DateTimeToTimeOfDay on DateTime {
     return TimeOfDay(hour: hour, minute: minute);
   }
 }
-

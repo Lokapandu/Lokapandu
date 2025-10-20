@@ -71,10 +71,7 @@ class PlanTimelineShimmerItem extends StatelessWidget {
         ),
         // Timeline line shimmer
         Expanded(
-          child: Container(
-            width: 2,
-            color: colorScheme.surfaceContainerHigh,
-          ),
+          child: Container(width: 2, color: colorScheme.surfaceContainerHigh),
         ),
       ],
     );
@@ -84,9 +81,7 @@ class PlanTimelineShimmerItem extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       elevation: 3.0,
       color: colorScheme.surfaceContainer,
       child: Padding(

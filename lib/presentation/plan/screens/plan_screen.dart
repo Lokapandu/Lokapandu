@@ -90,7 +90,7 @@ class _PlanScreenState extends State<PlanScreen> {
           if (notifier.isLoading) {
             return const PlanShimmerLoading();
           }
-          
+
           return ListView.separated(
             padding: const EdgeInsets.fromLTRB(
               24,
