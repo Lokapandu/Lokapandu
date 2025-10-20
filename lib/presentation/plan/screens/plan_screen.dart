@@ -5,7 +5,9 @@ import '../widgets/expanding_fab.dart';
 import '../widgets/plan_timeline_item.dart';
 
 class PlanScreen extends StatefulWidget {
-  const PlanScreen({super.key});
+  final String? message;
+
+  const PlanScreen({super.key, this.message});
 
   @override
   State<PlanScreen> createState() => _PlanScreenState();
@@ -23,8 +25,8 @@ class _PlanScreenState extends State<PlanScreen> {
       type: PlanItemType.tour,
       title: 'Eksplorasi Tirta Gangga',
       timeRange: '09.30 - 11.00',
-      tourImageUrl:
-          'assets/images/tirta_gangga.jpg', // Ganti dengan path gambar Anda
+      tourImageUrl: 'assets/images/tirta_gangga.jpg',
+      // Ganti dengan path gambar Anda
       tourLocation: 'Bali, Indonesia',
     ),
     const PlanItem(
@@ -36,8 +38,8 @@ class _PlanScreenState extends State<PlanScreen> {
       type: PlanItemType.tour,
       title: 'Menikmati Pemandangan',
       timeRange: '13.00 - 15.00',
-      tourImageUrl:
-          'assets/images/taman_ujung.jpg', // Ganti dengan path gambar Anda
+      tourImageUrl: 'assets/images/taman_ujung.jpg',
+      // Ganti dengan path gambar Anda
       tourLocation: 'Bali, Indonesia',
     ),
   ];
@@ -47,6 +49,31 @@ class _PlanScreenState extends State<PlanScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+
+    // PERBAIKAN: Pindahkan ke post frame callback
+    if (widget.message != null && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final scaffoldMessenger = ScaffoldMessenger.of(this.context);
+        final banner = MaterialBanner(
+          padding: EdgeInsets.all(20),
+          content: Text('${widget.message}'),
+          actions: [
+            TextButton(
+              onPressed: () => scaffoldMessenger.hideCurrentMaterialBanner(),
+              child: const Text('Dismiss'),
+            ),
+          ],
+        );
+        scaffoldMessenger.showMaterialBanner(banner);
+
+        // Auto-dismiss after 5 seconds
+        Future.delayed(const Duration(seconds: 5), () {
+          if (mounted) {
+            scaffoldMessenger.hideCurrentMaterialBanner();
+          }
+        });
+      });
+    }
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerHigh,

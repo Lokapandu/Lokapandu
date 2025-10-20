@@ -99,7 +99,6 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     }
 
     final result = await useCase.execute(
-      user.id,
       CreateItinerary(
         name: name,
         notes: notes,
@@ -118,6 +117,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
           endTime!.minute,
         ),
         tourismSpot: _selectedTour!.id,
+        userId: user.id,
       ),
     );
 
@@ -125,5 +125,11 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     notifyListeners();
 
     return result;
+  }
+
+  @override
+  void dispose() {
+    resetState();
+    super.dispose();
   }
 }

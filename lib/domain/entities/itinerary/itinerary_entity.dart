@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
@@ -13,7 +12,7 @@ abstract class Itinerary with _$Itinerary {
     required DateTime startTime,
     required DateTime endTime,
     required DateTime createdAt,
-
     TourismSpot? tourismSpot,
+    required String userId,
   }) = _Itinerary;
 }

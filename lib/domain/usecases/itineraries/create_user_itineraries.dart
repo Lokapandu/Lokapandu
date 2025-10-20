@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
@@ -24,10 +23,7 @@ class CreateUserItineraries {
   ///
   /// [userId] The ID of the user creating the itinerary.
   /// [itineraryInput] The itinerary data to be created.
-  Future<Either<Failure, Unit>> execute(
-    String userId,
-    CreateItinerary itineraryInput,
-  ) async {
+  Future<Either<Failure, Unit>> execute(CreateItinerary itineraryInput) async {
     final requiredFieldsValidation = validators.validateRequiredFields(
       itineraryInput,
     );
@@ -66,7 +62,7 @@ class CreateUserItineraries {
     }
 
     final conflictCheck = await validators.checkSchedulingConflicts(
-      userId,
+      itineraryInput.userId,
       itineraryInput.startTime,
       itineraryInput.endTime,
     );
@@ -74,6 +70,6 @@ class CreateUserItineraries {
       return conflictCheck;
     }
 
-    return await repository.createItinerary(userId, itineraryInput);
+    return await repository.createItinerary(itineraryInput);
   }
 }

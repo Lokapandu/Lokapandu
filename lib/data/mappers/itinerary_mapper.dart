@@ -11,6 +11,7 @@ extension ItineraryEntityMapper on Itinerary {
     endTime: endTime.toIso8601String(),
     createdAt: createdAt,
     tourismSpotId: tourismSpot?.id,
+    userId: userId,
   );
 }
 
@@ -23,5 +24,6 @@ extension ItineraryModelMapper on ItineraryModel {
     endTime: DateTime.parse(endTime),
     createdAt: createdAt,
     tourismSpot: tourismSpot,
+    userId: userId,
   );
 }

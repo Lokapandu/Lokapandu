@@ -15,8 +15,8 @@ class ItineraryModel extends OfflineFirstWithSupabaseModel {
   final String startTime;
   final String endTime;
   final DateTime createdAt;
-
   final int? tourismSpotId;
+  final String userId;
 
   ItineraryModel({
     required this.id,
@@ -26,5 +26,6 @@ class ItineraryModel extends OfflineFirstWithSupabaseModel {
     required this.endTime,
     required this.createdAt,
     this.tourismSpotId,
+    required this.userId,
   });
 }

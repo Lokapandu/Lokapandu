@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/plan/models/plan_item_model.dart';
@@ -26,11 +27,10 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   @override
   void initState() {
     super.initState();
-
+    context.read<TourPlanEditorNotifier>().resetState();
     // Schedule state changes after the current build frame is complete
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = context.read<TourPlanEditorNotifier>();
-
       notifier.selectedTour = widget.tourismSpot;
 
       if (isEditing) {
@@ -57,6 +57,10 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      var itemSaved = notifier.selectedTour != null
+          ? notifier.selectedTour?.name
+          : notifier.notes;
+
       final result = await notifier.savePlan();
 
       if (mounted) {
@@ -68,8 +72,10 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
             );
           },
           (_) {
-            print('SUCCESS!!!');
-            // context.goNamed(Routing.plan.routeName);
+            context.goNamed(
+              Routing.plan.routeName,
+              extra: '$itemSaved Berhasil ditambahkan!',
+            );
           },
         );
       }
@@ -80,9 +86,41 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     }
   }
 
+  InputDecoration textInputDecoration(BuildContext context, String hint) =>
+      InputDecoration(
+        hintText: hint,
+        hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+        filled: true,
+
+        fillColor: Theme.of(context).colorScheme.surface,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+            width: 2,
+          ),
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
@@ -114,10 +152,21 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _buildTextField(
-                    context: context,
-                    label: 'Nama Rencana',
-                    hint: 'Contoh: Jelajahi Candi Jedong',
+                  Text('Nama Rencana', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    maxLines: 1,
+                    style: textTheme.bodyLarge,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nama Rencana tidak boleh kosong!';
+                      }
+                      return null;
+                    },
+                    decoration: textInputDecoration(
+                      context,
+                      'Contoh: Jelajahi Candi Jedong',
+                    ),
                     onSaved: (value) => notifier.name = value ?? '',
                   ),
                   const SizedBox(height: 24),
@@ -163,33 +212,44 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                     onTap: _navigateToSearchScreen,
                   ),
                   const SizedBox(height: 24),
-                  _buildTextField(
-                    context: context,
-                    label: 'Catatan',
-                    hint: 'Tulis catatan di sini (opsional)',
-                    optional: true,
+                  Text('Catatan', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  TextFormField(
                     maxLines: 4,
+                    style: textTheme.bodyLarge,
+                    decoration: textInputDecoration(
+                      context,
+                      'Tulis catatan di sini (opsional)',
+                    ),
                     onSaved: (value) => notifier.notes = value ?? '',
                   ),
                   const SizedBox(height: 40),
                   ElevatedButton.icon(
-                    onPressed: () => _proceedSavePlan(notifier),
+                    onPressed: notifier.isSubmitting
+                        ? null
+                        : () => _proceedSavePlan(notifier),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
+                      foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     icon: notifier.isSubmitting
-                        ? CircularProgressIndicator()
+                        ? ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 16,
+                              maxWidth: 16,
+                            ),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
                         : null,
                     label: Text(
                       notifier.isSubmitting ? 'Menyimpan...' : 'Simpan Rencana',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
                     ),
                   ),
                 ],
@@ -198,62 +258,6 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required BuildContext context,
-    required String label,
-    required String hint,
-    bool optional = false,
-    void Function(String?)? onSaved,
-    int maxLines = 1,
-  }) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: textTheme.titleMedium),
-        const SizedBox(height: 8),
-        TextFormField(
-          maxLines: maxLines,
-          style: textTheme.bodyLarge,
-          validator: !optional
-              ? (value) {
-                  if (value == null || value.isEmpty) {
-                    return '$label tidak boleh kosong!';
-                  }
-                  return null;
-                }
-              : null,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            filled: true,
-
-            fillColor: colorScheme.surface,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: colorScheme.surfaceContainerHighest,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colorScheme.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colorScheme.error, width: 2),
-            ),
-          ),
-          onSaved: onSaved,
-        ),
-      ],
     );
   }
 }

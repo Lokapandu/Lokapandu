@@ -219,7 +219,6 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
   @override
   Future<Either<Failure, Unit>> createItinerary(
-    String userId,
     CreateItinerary itineraryInput,
   ) async {
     try {
@@ -231,20 +230,11 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         endTime: itineraryInput.endTime.toIso8601String(),
         createdAt: DateTime.now(),
         tourismSpotId: itineraryInput.tourismSpot,
+        userId: itineraryInput.userId,
       );
 
-      final createdModel = await Repository().upsertOne<ItineraryModel>(
-        itineraryModel,
-      );
-
-      await Repository().upsertOne<UserItineraryModel>(
-        UserItineraryModel(
-          id: Uuid().v4(),
-          userId: userId,
-          itinerariesId: createdModel.id,
-          createdAt: DateTime.now(),
-        ),
-      );
+      // await Repository().upsertOne<ItineraryModel>(itineraryModel);
+      await Future.delayed(const Duration(seconds: 2));
 
       return Right(unit);
     } on ConnectionException catch (e) {
@@ -269,6 +259,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         startTime: itineraryNoteInput.startTime.toIso8601String(),
         endTime: itineraryNoteInput.endTime.toIso8601String(),
         createdAt: DateTime.now(),
+        userId: itineraryNoteInput.userId,
       );
 
       final createdModel = await Repository().upsertOne<ItineraryModel>(
@@ -332,6 +323,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
           existingItinerary.endTime;
       final finalTourismSpotId =
           itineraryInput.tourismSpot ?? existingItinerary.tourismSpotId;
+      final finalUserId = itineraryInput.userId ?? existingItinerary.userId;
 
       final updatedItinerary = ItineraryModel(
         id: existingItinerary.id,
@@ -340,6 +332,7 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
         startTime: finalStartTime,
         endTime: finalEndTime,
         tourismSpotId: finalTourismSpotId,
+        userId: finalUserId,
         createdAt: existingItinerary.createdAt,
       );
 

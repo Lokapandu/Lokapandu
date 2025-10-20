@@ -8,10 +8,7 @@ import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 abstract class ItineraryRepository {
   Future<Either<Failure, List<Itinerary>>> getUserItineraries(String userId);
 
-  Future<Either<Failure, Unit>> createItinerary(
-    String userId,
-    CreateItinerary itineraryInput,
-  );
+  Future<Either<Failure, Unit>> createItinerary(CreateItinerary itineraryInput);
 
   Future<Either<Failure, Unit>> createItineraryNote(
     String userId,

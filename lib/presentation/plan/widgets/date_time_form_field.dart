@@ -68,6 +68,7 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
     if (mounted && (widget.mode == DateTimeInputMode.date)) {
       final DateTime? pickedDate = await showDatePicker(
         context: context,
+        initialDate: DateTime.now(),
         firstDate: DateTime(2025),
         lastDate: DateTime(2030),
         locale: Locale('id'),
@@ -85,6 +86,10 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime: initialTime,
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        ),
       );
 
       if (pickedTime != null) {
@@ -166,6 +171,7 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
             }
             return null;
           },
+          onSaved: (value) => _controller.text = value!,
         ),
       ],
     );

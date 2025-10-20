@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CreateItineraryNote {
 
- String get name; String get notes; DateTime get startTime; DateTime get endTime;
+ String get name; String get notes; DateTime get startTime; DateTime get endTime; String get userId;
 /// Create a copy of CreateItineraryNote
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $CreateItineraryNoteCopyWith<CreateItineraryNote> get copyWith => _$CreateItiner
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateItineraryNote&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreateItineraryNote&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.userId, userId) || other.userId == userId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,notes,startTime,endTime);
+int get hashCode => Object.hash(runtimeType,name,notes,startTime,endTime,userId);
 
 @override
 String toString() {
-  return 'CreateItineraryNote(name: $name, notes: $notes, startTime: $startTime, endTime: $endTime)';
+  return 'CreateItineraryNote(name: $name, notes: $notes, startTime: $startTime, endTime: $endTime, userId: $userId)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $CreateItineraryNoteCopyWith<$Res>  {
   factory $CreateItineraryNoteCopyWith(CreateItineraryNote value, $Res Function(CreateItineraryNote) _then) = _$CreateItineraryNoteCopyWithImpl;
 @useResult
 $Res call({
- String name, String notes, DateTime startTime, DateTime endTime
+ String name, String notes, DateTime startTime, DateTime endTime, String userId
 });
 
 
@@ -62,13 +62,14 @@ class _$CreateItineraryNoteCopyWithImpl<$Res>
 
 /// Create a copy of CreateItineraryNote
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? notes = null,Object? startTime = null,Object? endTime = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? notes = null,Object? startTime = null,Object? endTime = null,Object? userId = null,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,notes: null == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String,startTime: null == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime,endTime: null == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -153,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String notes,  DateTime startTime,  DateTime endTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String notes,  DateTime startTime,  DateTime endTime,  String userId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreateItineraryNote() when $default != null:
-return $default(_that.name,_that.notes,_that.startTime,_that.endTime);case _:
+return $default(_that.name,_that.notes,_that.startTime,_that.endTime,_that.userId);case _:
   return orElse();
 
 }
@@ -174,10 +175,10 @@ return $default(_that.name,_that.notes,_that.startTime,_that.endTime);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String notes,  DateTime startTime,  DateTime endTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String notes,  DateTime startTime,  DateTime endTime,  String userId)  $default,) {final _that = this;
 switch (_that) {
 case _CreateItineraryNote():
-return $default(_that.name,_that.notes,_that.startTime,_that.endTime);case _:
+return $default(_that.name,_that.notes,_that.startTime,_that.endTime,_that.userId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +195,10 @@ return $default(_that.name,_that.notes,_that.startTime,_that.endTime);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String notes,  DateTime startTime,  DateTime endTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String notes,  DateTime startTime,  DateTime endTime,  String userId)?  $default,) {final _that = this;
 switch (_that) {
 case _CreateItineraryNote() when $default != null:
-return $default(_that.name,_that.notes,_that.startTime,_that.endTime);case _:
+return $default(_that.name,_that.notes,_that.startTime,_that.endTime,_that.userId);case _:
   return null;
 
 }
@@ -209,13 +210,14 @@ return $default(_that.name,_that.notes,_that.startTime,_that.endTime);case _:
 
 
 class _CreateItineraryNote implements CreateItineraryNote {
-  const _CreateItineraryNote({required this.name, required this.notes, required this.startTime, required this.endTime});
+  const _CreateItineraryNote({required this.name, required this.notes, required this.startTime, required this.endTime, required this.userId});
   
 
 @override final  String name;
 @override final  String notes;
 @override final  DateTime startTime;
 @override final  DateTime endTime;
+@override final  String userId;
 
 /// Create a copy of CreateItineraryNote
 /// with the given fields replaced by the non-null parameter values.
@@ -227,16 +229,16 @@ _$CreateItineraryNoteCopyWith<_CreateItineraryNote> get copyWith => __$CreateIti
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateItineraryNote&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateItineraryNote&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.userId, userId) || other.userId == userId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,name,notes,startTime,endTime);
+int get hashCode => Object.hash(runtimeType,name,notes,startTime,endTime,userId);
 
 @override
 String toString() {
-  return 'CreateItineraryNote(name: $name, notes: $notes, startTime: $startTime, endTime: $endTime)';
+  return 'CreateItineraryNote(name: $name, notes: $notes, startTime: $startTime, endTime: $endTime, userId: $userId)';
 }
 
 
@@ -247,7 +249,7 @@ abstract mixin class _$CreateItineraryNoteCopyWith<$Res> implements $CreateItine
   factory _$CreateItineraryNoteCopyWith(_CreateItineraryNote value, $Res Function(_CreateItineraryNote) _then) = __$CreateItineraryNoteCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String notes, DateTime startTime, DateTime endTime
+ String name, String notes, DateTime startTime, DateTime endTime, String userId
 });
 
 
@@ -264,13 +266,14 @@ class __$CreateItineraryNoteCopyWithImpl<$Res>
 
 /// Create a copy of CreateItineraryNote
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? notes = null,Object? startTime = null,Object? endTime = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? notes = null,Object? startTime = null,Object? endTime = null,Object? userId = null,}) {
   return _then(_CreateItineraryNote(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,notes: null == notes ? _self.notes : notes // ignore: cast_nullable_to_non_nullable
 as String,startTime: null == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime,endTime: null == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

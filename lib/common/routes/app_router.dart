@@ -110,10 +110,13 @@ class AppRouter {
             GoRoute(
               path: Routing.plan.path,
               name: Routing.plan.routeName,
-              pageBuilder: (context, state) => PageTransitions.noTransition(
-                const PlanScreen(),
-                name: Routing.plan.routeName,
-              ),
+              pageBuilder: (context, state) {
+                final String? message = state.extra as String?;
+                return PageTransitions.noTransition(
+                  PlanScreen(message: message),
+                  name: Routing.plan.routeName,
+                );
+              },
               routes: [
                 GoRoute(
                   path: Routing.planSearch.path,
