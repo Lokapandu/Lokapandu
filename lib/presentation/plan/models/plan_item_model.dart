@@ -1,3 +1,5 @@
+import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
+
 enum PlanItemType { tour, note, activity } // <-- 'activity' ditambahkan
 
 class PlanItem {
@@ -14,4 +16,19 @@ class PlanItem {
     this.tourImageUrl,
     this.tourLocation,
   });
+}
+
+extension PlanItemFromItinerary on Itinerary {
+  PlanItem toPlanItem() {
+    final timeRange =
+        '${startTime.hour}:${startTime.minute} - ${endTime.hour}:${endTime.minute}';
+    final tourImageUrl = tourismSpot?.images.first.imageUrl;
+    return PlanItem(
+      title: name,
+      timeRange: timeRange,
+      type: tourImageUrl != null ? PlanItemType.tour : PlanItemType.activity,
+      tourImageUrl: tourImageUrl,
+      tourLocation: tourismSpot?.address,
+    );
+  }
 }

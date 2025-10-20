@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
@@ -21,17 +22,39 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   @override
   void initState() {
     super.initState();
-    final notifier = context.read<TourPlanEditorNotifier>();
-    if (widget.id != null) {
-      isEditing = true;
-      Future.microtask(() {
-        notifier.getPlanById(widget.id!);
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notifier = context.read<TourPlanEditorNotifier>();
+      notifier.resetState();
+      if (widget.id != null) {
+        isEditing = true;
+        Future.microtask(() {
+          notifier.getPlanById(widget.id!);
+        });
+      }
+    });
   }
 
-  Future<void> _proceedSaveNote(notifier) async {
-    context.pop();
+  Future<void> _proceedSaveNote(TourPlanEditorNotifier notifier) async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      var itemSaved = notifier.name.isEmpty ? notifier.notes : notifier.name;
+      final result = await notifier.savePlan();
+
+      result.fold(
+        (failure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Gagal: ${failure.message}')));
+        },
+        (_) {
+          context.goNamed(
+            Routing.plan.routeName,
+            extra: '$itemSaved Berhasil ditambahkan!',
+          );
+        },
+      );
+    }
   }
 
   InputDecoration textInputDecoration(BuildContext context, String hint) =>
@@ -96,7 +119,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           builder: (context, notifier, child) {
             return Form(
               key: _formKey,
-              autovalidateMode: AutovalidateMode.onUnfocus,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -142,8 +164,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           icon: Icons.access_time_outlined,
                           mode: DateTimeInputMode.time,
                           initialDateTime: notifier.startTime?.toDateTime(),
-                          onDateTimeSelected: (date) =>
-                              notifier.startTime = date?.toTimeOfDay(),
+                          onDateTimeSelected: (date) {
+                            if (date != null) {
+                              notifier.startTime = date.toTimeOfDay();
+                            }
+                            return;
+                          },
                         ),
                       ),
                     ],
@@ -173,8 +199,12 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           icon: Icons.access_time_outlined,
                           mode: DateTimeInputMode.time,
                           initialDateTime: notifier.startTime?.toDateTime(),
-                          onDateTimeSelected: (date) =>
-                              notifier.startTime = date?.toTimeOfDay(),
+                          onDateTimeSelected: (date) {
+                            if (date != null) {
+                              notifier.endTime = date.toTimeOfDay();
+                            }
+                            return;
+                          },
                         ),
                       ),
                     ],
@@ -192,8 +222,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     onSaved: (value) => notifier.notes = value ?? '',
                   ),
                   const SizedBox(height: 40),
-                  ElevatedButton(
-                    onPressed: () => _proceedSaveNote(notifier),
+                  ElevatedButton.icon(
+                    onPressed: notifier.isSubmitting
+                        ? null
+                        : () => _proceedSaveNote(notifier),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colorScheme.primary,
                       foregroundColor: colorScheme.onPrimary,
@@ -202,11 +234,20 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: Text(
-                      'Simpan Catatan',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    icon: notifier.isSubmitting
+                        ? ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 16,
+                              maxWidth: 16,
+                            ),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : null,
+                    label: Text(
+                      notifier.isSubmitting ? 'Menyimpan...' : 'Simpan Catatan',
                     ),
                   ),
                 ],

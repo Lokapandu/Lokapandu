@@ -1,7 +1,10 @@
 // Flutter imports
+import 'package:flutter/material.dart';
+
 // Third-party imports
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 // Local imports
 import 'package:lokapandu/common/analytics.dart';
 import 'package:lokapandu/common/errors/failure.dart';
@@ -11,7 +14,6 @@ import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart'
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itinerary_by_id.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// A notifier class that manages the state and operations for tour plan editing.
 ///
@@ -19,13 +21,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// including both regular itineraries and note-based itineraries.
 /// It also provides analytics tracking for user interactions.
 class TourPlanEditorNotifier extends ChangeNotifier {
-  // Dependencies
+  // ========== Dependencies ==========
   final CreateUserItineraries _createItineraryUseCase;
   final CreateUserItinerariesNote _createItineraryNoteUseCase;
   final GetUserItineraryById _getItineraryUseCase;
   final AnalyticsManager _analyticsManager;
 
-  // Private state variables
+  // ========== Private State Variables ==========
   String _name = '';
   DateTime? _date = DateTime.now();
   DateTime? _endDate;
@@ -35,12 +37,13 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   TourismSpot? _selectedTour;
   bool _isSubmitting = false;
 
-  // Constants
+  // ========== Constants ==========
   static const String _errorUserNotFound = "Gagal mendapatkan data user";
   static const String _errorValidationFailed =
       "Validasi form gagal, mohon periksa kembali";
   static const String _errorSelectTourismSpot = "Pilih tempat wisata";
 
+  // ========== Constructor ==========
   /// Constructor for TourPlanEditorNotifier
   ///
   /// Requires use cases for creating itineraries and analytics manager
@@ -55,24 +58,28 @@ class TourPlanEditorNotifier extends ChangeNotifier {
        _createItineraryNoteUseCase = createItineraryUseCase,
        _analyticsManager = analyticsManager;
 
-  // Getters
+  // ========== Getters ==========
   String get name => _name;
-
   DateTime? get date => _date;
-
   DateTime? get endDate => _endDate;
-
   TimeOfDay? get startTime => _startTime;
-
   TimeOfDay? get endTime => _endTime;
-
   String get notes => _notes;
-
   TourismSpot? get selectedTour => _selectedTour;
-
   bool get isSubmitting => _isSubmitting;
 
-  // Setters with state notification
+  /// Validates the form fields to ensure all required data is present
+  ///
+  /// Returns true if validation fails (form is invalid)
+  /// Returns false if validation passes (form is valid)
+  bool get isFormInvalid {
+    return _name.isEmpty ||
+        _date == null ||
+        _startTime == null ||
+        _endTime == null;
+  }
+
+  // ========== Setters ==========
   set name(String value) {
     _name = value;
     notifyListeners();
@@ -112,17 +119,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Validates the form fields to ensure all required data is present
-  ///
-  /// Returns true if validation fails (form is invalid)
-  /// Returns false if validation passes (form is valid)
-  bool get isFormInvalid {
-    return _name.isEmpty ||
-        _date == null ||
-        _startTime == null ||
-        _endTime == null;
-  }
-
+  // ========== Public Methods ==========
   /// Resets all state variables to their initial values
   ///
   /// This method clears all form data and tracks the reset action
@@ -151,32 +148,37 @@ class TourPlanEditorNotifier extends ChangeNotifier {
 
     _setSubmittingState(true);
 
-    // Validate user authentication
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null) {
+    try {
+      // Validate user authentication
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        _trackSavePlanFailed(_errorUserNotFound, userId: 'null');
+        return Left(Failure.client(_errorUserNotFound));
+      }
+
+      // Validate form data
+      if (isFormInvalid) {
+        _trackSavePlanFailed(_errorValidationFailed);
+        return Left(Failure.validation(_errorValidationFailed));
+      }
+
+      Either<Failure, Unit> result;
+
+      // Save based on whether notes are provided or tourism spot is selected
+      if (_notes.isNotEmpty) {
+        if (_endDate == null) {
+          _trackSavePlanFailed(_errorValidationFailed);
+          return Left(Failure.validation(_errorValidationFailed));
+        }
+        result = await _saveItineraryWithNote(user.id);
+      } else {
+        result = await _saveRegularItinerary(user.id);
+      }
+
+      return result;
+    } finally {
       _setSubmittingState(false);
-      _trackSavePlanFailed(_errorUserNotFound, userId: 'null');
-      return Left(Failure.client(_errorUserNotFound));
     }
-
-    // Validate form data
-    if (isFormInvalid) {
-      _setSubmittingState(false);
-      _trackSavePlanFailed(_errorValidationFailed);
-      return Left(Failure.validation(_errorValidationFailed));
-    }
-
-    Either<Failure, Unit> result;
-
-    // Save based on whether notes are provided or tourism spot is selected
-    if (_notes.isNotEmpty) {
-      result = await _saveItineraryWithNote(user.id);
-    } else {
-      result = await _saveRegularItinerary(user.id);
-    }
-
-    _setSubmittingState(false);
-    return result;
   }
 
   /// Retrieves and loads a plan by its ID
@@ -193,15 +195,13 @@ class TourPlanEditorNotifier extends ChangeNotifier {
         eventName: 'get_plan_by_id_success',
         parameters: {'itinerary_id': itineraryId},
       );
-
       _populateFormWithItineraryData(data);
     });
 
     return error;
   }
 
-  // Private helper methods
-
+  // ========== Private Helper Methods ==========
   /// Sets the submitting state and notifies listeners
   void _setSubmittingState(bool isSubmitting) {
     _isSubmitting = isSubmitting;
@@ -225,7 +225,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
         name: _name,
         notes: _notes,
         startTime: _createDateTime(_date!, _startTime!),
-        endTime: _createDateTime(_date!, _endTime!),
+        endTime: _createDateTime(_endDate!, _endTime!),
         userId: userId,
       ),
     );
@@ -270,8 +270,8 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     _name = data.name;
     _date = data.startTime;
     _endDate = data.endTime;
-    _startTime = data.startTime.toTimeOfDay();
-    _endTime = data.endTime.toTimeOfDay();
+    _startTime = TimeOfDay.fromDateTime(data.startTime);
+    _endTime = TimeOfDay.fromDateTime(data.endTime);
     _notes = data.notes ?? '';
     notifyListeners();
   }
@@ -284,6 +284,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     );
   }
 
+  // ========== Lifecycle Methods ==========
   @override
   void dispose() {
     resetState();

@@ -67,14 +67,28 @@ class PlanCard extends StatelessWidget {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    _buildImage(item.tourImageUrl!, colorScheme),
+                    if (item.tourImageUrl != null)
+                      _buildImage(item.tourImageUrl!, colorScheme)
+                    else
+                      Container(
+                        width: 60,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        child: Icon(
+                          Icons.image_not_supported_outlined,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.tourLocation!,
+                            item.tourLocation ?? 'Lokasi tidak tersedia',
                             style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),

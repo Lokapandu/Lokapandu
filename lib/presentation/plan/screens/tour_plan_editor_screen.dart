@@ -143,7 +143,6 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
           builder: (context, notifier, child) {
             return Form(
               key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[

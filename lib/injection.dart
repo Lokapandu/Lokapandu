@@ -36,6 +36,7 @@ import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
@@ -245,6 +246,12 @@ Future<void> initDependencies() async {
       useCase: locator<CreateUserItineraries>(),
       getItineraryUseCase: locator<GetUserItineraryById>(),
       createItineraryUseCase: locator<CreateUserItinerariesNote>(),
+    ),
+  );
+  locator.registerFactory<TourPlanNotifier>(
+    () => TourPlanNotifier(
+      locator<GetUserItineraries>(),
+      locator<AnalyticsManager>(),
     ),
   );
 }

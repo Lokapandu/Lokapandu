@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
+import 'package:provider/provider.dart';
 
-import '../models/plan_item_model.dart';
 import '../widgets/expanding_fab.dart';
 import '../widgets/plan_timeline_item.dart';
+import '../widgets/plan_shimmer_loading.dart';
 
 class PlanScreen extends StatefulWidget {
   final String? message;
@@ -14,35 +16,16 @@ class PlanScreen extends StatefulWidget {
 }
 
 class _PlanScreenState extends State<PlanScreen> {
-  // Data dummy yang lebih relevan dengan konteks Bali
-  final List<PlanItem> _planItems = [
-    const PlanItem(
-      type: PlanItemType.activity,
-      title: 'Perjalanan ke Tirta Gangga',
-      timeRange: '09.00 - 09.30',
-    ),
-    const PlanItem(
-      type: PlanItemType.tour,
-      title: 'Eksplorasi Tirta Gangga',
-      timeRange: '09.30 - 11.00',
-      tourImageUrl: 'assets/images/tirta_gangga.jpg',
-      // Ganti dengan path gambar Anda
-      tourLocation: 'Bali, Indonesia',
-    ),
-    const PlanItem(
-      type: PlanItemType.activity,
-      title: 'Makan Siang di Warung Lokal',
-      timeRange: '11.15 - 12.15',
-    ),
-    const PlanItem(
-      type: PlanItemType.tour,
-      title: 'Menikmati Pemandangan',
-      timeRange: '13.00 - 15.00',
-      tourImageUrl: 'assets/images/taman_ujung.jpg',
-      // Ganti dengan path gambar Anda
-      tourLocation: 'Bali, Indonesia',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      if (mounted) {
+        await context.read<TourPlanNotifier>().fetchItineraries();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,18 +85,26 @@ class _PlanScreenState extends State<PlanScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          100,
-        ), // Padding bawah ditambah
-        itemCount: _planItems.length,
-        itemBuilder: (context, index) {
-          return PlanTimelineItem(item: _planItems[index]);
+      body: Consumer<TourPlanNotifier>(
+        builder: (context, notifier, child) {
+          if (notifier.isLoading) {
+            return const PlanShimmerLoading();
+          }
+          
+          return ListView.separated(
+            padding: const EdgeInsets.fromLTRB(
+              24,
+              16,
+              24,
+              100,
+            ), // Padding bawah ditambah
+            itemCount: notifier.planItems.length,
+            itemBuilder: (context, index) {
+              return PlanTimelineItem(item: notifier.planItems[index]);
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 16),
+          );
         },
-        separatorBuilder: (context, index) => const SizedBox(height: 16),
       ),
       floatingActionButton: const ExpandingFab(),
     );

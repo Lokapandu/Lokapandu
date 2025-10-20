@@ -154,16 +154,16 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
     String userId,
   ) async {
     try {
-      final userItineraryResults = await Repository().getAll<ItineraryModel>(
+      final itineraryResults = await Repository().getAll<ItineraryModel>(
         query: Query.where('userId', userId),
         policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
       );
 
-      if (userItineraryResults == null || userItineraryResults.isEmpty) {
+      if (itineraryResults == null || itineraryResults.isEmpty) {
         return const Right([]);
       }
 
-      final itineraryIds = userItineraryResults.map((e) => e.id).toList();
+      final itineraryIds = itineraryResults.map((e) => e.id).toList();
 
       developer.log(
         "Total itinerary IDs: ${itineraryIds.length}",
