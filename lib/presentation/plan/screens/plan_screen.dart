@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
+import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
 import 'package:provider/provider.dart';
 
-import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import '../widgets/expanding_fab.dart';
 import '../widgets/plan_shimmer_loading.dart';
 import '../widgets/plan_timeline_item.dart';
@@ -16,20 +16,14 @@ class PlanScreen extends StatefulWidget {
 
 class _PlanScreenState extends State<PlanScreen> {
   DateTime? selectedDate;
+
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() async {
       if (mounted) {
-        final error = await context.read<TourPlanNotifier>().fetchItineraries();
-        if (error != null) {
-          if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(error)));
-          }
-        }
+        await context.read<TourPlanNotifier>().fetchItineraries();
       }
     });
   }
@@ -89,6 +83,14 @@ class _PlanScreenState extends State<PlanScreen> {
         builder: (context, notifier, child) {
           if (notifier.isLoading) {
             return const PlanShimmerLoading();
+          }
+
+          if (notifier.hasError && mounted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(snackbar(notifier.errorMessage!));
+            });
           }
 
           return ListView.builder(
