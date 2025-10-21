@@ -62,8 +62,6 @@ class TourPlanNotifier extends ChangeNotifier {
         (failure) {
           _analyticsManager.trackError(error: failure.message);
           _handleFailure(failure);
-
-          notifyListeners();
         },
         (itineraries) {
           _planItems = itineraries.map((e) => e.toPlanItem()).toList()

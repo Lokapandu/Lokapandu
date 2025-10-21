@@ -86,9 +86,11 @@ class _PlanScreenState extends State<PlanScreen> {
           }
 
           if (notifier.hasError && mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(snackbar(notifier.errorMessage!));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(snackbar(notifier.errorMessage!));
+            });
           }
 
           return ListView.builder(
