@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-
-import 'package:provider/provider.dart';
-
+import 'package:lokapandu/common/utils/string_to_timeofday.dart';
+import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:lokapandu/presentation/home/widgets/dont_miss_carausel.dart';
 import 'package:lokapandu/presentation/home/widgets/search_bar.dart';
 import 'package:lokapandu/presentation/home/widgets/upcoming_tour_card.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
+import 'package:provider/provider.dart';
 
 class HomeContent extends StatefulWidget {
   const HomeContent({super.key});
@@ -54,7 +55,7 @@ class _HomeContentState extends State<HomeContent> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Text(
-              'Rekomendasi Untuk Anda',
+              'Rencana Anda',
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
@@ -62,30 +63,36 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
           const SizedBox(height: 16),
-          Consumer<TourismSpotNotifier>(
+          Consumer<TourPlanNotifier>(
             builder: (context, notifier, child) {
               if (notifier.isLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return Expanded(
+                  child: const Center(child: CircularProgressIndicator()),
+                );
               }
               if (notifier.hasError) {
-                return Center(
-                  child: Text('Gagal memuat data: ${notifier.errorMessage}'),
+                return Expanded(
+                  child: Center(
+                    child: Text('Gagal memuat data: ${notifier.errorMessage}'),
+                  ),
                 );
               }
               if (!notifier.hasData) {
                 return const Center(child: Text('Belum ada rekomendasi.'));
               }
 
-              final upcomingSpots = notifier.tourismSpots.take(3).toList();
+              final upcomingSpots = notifier.planItems
+                  .map((e) => e.tourismSpot)
+                  .whereType<TourismSpot>()
+                  .take(3)
+                  .toList();
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: ListView.separated(
+                child: ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: upcomingSpots.length,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final spot = upcomingSpots[index];
                     return UpcomingTourCard(
@@ -94,7 +101,8 @@ class _HomeContentState extends State<HomeContent> {
                           : '',
                       title: spot.name,
                       location: '${spot.city}, ${spot.province}',
-                      time: 'Dibuka: ${spot.openTime}',
+                      time:
+                          '${spot.openTime.toTimeOfDay().toString24()}-${spot.closeTime.toTimeOfDay().toString24()}',
                     );
                   },
                 ),
