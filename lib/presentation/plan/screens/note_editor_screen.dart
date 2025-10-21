@@ -10,9 +10,9 @@ import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:provider/provider.dart';
 
 class NoteEditorScreen extends StatefulWidget {
-  final TourPlanModel? tourPlanModel;
+  final TourPlanModel? editorModel;
 
-  const NoteEditorScreen({super.key, this.tourPlanModel});
+  const NoteEditorScreen({super.key, this.editorModel});
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -34,8 +34,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
         final notifier = context.read<TourPlanEditorNotifier>();
         notifier.resetState();
 
-        if (widget.tourPlanModel != null) {
-          notifier.populateFormWithItineraryData(widget.tourPlanModel!);
+        if (widget.editorModel != null) {
+          notifier.populateFormWithItineraryData(widget.editorModel!);
         }
 
         // 4. Set nilai controller dari notifier SETELAH state di-update
@@ -129,7 +129,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(
         backgroundColor: colorScheme.surface,
         elevation: 0,
@@ -140,7 +139,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          widget.tourPlanModel != null ? 'Edit Catatan' : 'Tambah Catatan',
+          widget.editorModel != null ? 'Edit Catatan' : 'Tambah Catatan',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),

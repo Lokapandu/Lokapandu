@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 
 import '../models/plan_item_model.dart';
@@ -8,9 +7,9 @@ import 'plan_card.dart';
 class PlanTimelineItem extends StatelessWidget {
   final PlanItem item;
   final bool showDate;
+
   const PlanTimelineItem({super.key, required this.item, this.showDate = true});
 
-  // Helper untuk menentukan warna berdasarkan tipe
   Color _getIndicatorColor(PlanItemType type, ColorScheme colorScheme) {
     switch (type) {
       case PlanItemType.tour:
@@ -63,10 +62,7 @@ class PlanTimelineItem extends StatelessWidget {
             shape: BoxShape.circle,
             color: colorScheme.surface,
             border: Border.all(
-              color: _getIndicatorColor(
-                item.type,
-                colorScheme,
-              ), // <-- Menggunakan helper
+              color: _getIndicatorColor(item.type, colorScheme),
               width: 3,
             ),
           ),

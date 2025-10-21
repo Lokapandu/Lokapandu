@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-
 import 'package:lokapandu/common/routes/routing_list.dart';
 
 class _FabOption extends StatelessWidget {
@@ -102,7 +100,7 @@ class _ExpandingFabState extends State<ExpandingFab>
               label: 'Buat Catatan',
               onTap: () {
                 _toggle();
-                context.push(Routing.planAddNote.fullPath);
+                context.pushNamed(Routing.planAddNote.routeName);
               },
             ),
           ),
@@ -114,7 +112,7 @@ class _ExpandingFabState extends State<ExpandingFab>
               label: 'Buat Rencana',
               onTap: () {
                 _toggle();
-                context.push(Routing.planAdd.fullPath);
+                context.pushNamed(Routing.planAdd.routeName);
               },
             ),
           ),

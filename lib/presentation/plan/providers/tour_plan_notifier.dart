@@ -60,7 +60,11 @@ class TourPlanNotifier extends ChangeNotifier {
       );
       result.fold(
         (failure) {
-          _analyticsManager.trackError(error: failure.message);
+          _analyticsManager.trackError(
+            error: failure.runtimeType.toString(),
+            description: failure.message,
+            parameters: {'provider': 'TourPlanNotifier'},
+          );
           _handleFailure(failure);
         },
         (itineraries) {
@@ -68,7 +72,10 @@ class TourPlanNotifier extends ChangeNotifier {
             ..sort((a, b) => a.date.compareTo(b.date));
           _analyticsManager.trackEvent(
             eventName: 'fetch_itineraries',
-            parameters: {'itineraries_count': _planItems.length},
+            parameters: {
+              'itineraries_count': _planItems.length,
+              'provider': 'TourPlanNotifier',
+            },
           );
         },
       );

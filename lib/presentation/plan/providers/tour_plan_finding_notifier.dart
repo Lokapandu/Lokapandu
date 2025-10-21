@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
@@ -34,14 +33,20 @@ class TourPlanFindingNotifier extends ChangeNotifier {
     _searchResults = result.fold((failure) {
       _analyticsManager.trackError(
         error: failure.message,
-        parameters: {'query': query ?? 'empty'},
+        parameters: {
+          'query': query ?? 'empty',
+          'provider': 'TourPlanFindingNotifier',
+        },
       );
       onError?.call(failure.message);
       return [];
     }, (spots) => spots);
     _analyticsManager.trackEvent(
       eventName: 'search_tourism_spot',
-      parameters: {'query': query ?? 'empty'},
+      parameters: {
+        'query': query ?? 'empty',
+        'provider': 'TourPlanFindingNotifier',
+      },
     );
     notifyListeners();
 

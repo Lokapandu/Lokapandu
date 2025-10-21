@@ -40,6 +40,7 @@ extension PlanItemFromItinerary on Itinerary {
       type: tourImageUrl != null ? PlanItemType.tour : PlanItemType.activity,
       tourismSpot: tourismSpot,
       tourPlanModel: TourPlanModel(
+        id: id,
         name: name,
         startDate: startTime,
         endDate: endTime,
