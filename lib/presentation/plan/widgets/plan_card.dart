@@ -1,5 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
+import 'package:lokapandu/presentation/plan/route/tour_plan_editor_extra.dart';
 
 import '../models/plan_item_model.dart';
 
@@ -8,6 +11,17 @@ class PlanCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const PlanCard({super.key, required this.item, this.onTap});
+
+  Color _getIndicatorColor(PlanItemType type, ColorScheme colorScheme) {
+    switch (type) {
+      case PlanItemType.tour:
+        return colorScheme.primary;
+      case PlanItemType.note:
+        return colorScheme.tertiary;
+      case PlanItemType.activity:
+        return colorScheme.secondary;
+    }
+  }
 
   Widget _buildImage(String imageUrl, ColorScheme colorScheme) {
     bool isNetwork = imageUrl.startsWith('http');
@@ -41,60 +55,109 @@ class PlanCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         color: colorScheme.surface,
         border: Border(
-          top: BorderSide(color: colorScheme.primary, width: 0.8),
-          left: BorderSide(color: colorScheme.primary, width: 5),
-          right: BorderSide(color: colorScheme.primary, width: 0.8),
-          bottom: BorderSide(color: colorScheme.primary, width: 0.8),
+          top: BorderSide(
+            color: _getIndicatorColor(item.type, colorScheme),
+            width: 0.8,
+          ),
+          left: BorderSide(
+            color: _getIndicatorColor(item.type, colorScheme),
+            width: 5,
+          ),
+          right: BorderSide(
+            color: _getIndicatorColor(item.type, colorScheme),
+            width: 0.8,
+          ),
+          bottom: BorderSide(
+            color: _getIndicatorColor(item.type, colorScheme),
+            width: 0.8,
+          ),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(item.title, style: textTheme.titleMedium),
-          ),
-          SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text(item.timeRange, style: textTheme.bodySmall),
-          ),
-          SizedBox(height: 4),
-          if (item.type == PlanItemType.tour && item.tourImageUrl != null) ...[
-            ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: colorScheme.outline),
-              ),
-              tileColor: colorScheme.surfaceContainerHigh,
-              contentPadding: const EdgeInsets.all(8.0),
-              leading: _buildImage(item.tourImageUrl!, colorScheme),
-              title: Text(
-                item.tourLocation!,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Row(
+          SizedBox(
+            width: double.infinity,
+            child: InkWell(
+              onTap: () {
+                context.push(
+                  item.tourismSpot != null
+                      ? Routing.planAdd.fullPath
+                      : Routing.planAddNote.fullPath,
+                  extra: item.tourismSpot != null
+                      ? TourPlanEditorExtra(
+                          editorModel: item.tourPlanModel,
+                          tourismSpot: item.tourismSpot,
+                        )
+                      : TourPlanEditorExtra(editorModel: item.tourPlanModel),
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.near_me_outlined,
-                    size: 14,
-                    color: Color(0xFFA5A5A5),
-                  ),
-                  SizedBox(width: 4),
-                  Expanded(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Text(
-                      "Klik untuk lihat detail wisata",
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Color(0xFFA5A5A5),
-                      ),
+                      item.title,
+                      style: textTheme.titleMedium,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  SizedBox(height: 4),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text(item.timeRange, style: textTheme.bodySmall),
+                  ),
                 ],
+              ),
+            ),
+          ),
+          if (item.type == PlanItemType.tour && item.tourismSpot != null) ...[
+            SizedBox(height: 10),
+            Material(
+              child: ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: colorScheme.outline),
+                ),
+                onTap: () => context.push(
+                  Routing.tourismSpotDetail.fullPath,
+                  extra: item.tourismSpot!,
+                ),
+                tileColor: colorScheme.surfaceContainerHigh,
+                contentPadding: const EdgeInsets.all(8.0),
+                leading: _buildImage(
+                  item.tourismSpot!.images.first.imageUrl,
+                  colorScheme,
+                ),
+                title: Text(
+                  item.tourismSpot!.address,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: Row(
+                  children: [
+                    Icon(
+                      Icons.near_me_outlined,
+                      size: 14,
+                      color: Color(0xFFA5A5A5),
+                    ),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        "Klik untuk lihat detail wisata",
+                        style: textTheme.bodySmall?.copyWith(
+                          color: Color(0xFFA5A5A5),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

@@ -244,7 +244,6 @@ Future<void> initDependencies() async {
     () => TourPlanEditorNotifier(
       analyticsManager: locator<AnalyticsManager>(),
       useCase: locator<CreateUserItineraries>(),
-      getItineraryUseCase: locator<GetUserItineraryById>(),
       createItineraryUseCase: locator<CreateUserItinerariesNote>(),
     ),
   );

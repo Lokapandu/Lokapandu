@@ -3,16 +3,17 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
+import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:lokapandu/presentation/plan/widgets/selected_tour_card.dart';
 import 'package:provider/provider.dart';
 
 class TourPlanEditorScreen extends StatefulWidget {
-  final String? id;
+  final TourPlanModel? editorModel;
   final TourismSpot? tourismSpot;
 
-  const TourPlanEditorScreen({super.key, this.id, this.tourismSpot});
+  const TourPlanEditorScreen({super.key, this.editorModel, this.tourismSpot});
 
   @override
   State<TourPlanEditorScreen> createState() => _TourPlanEditorScreenState();
@@ -31,11 +32,9 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
       notifier.resetState();
       notifier.selectedTour = widget.tourismSpot;
 
-      if (widget.id != null) {
+      if (widget.editorModel != null) {
         isEditing = true;
-        Future.microtask(() {
-          notifier.getPlanById(widget.id!);
-        });
+        notifier.populateFormWithItineraryData(widget.editorModel!);
       }
     });
   }
@@ -151,6 +150,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                   TextFormField(
                     maxLines: 1,
                     style: textTheme.bodyLarge,
+                    initialValue: notifier.name,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Nama Rencana tidak boleh kosong!';
@@ -227,6 +227,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                   TextFormField(
                     maxLines: 4,
                     style: textTheme.bodyLarge,
+                    initialValue: notifier.notes,
                     decoration: textInputDecoration(
                       context,
                       'Tulis catatan di sini (opsional)',

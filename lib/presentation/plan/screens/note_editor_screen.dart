@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
+import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:provider/provider.dart';
 
 class NoteEditorScreen extends StatefulWidget {
-  final String? id;
+  final TourPlanModel? tourPlanModel;
 
-  const NoteEditorScreen({super.key, this.id});
+  const NoteEditorScreen({super.key, this.tourPlanModel});
 
   @override
   State<NoteEditorScreen> createState() => _NoteEditorScreenState();
@@ -25,11 +26,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = context.read<TourPlanEditorNotifier>();
       notifier.resetState();
-      if (widget.id != null) {
+      if (widget.tourPlanModel != null) {
         isEditing = true;
-        Future.microtask(() {
-          notifier.getPlanById(widget.id!);
-        });
+        notifier.populateFormWithItineraryData(widget.tourPlanModel!);
       }
     });
   }
@@ -127,6 +126,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   TextFormField(
                     maxLines: 1,
                     style: textTheme.bodyLarge,
+                    initialValue: notifier.name,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Judul Catatan tidak boleh kosong!';
@@ -214,6 +214,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   const SizedBox(height: 8),
                   TextFormField(
                     maxLines: 4,
+                    initialValue: notifier.notes,
                     style: textTheme.bodyLarge,
                     decoration: textInputDecoration(
                       context,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 // Third-party imports
 import 'package:dartz/dartz.dart';
+import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Local imports
@@ -13,7 +14,6 @@ import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
-import 'package:lokapandu/domain/usecases/itineraries/get_user_itinerary_by_id.dart';
 
 /// A notifier class that manages the state and operations for tour plan editing.
 ///
@@ -24,7 +24,6 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   // ========== Dependencies ==========
   final CreateUserItineraries _createItineraryUseCase;
   final CreateUserItinerariesNote _createItineraryNoteUseCase;
-  final GetUserItineraryById _getItineraryUseCase;
   final AnalyticsManager _analyticsManager;
 
   // ========== Private State Variables ==========
@@ -50,11 +49,9 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   /// for tracking user interactions.
   TourPlanEditorNotifier({
     required CreateUserItineraries useCase,
-    required GetUserItineraryById getItineraryUseCase,
     required CreateUserItinerariesNote createItineraryUseCase,
     required AnalyticsManager analyticsManager,
   }) : _createItineraryUseCase = useCase,
-       _getItineraryUseCase = getItineraryUseCase,
        _createItineraryNoteUseCase = createItineraryUseCase,
        _analyticsManager = analyticsManager;
 
@@ -181,26 +178,6 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     }
   }
 
-  /// Retrieves and loads a plan by its ID
-  ///
-  /// Returns an error message if the operation fails, null if successful.
-  /// This method populates the form fields with the retrieved itinerary data.
-  Future<String?> getPlanById(String itineraryId) async {
-    String? error;
-
-    final itinerary = await _getItineraryUseCase.execute(itineraryId);
-
-    itinerary.fold((failure) => error = failure.message, (data) {
-      _analyticsManager.trackEvent(
-        eventName: 'get_plan_by_id_success',
-        parameters: {'itinerary_id': itineraryId},
-      );
-      _populateFormWithItineraryData(data);
-    });
-
-    return error;
-  }
-
   // ========== Private Helper Methods ==========
   /// Sets the submitting state and notifies listeners
   void _setSubmittingState(bool isSubmitting) {
@@ -266,13 +243,19 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   }
 
   /// Populates form fields with itinerary data
-  void _populateFormWithItineraryData(dynamic data) {
+  void populateFormWithItineraryData(TourPlanModel data) {
     _name = data.name;
-    _date = data.startTime;
-    _endDate = data.endTime;
-    _startTime = TimeOfDay.fromDateTime(data.startTime);
-    _endTime = TimeOfDay.fromDateTime(data.endTime);
+    _date = data.startDate;
+    _endDate = data.endDate;
+    _startTime = data.startTime;
+    _endTime = data.endTime;
     _notes = data.notes ?? '';
+
+    // Set the selected tourism spot if available in the data
+    if (data.tourismSpot != null) {
+      _selectedTour = data.tourismSpot;
+    }
+
     notifyListeners();
   }
 

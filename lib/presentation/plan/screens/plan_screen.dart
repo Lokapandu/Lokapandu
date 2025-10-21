@@ -91,7 +91,7 @@ class _PlanScreenState extends State<PlanScreen> {
             return const PlanShimmerLoading();
           }
 
-          return ListView.separated(
+          return ListView.builder(
             padding: const EdgeInsets.fromLTRB(
               24,
               16,
@@ -100,9 +100,15 @@ class _PlanScreenState extends State<PlanScreen> {
             ), // Padding bawah ditambah
             itemCount: notifier.planItems.length,
             itemBuilder: (context, index) {
-              return PlanTimelineItem(item: notifier.planItems[index]);
+              final isSameDate =
+                  index > 0 &&
+                  notifier.planItems[index].date.day ==
+                      notifier.planItems[index - 1].date.day;
+              return PlanTimelineItem(
+                item: notifier.planItems[index],
+                showDate: !isSameDate,
+              );
             },
-            separatorBuilder: (context, index) => const SizedBox(height: 16),
           );
         },
       ),

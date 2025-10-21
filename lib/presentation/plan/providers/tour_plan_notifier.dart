@@ -36,7 +36,8 @@ class TourPlanNotifier extends ChangeNotifier {
         notifyListeners();
       },
       (itineraries) {
-        _planItems = itineraries.map((e) => e.toPlanItem()).toList();
+        _planItems = itineraries.map((e) => e.toPlanItem()).toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
         _analyticsManager.trackEvent(
           eventName: 'fetch_itineraries',
           parameters: {'itineraries_count': _planItems.length},
