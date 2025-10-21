@@ -35,6 +35,8 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   String _notes = '';
   TourismSpot? _selectedTour;
   bool _isSubmitting = false;
+  TourPlanModel? _editModel;
+  bool _isSameValue = false;
 
   // ========== Constants ==========
   static const String _errorUserNotFound = "Gagal mendapatkan data user";
@@ -64,6 +66,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   String get notes => _notes;
   TourismSpot? get selectedTour => _selectedTour;
   bool get isSubmitting => _isSubmitting;
+  bool get isSameValue => _isSameValue;
 
   /// Validates the form fields to ensure all required data is present
   ///
@@ -79,36 +82,43 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   // ========== Setters ==========
   set name(String value) {
     _name = value;
+    _validateSameValue();
     notifyListeners();
   }
 
   set date(DateTime? value) {
     _date = value;
+    _validateSameValue();
     notifyListeners();
   }
 
   set endDate(DateTime? value) {
     _endDate = value;
+    _validateSameValue();
     notifyListeners();
   }
 
   set startTime(TimeOfDay? value) {
     _startTime = value;
+    _validateSameValue();
     notifyListeners();
   }
 
   set endTime(TimeOfDay? value) {
     _endTime = value;
+    _validateSameValue();
     notifyListeners();
   }
 
   set notes(String value) {
     _notes = value;
+    _validateSameValue();
     notifyListeners();
   }
 
   set selectedTour(TourismSpot? value) {
     _selectedTour = value;
+    _validateSameValue();
     _analyticsManager.setUserProperty(
       name: 'selected_tour',
       value: value?.id.toString() ?? 'null',
@@ -129,10 +139,34 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     _endTime = null;
     _notes = '';
     _selectedTour = null;
+    _editModel = null;
     _isSubmitting = false;
 
     _analyticsManager.trackEvent(eventName: 'reset_plan');
     notifyListeners();
+  }
+
+  void _validateSameValue() {
+    if (_editModel == null) return;
+
+    final modelName = _editModel!.name;
+    final modelStartTime = _editModel!.startTime;
+    final modelEndTime = _editModel!.endTime;
+    final modelDate = _editModel!.startDate;
+    final modelEndDate = _editModel!.endDate;
+    final modelNote = _editModel!.notes;
+    final modelTourism = _editModel!.tourismSpot;
+
+    final validate =
+        modelName == _name &&
+        modelDate == _date &&
+        modelEndDate == _endDate &&
+        modelStartTime == _startTime &&
+        modelEndTime == _endTime &&
+        modelNote == _notes &&
+        modelTourism == _selectedTour;
+
+    _isSameValue = validate;
   }
 
   /// Saves the current plan as either a regular itinerary or a note-based itinerary
@@ -244,9 +278,10 @@ class TourPlanEditorNotifier extends ChangeNotifier {
 
   /// Populates form fields with itinerary data
   void populateFormWithItineraryData(TourPlanModel data) {
+    _editModel = data;
     _name = data.name;
     _date = data.startDate;
-    _endDate = data.endDate;
+    _endDate = data.endDate ?? data.startDate; // Ensure endDate is not null
     _startTime = data.startTime;
     _endTime = data.endTime;
     _notes = data.notes ?? '';
@@ -255,6 +290,17 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     if (data.tourismSpot != null) {
       _selectedTour = data.tourismSpot;
     }
+
+    // Ensure we have valid time values
+    if (_startTime == null && _date != null) {
+      _startTime = TimeOfDay.now();
+    }
+
+    if (_endTime == null && _endDate != null) {
+      _endTime = TimeOfDay.now();
+    }
+
+    _validateSameValue();
 
     notifyListeners();
   }

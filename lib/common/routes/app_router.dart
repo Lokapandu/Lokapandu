@@ -112,9 +112,8 @@ class AppRouter {
               path: Routing.plan.path,
               name: Routing.plan.routeName,
               pageBuilder: (context, state) {
-                final String? message = state.extra as String?;
                 return PageTransitions.noTransition(
-                  PlanScreen(message: message),
+                  PlanScreen(),
                   name: Routing.plan.routeName,
                 );
               },

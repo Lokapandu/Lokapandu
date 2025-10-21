@@ -7,9 +7,8 @@ import '../widgets/plan_timeline_item.dart';
 import '../widgets/plan_shimmer_loading.dart';
 
 class PlanScreen extends StatefulWidget {
-  final String? message;
 
-  const PlanScreen({super.key, this.message});
+  const PlanScreen({super.key});
 
   @override
   State<PlanScreen> createState() => _PlanScreenState();
@@ -32,31 +31,6 @@ class _PlanScreenState extends State<PlanScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-
-    // PERBAIKAN: Pindahkan ke post frame callback
-    if (widget.message != null && mounted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final scaffoldMessenger = ScaffoldMessenger.of(this.context);
-        final banner = MaterialBanner(
-          padding: EdgeInsets.all(20),
-          content: Text('${widget.message}'),
-          actions: [
-            TextButton(
-              onPressed: () => scaffoldMessenger.hideCurrentMaterialBanner(),
-              child: const Text('Dismiss'),
-            ),
-          ],
-        );
-        scaffoldMessenger.showMaterialBanner(banner);
-
-        // Auto-dismiss after 5 seconds
-        Future.delayed(const Duration(seconds: 5), () {
-          if (mounted) {
-            scaffoldMessenger.hideCurrentMaterialBanner();
-          }
-        });
-      });
-    }
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerHigh,

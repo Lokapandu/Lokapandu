@@ -39,6 +39,17 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
   @override
   void didUpdateWidget(covariant DateTimeFormField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    
+    // Perbarui state jika initialDateTime berubah
+    if (widget.initialDateTime != oldWidget.initialDateTime) {
+      _selectedDateTime = widget.initialDateTime;
+      // Tunda pembaruan controller hingga setelah build selesai
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _updateControllerText();
+        }
+      });
+    }
   }
 
   String _getFormatString() {

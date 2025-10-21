@@ -4,6 +4,7 @@ import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:provider/provider.dart';
 
@@ -18,19 +19,38 @@ class NoteEditorScreen extends StatefulWidget {
 
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool isEditing = false;
+  late final TextEditingController _nameController;
+  late final TextEditingController _notesController;
 
   @override
   void initState() {
-    super.initState();
+    // Controller initialization
+    _nameController = TextEditingController();
+    _notesController = TextEditingController();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = context.read<TourPlanEditorNotifier>();
-      notifier.resetState();
-      if (widget.tourPlanModel != null) {
-        isEditing = true;
-        notifier.populateFormWithItineraryData(widget.tourPlanModel!);
+      if (mounted) {
+        final notifier = context.read<TourPlanEditorNotifier>();
+        notifier.resetState();
+
+        if (widget.tourPlanModel != null) {
+          notifier.populateFormWithItineraryData(widget.tourPlanModel!);
+        }
+
+        // 4. Set nilai controller dari notifier SETELAH state di-update
+        _nameController.text = notifier.name;
+        _notesController.text = notifier.notes;
       }
     });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _notesController.dispose();
+    super.dispose();
   }
 
   Future<void> _proceedSaveNote(TourPlanEditorNotifier notifier) async {
@@ -38,21 +58,34 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       _formKey.currentState!.save();
 
       var itemSaved = notifier.name.isEmpty ? notifier.notes : notifier.name;
-      final result = await notifier.savePlan();
+      String successMessage = '$itemSaved Berhasil ditambahkan!';
 
-      result.fold(
-        (failure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Gagal: ${failure.message}')));
-        },
-        (_) {
-          context.goNamed(
-            Routing.plan.routeName,
-            extra: '$itemSaved Berhasil ditambahkan!',
-          );
-        },
-      );
+      if (notifier.isSameValue) {
+        context.goNamed(Routing.plan.routeName);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackbar(successMessage));
+        }
+      } else {
+        final result = await notifier.savePlan();
+
+        result.fold(
+          (failure) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(snackbar('Gagal: ${failure.message}'));
+          },
+          (_) {
+            context.goNamed(Routing.plan.routeName);
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(snackbar(successMessage));
+          },
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
     }
   }
 
@@ -105,7 +138,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          isEditing ? 'Edit Catatan' : 'Tambah Catatan',
+          widget.tourPlanModel != null ? 'Edit Catatan' : 'Tambah Catatan',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -124,9 +157,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   Text('Judul Catatan', style: textTheme.titleMedium),
                   const SizedBox(height: 8),
                   TextFormField(
+                    controller: _nameController,
                     maxLines: 1,
                     style: textTheme.bodyLarge,
-                    initialValue: notifier.name,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Judul Catatan tidak boleh kosong!';
@@ -198,7 +231,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           hint: "HH:mm",
                           icon: Icons.access_time_outlined,
                           mode: DateTimeInputMode.time,
-                          initialDateTime: notifier.startTime?.toDateTime(),
+                          initialDateTime: notifier.endTime?.toDateTime(),
                           onDateTimeSelected: (date) {
                             if (date != null) {
                               notifier.endTime = date.toTimeOfDay();
@@ -213,8 +246,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   Text('Catatan', style: textTheme.titleMedium),
                   const SizedBox(height: 8),
                   TextFormField(
+                    controller: _notesController,
                     maxLines: 4,
-                    initialValue: notifier.notes,
                     style: textTheme.bodyLarge,
                     decoration: textInputDecoration(
                       context,

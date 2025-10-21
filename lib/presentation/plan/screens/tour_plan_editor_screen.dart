@@ -5,6 +5,7 @@ import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:lokapandu/presentation/plan/widgets/selected_tour_card.dart';
 import 'package:provider/provider.dart';
@@ -21,22 +22,38 @@ class TourPlanEditorScreen extends StatefulWidget {
 
 class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   final _formKey = GlobalKey<FormState>();
-  bool isEditing = false;
+  late final TextEditingController _nameController;
+  late final TextEditingController _notesController;
 
   @override
   void initState() {
-    super.initState();
-    // Schedule state changes after the current build frame is complete
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = context.read<TourPlanEditorNotifier>();
-      notifier.resetState();
-      notifier.selectedTour = widget.tourismSpot;
+    // Controller initialization
+    _nameController = TextEditingController();
+    _notesController = TextEditingController();
 
-      if (widget.editorModel != null) {
-        isEditing = true;
-        notifier.populateFormWithItineraryData(widget.editorModel!);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final notifier = context.read<TourPlanEditorNotifier>();
+        notifier.resetState();
+
+        notifier.selectedTour = widget.tourismSpot;
+
+        if (widget.editorModel != null) {
+          notifier.populateFormWithItineraryData(widget.editorModel!);
+        }
+
+        _nameController.text = notifier.name;
+        _notesController.text = notifier.notes;
       }
     });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _notesController.dispose();
+    super.dispose();
   }
 
   Future<void> _navigateToSearchScreen() async {
@@ -56,27 +73,40 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
           ? notifier.selectedTour?.name
           : notifier.notes;
 
-      final result = await notifier.savePlan();
+      String successMessage = '$itemSaved Berhasil ditambahkan!';
 
-      if (mounted) {
-        result.fold(
-          (failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Gagal: ${failure.message}')),
-            );
-          },
-          (_) {
-            context.goNamed(
-              Routing.plan.routeName,
-              extra: '$itemSaved Berhasil ditambahkan!',
-            );
-          },
-        );
+      if (notifier.isSameValue) {
+        // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
+        context.go(Routing.plan.fullPath);
+        // Tampilkan pesan sukses menggunakan SnackBar
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackbar(successMessage));
+        }
+      } else {
+        final result = await notifier.savePlan();
+
+        if (mounted) {
+          result.fold(
+            (failure) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(snackbar('Gagal: ${failure.message}'));
+            },
+            (_) {
+              // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
+              context.go(Routing.plan.fullPath);
+              // Tampilkan pesan sukses menggunakan SnackBar
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(snackbar(successMessage));
+            },
+          );
+        }
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Mohon isi semua field yang wajib.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
     }
   }
 
@@ -129,7 +159,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          isEditing ? 'Edit Rencana' : 'Tambah Rencana',
+          widget.editorModel != null ? 'Edit Rencana' : 'Tambah Rencana',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -148,9 +178,9 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                   Text('Nama Rencana', style: textTheme.titleMedium),
                   const SizedBox(height: 8),
                   TextFormField(
+                    controller: _nameController,
                     maxLines: 1,
                     style: textTheme.bodyLarge,
-                    initialValue: notifier.name,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Nama Rencana tidak boleh kosong!';
@@ -225,9 +255,9 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                   Text('Catatan', style: textTheme.titleMedium),
                   const SizedBox(height: 8),
                   TextFormField(
+                    controller: _notesController,
                     maxLines: 4,
                     style: textTheme.bodyLarge,
-                    initialValue: notifier.notes,
                     decoration: textInputDecoration(
                       context,
                       'Tulis catatan di sini (opsional)',
