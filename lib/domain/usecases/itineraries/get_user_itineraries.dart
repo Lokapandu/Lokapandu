@@ -18,7 +18,13 @@ class GetUserItineraries {
   /// It returns a list of [Itinerary] on success or a [Failure] if an error occurs.
   ///
   /// [userId] The ID of the user whose itineraries are to be fetched.
-  Future<Either<Failure, List<Itinerary>>> execute(String userId, {String? filterByDate}) async {
-    return await repository.getUserItineraries(userId, filterByDate: filterByDate);
+  Future<Either<Failure, List<Itinerary>>> execute(
+    String userId, {
+    String? filterByDate,
+  }) async {
+    return await repository.getUserItineraries(
+      userId,
+      filterByDate: filterByDate,
+    );
   }
 }

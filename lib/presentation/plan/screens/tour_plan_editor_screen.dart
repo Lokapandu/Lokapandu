@@ -58,7 +58,11 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
 
   Future<void> _navigateToSearchScreen() async {
     // Navigasi ke halaman pencarian wisata, menunggu hasil berupa TourismSpot
-    final result = await context.push<TourismSpot>('/plan/search-tour');
+    // Using pushNamed with unique key to avoid duplicate page keys
+    final result = await context.push<TourismSpot>(
+      Routing.planSearch.fullPath,
+      extra: {'key': UniqueKey().toString()},
+    );
 
     if (result != null && mounted) {
       context.read<TourPlanEditorNotifier>().selectedTour = result;

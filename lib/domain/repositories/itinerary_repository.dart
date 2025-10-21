@@ -6,7 +6,10 @@ import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 
 abstract class ItineraryRepository {
-  Future<Either<Failure, List<Itinerary>>> getUserItineraries(String userId, {String? filterByDate});
+  Future<Either<Failure, List<Itinerary>>> getUserItineraries(
+    String userId, {
+    String? filterByDate,
+  });
 
   Future<Either<Failure, Unit>> createItinerary(CreateItinerary itineraryInput);
 

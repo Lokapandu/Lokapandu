@@ -59,13 +59,6 @@ class _PlanScreenState extends State<PlanScreen> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notifier = context.read<TourPlanNotifier>();
-      if (mounted) {
-        print('selectedDate: ${notifier.selectedDate}');
-      }
-    });
-
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(

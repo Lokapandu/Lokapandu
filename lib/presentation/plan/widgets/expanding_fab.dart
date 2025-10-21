@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/presentation/plan/screens/note_editor_screen.dart';
-import 'package:lokapandu/presentation/plan/screens/tour_plan_editor_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 
 class _FabOption extends StatelessWidget {
   const _FabOption({required this.icon, required this.label, this.onTap});
@@ -100,11 +100,7 @@ class _ExpandingFabState extends State<ExpandingFab>
               label: 'Buat Catatan',
               onTap: () {
                 _toggle();
-                Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(
-                    builder: (context) => const NoteEditorScreen(),
-                  ),
-                );
+                context.push(Routing.planAddNote.fullPath);
               },
             ),
           ),
@@ -116,11 +112,7 @@ class _ExpandingFabState extends State<ExpandingFab>
               label: 'Buat Rencana',
               onTap: () {
                 _toggle();
-                Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(
-                    builder: (context) => const TourPlanEditorScreen(),
-                  ),
-                );
+                context.push(Routing.planAdd.fullPath);
               },
             ),
           ),
