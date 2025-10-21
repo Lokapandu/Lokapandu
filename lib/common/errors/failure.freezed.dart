@@ -86,10 +86,11 @@ extension FailurePatterns on Failure {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ServerFailure value)?  server,TResult Function( ConnectionFailure value)?  connection,TResult Function( DatabaseFailure value)?  database,TResult Function( ValidationFailure value)?  validation,TResult Function( SchedulingConflictFailure value)?  schedulingConflict,TResult Function( InvalidTimeRangeFailure value)?  invalidTimeRange,TResult Function( MissingFieldFailure value)?  missingField,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ClientFailure value)?  client,TResult Function( ServerFailure value)?  server,TResult Function( ConnectionFailure value)?  connection,TResult Function( DatabaseFailure value)?  database,TResult Function( ValidationFailure value)?  validation,TResult Function( SchedulingConflictFailure value)?  schedulingConflict,TResult Function( InvalidTimeRangeFailure value)?  invalidTimeRange,TResult Function( MissingFieldFailure value)?  missingField,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case ServerFailure() when server != null:
+case ClientFailure() when client != null:
+return client(_that);case ServerFailure() when server != null:
 return server(_that);case ConnectionFailure() when connection != null:
 return connection(_that);case DatabaseFailure() when database != null:
 return database(_that);case ValidationFailure() when validation != null:
@@ -114,10 +115,11 @@ return missingField(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ServerFailure value)  server,required TResult Function( ConnectionFailure value)  connection,required TResult Function( DatabaseFailure value)  database,required TResult Function( ValidationFailure value)  validation,required TResult Function( SchedulingConflictFailure value)  schedulingConflict,required TResult Function( InvalidTimeRangeFailure value)  invalidTimeRange,required TResult Function( MissingFieldFailure value)  missingField,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ClientFailure value)  client,required TResult Function( ServerFailure value)  server,required TResult Function( ConnectionFailure value)  connection,required TResult Function( DatabaseFailure value)  database,required TResult Function( ValidationFailure value)  validation,required TResult Function( SchedulingConflictFailure value)  schedulingConflict,required TResult Function( InvalidTimeRangeFailure value)  invalidTimeRange,required TResult Function( MissingFieldFailure value)  missingField,}){
 final _that = this;
 switch (_that) {
-case ServerFailure():
+case ClientFailure():
+return client(_that);case ServerFailure():
 return server(_that);case ConnectionFailure():
 return connection(_that);case DatabaseFailure():
 return database(_that);case ValidationFailure():
@@ -138,10 +140,11 @@ return missingField(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ServerFailure value)?  server,TResult? Function( ConnectionFailure value)?  connection,TResult? Function( DatabaseFailure value)?  database,TResult? Function( ValidationFailure value)?  validation,TResult? Function( SchedulingConflictFailure value)?  schedulingConflict,TResult? Function( InvalidTimeRangeFailure value)?  invalidTimeRange,TResult? Function( MissingFieldFailure value)?  missingField,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ClientFailure value)?  client,TResult? Function( ServerFailure value)?  server,TResult? Function( ConnectionFailure value)?  connection,TResult? Function( DatabaseFailure value)?  database,TResult? Function( ValidationFailure value)?  validation,TResult? Function( SchedulingConflictFailure value)?  schedulingConflict,TResult? Function( InvalidTimeRangeFailure value)?  invalidTimeRange,TResult? Function( MissingFieldFailure value)?  missingField,}){
 final _that = this;
 switch (_that) {
-case ServerFailure() when server != null:
+case ClientFailure() when client != null:
+return client(_that);case ServerFailure() when server != null:
 return server(_that);case ConnectionFailure() when connection != null:
 return connection(_that);case DatabaseFailure() when database != null:
 return database(_that);case ValidationFailure() when validation != null:
@@ -165,9 +168,10 @@ return missingField(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String message)?  server,TResult Function( String message)?  connection,TResult Function( String message)?  database,TResult Function( String message)?  validation,TResult Function( String message)?  schedulingConflict,TResult Function( String message)?  invalidTimeRange,TResult Function( String message)?  missingField,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String message)?  client,TResult Function( String message)?  server,TResult Function( String message)?  connection,TResult Function( String message)?  database,TResult Function( String message)?  validation,TResult Function( String message)?  schedulingConflict,TResult Function( String message)?  invalidTimeRange,TResult Function( String message)?  missingField,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case ServerFailure() when server != null:
+case ClientFailure() when client != null:
+return client(_that.message);case ServerFailure() when server != null:
 return server(_that.message);case ConnectionFailure() when connection != null:
 return connection(_that.message);case DatabaseFailure() when database != null:
 return database(_that.message);case ValidationFailure() when validation != null:
@@ -192,9 +196,10 @@ return missingField(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String message)  server,required TResult Function( String message)  connection,required TResult Function( String message)  database,required TResult Function( String message)  validation,required TResult Function( String message)  schedulingConflict,required TResult Function( String message)  invalidTimeRange,required TResult Function( String message)  missingField,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String message)  client,required TResult Function( String message)  server,required TResult Function( String message)  connection,required TResult Function( String message)  database,required TResult Function( String message)  validation,required TResult Function( String message)  schedulingConflict,required TResult Function( String message)  invalidTimeRange,required TResult Function( String message)  missingField,}) {final _that = this;
 switch (_that) {
-case ServerFailure():
+case ClientFailure():
+return client(_that.message);case ServerFailure():
 return server(_that.message);case ConnectionFailure():
 return connection(_that.message);case DatabaseFailure():
 return database(_that.message);case ValidationFailure():
@@ -215,9 +220,10 @@ return missingField(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String message)?  server,TResult? Function( String message)?  connection,TResult? Function( String message)?  database,TResult? Function( String message)?  validation,TResult? Function( String message)?  schedulingConflict,TResult? Function( String message)?  invalidTimeRange,TResult? Function( String message)?  missingField,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String message)?  client,TResult? Function( String message)?  server,TResult? Function( String message)?  connection,TResult? Function( String message)?  database,TResult? Function( String message)?  validation,TResult? Function( String message)?  schedulingConflict,TResult? Function( String message)?  invalidTimeRange,TResult? Function( String message)?  missingField,}) {final _that = this;
 switch (_that) {
-case ServerFailure() when server != null:
+case ClientFailure() when client != null:
+return client(_that.message);case ServerFailure() when server != null:
 return server(_that.message);case ConnectionFailure() when connection != null:
 return connection(_that.message);case DatabaseFailure() when database != null:
 return database(_that.message);case ValidationFailure() when validation != null:
@@ -229,6 +235,72 @@ return missingField(_that.message);case _:
 
 }
 }
+
+}
+
+/// @nodoc
+
+
+class ClientFailure implements Failure {
+  const ClientFailure(this.message);
+  
+
+@override final  String message;
+
+/// Create a copy of Failure
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ClientFailureCopyWith<ClientFailure> get copyWith => _$ClientFailureCopyWithImpl<ClientFailure>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClientFailure&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'Failure.client(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ClientFailureCopyWith<$Res> implements $FailureCopyWith<$Res> {
+  factory $ClientFailureCopyWith(ClientFailure value, $Res Function(ClientFailure) _then) = _$ClientFailureCopyWithImpl;
+@override @useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$ClientFailureCopyWithImpl<$Res>
+    implements $ClientFailureCopyWith<$Res> {
+  _$ClientFailureCopyWithImpl(this._self, this._then);
+
+  final ClientFailure _self;
+  final $Res Function(ClientFailure) _then;
+
+/// Create a copy of Failure
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(ClientFailure(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
 
 }
 

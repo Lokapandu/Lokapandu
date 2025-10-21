@@ -12,6 +12,7 @@ import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
 import 'package:lokapandu/presentation/bookmark/screens/bookmark_screen.dart';
 import 'package:lokapandu/presentation/home/screens/home_content.dart';
 import 'package:lokapandu/presentation/home/screens/home_screen.dart';
+import 'package:lokapandu/presentation/plan/route/tour_plan_editor_extra.dart';
 import 'package:lokapandu/presentation/plan/screens/note_editor_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/plan_screen.dart';
 import 'package:lokapandu/presentation/plan/screens/tour_plan_editor_screen.dart';
@@ -112,10 +113,12 @@ class AppRouter {
             GoRoute(
               path: Routing.plan.path,
               name: Routing.plan.routeName,
-              pageBuilder: (context, state) => PageTransitions.noTransition(
-                const PlanScreen(),
-                name: Routing.plan.routeName,
-              ),
+              pageBuilder: (context, state) {
+                return PageTransitions.noTransition(
+                  PlanScreen(),
+                  name: Routing.plan.routeName,
+                );
+              },
               routes: [
                 GoRoute(
                   path: Routing.planSearch.path,
@@ -129,20 +132,27 @@ class AppRouter {
                 GoRoute(
                   path: Routing.planAdd.path,
                   name: Routing.planAdd.routeName,
-                  pageBuilder: (context, state) =>
-                      PageTransitions.slideFromBottomTransition(
-                        const TourPlanEditorScreen(),
-                        name: Routing.planAdd.routeName,
+                  pageBuilder: (context, state) {
+                    final extra = state.extra as TourPlanEditorExtra?;
+                    return PageTransitions.slideFromBottomTransition(
+                      TourPlanEditorScreen(
+                        editorModel: extra?.editorModel,
+                        tourismSpot: extra?.tourismSpot,
                       ),
+                      name: Routing.planAdd.routeName,
+                    );
+                  },
                 ),
                 GoRoute(
                   path: Routing.planAddNote.path,
                   name: Routing.planAddNote.routeName,
-                  pageBuilder: (context, state) =>
-                      PageTransitions.slideFromBottomTransition(
-                        const NoteEditorScreen(),
-                        name: Routing.planAddNote.routeName,
-                      ),
+                  pageBuilder: (context, state) {
+                    final extra = state.extra as TourPlanEditorExtra?;
+                    return PageTransitions.slideFromBottomTransition(
+                      NoteEditorScreen(tourPlanModel: extra?.editorModel),
+                      name: Routing.planAddNote.routeName,
+                    );
+                  },
                 ),
               ],
             ),

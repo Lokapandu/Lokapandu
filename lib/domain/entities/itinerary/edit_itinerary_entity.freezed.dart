@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EditItinerary {
 
- String get id; String? get name; String? get notes; DateTime? get startTime; DateTime? get endTime; int? get tourismSpot;
+ String get id; String? get name; String? get notes; DateTime? get startTime; DateTime? get endTime; int? get tourismSpot; String? get userId;
 /// Create a copy of EditItinerary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $EditItineraryCopyWith<EditItinerary> get copyWith => _$EditItineraryCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EditItinerary&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.tourismSpot, tourismSpot) || other.tourismSpot == tourismSpot));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EditItinerary&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.tourismSpot, tourismSpot) || other.tourismSpot == tourismSpot)&&(identical(other.userId, userId) || other.userId == userId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,notes,startTime,endTime,tourismSpot);
+int get hashCode => Object.hash(runtimeType,id,name,notes,startTime,endTime,tourismSpot,userId);
 
 @override
 String toString() {
-  return 'EditItinerary(id: $id, name: $name, notes: $notes, startTime: $startTime, endTime: $endTime, tourismSpot: $tourismSpot)';
+  return 'EditItinerary(id: $id, name: $name, notes: $notes, startTime: $startTime, endTime: $endTime, tourismSpot: $tourismSpot, userId: $userId)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $EditItineraryCopyWith<$Res>  {
   factory $EditItineraryCopyWith(EditItinerary value, $Res Function(EditItinerary) _then) = _$EditItineraryCopyWithImpl;
 @useResult
 $Res call({
- String id, String? name, String? notes, DateTime? startTime, DateTime? endTime, int? tourismSpot
+ String id, String? name, String? notes, DateTime? startTime, DateTime? endTime, int? tourismSpot, String? userId
 });
 
 
@@ -62,7 +62,7 @@ class _$EditItineraryCopyWithImpl<$Res>
 
 /// Create a copy of EditItinerary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? tourismSpot = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? tourismSpot = freezed,Object? userId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -70,7 +70,8 @@ as String?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullabl
 as String?,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,tourismSpot: freezed == tourismSpot ? _self.tourismSpot : tourismSpot // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String? notes,  DateTime? startTime,  DateTime? endTime,  int? tourismSpot)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? name,  String? notes,  DateTime? startTime,  DateTime? endTime,  int? tourismSpot,  String? userId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EditItinerary() when $default != null:
-return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.tourismSpot);case _:
+return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.tourismSpot,_that.userId);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String? notes,  DateTime? startTime,  DateTime? endTime,  int? tourismSpot)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? name,  String? notes,  DateTime? startTime,  DateTime? endTime,  int? tourismSpot,  String? userId)  $default,) {final _that = this;
 switch (_that) {
 case _EditItinerary():
-return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.tourismSpot);case _:
+return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.tourismSpot,_that.userId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String? notes,  DateTime? startTime,  DateTime? endTime,  int? tourismSpot)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? name,  String? notes,  DateTime? startTime,  DateTime? endTime,  int? tourismSpot,  String? userId)?  $default,) {final _that = this;
 switch (_that) {
 case _EditItinerary() when $default != null:
-return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.tourismSpot);case _:
+return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_that.tourismSpot,_that.userId);case _:
   return null;
 
 }
@@ -211,7 +212,7 @@ return $default(_that.id,_that.name,_that.notes,_that.startTime,_that.endTime,_t
 
 
 class _EditItinerary implements EditItinerary {
-  const _EditItinerary({required this.id, this.name, this.notes, this.startTime, this.endTime, this.tourismSpot});
+  const _EditItinerary({required this.id, this.name, this.notes, this.startTime, this.endTime, this.tourismSpot, this.userId});
   
 
 @override final  String id;
@@ -220,6 +221,7 @@ class _EditItinerary implements EditItinerary {
 @override final  DateTime? startTime;
 @override final  DateTime? endTime;
 @override final  int? tourismSpot;
+@override final  String? userId;
 
 /// Create a copy of EditItinerary
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ _$EditItineraryCopyWith<_EditItinerary> get copyWith => __$EditItineraryCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EditItinerary&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.tourismSpot, tourismSpot) || other.tourismSpot == tourismSpot));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EditItinerary&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.notes, notes) || other.notes == notes)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.tourismSpot, tourismSpot) || other.tourismSpot == tourismSpot)&&(identical(other.userId, userId) || other.userId == userId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,notes,startTime,endTime,tourismSpot);
+int get hashCode => Object.hash(runtimeType,id,name,notes,startTime,endTime,tourismSpot,userId);
 
 @override
 String toString() {
-  return 'EditItinerary(id: $id, name: $name, notes: $notes, startTime: $startTime, endTime: $endTime, tourismSpot: $tourismSpot)';
+  return 'EditItinerary(id: $id, name: $name, notes: $notes, startTime: $startTime, endTime: $endTime, tourismSpot: $tourismSpot, userId: $userId)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$EditItineraryCopyWith<$Res> implements $EditItineraryCopy
   factory _$EditItineraryCopyWith(_EditItinerary value, $Res Function(_EditItinerary) _then) = __$EditItineraryCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? name, String? notes, DateTime? startTime, DateTime? endTime, int? tourismSpot
+ String id, String? name, String? notes, DateTime? startTime, DateTime? endTime, int? tourismSpot, String? userId
 });
 
 
@@ -268,7 +270,7 @@ class __$EditItineraryCopyWithImpl<$Res>
 
 /// Create a copy of EditItinerary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? tourismSpot = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? notes = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? tourismSpot = freezed,Object? userId = freezed,}) {
   return _then(_EditItinerary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -276,7 +278,8 @@ as String?,notes: freezed == notes ? _self.notes : notes // ignore: cast_nullabl
 as String?,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
 as DateTime?,tourismSpot: freezed == tourismSpot ? _self.tourismSpot : tourismSpot // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

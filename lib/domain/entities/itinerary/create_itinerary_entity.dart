@@ -10,5 +10,6 @@ abstract class CreateItinerary with _$CreateItinerary {
     required DateTime startTime,
     required DateTime endTime,
     required int tourismSpot,
+    required String userId,
   }) = _CreateItinerary;
 }

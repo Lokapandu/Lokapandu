@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -14,6 +15,9 @@ import 'package:lokapandu/common/services/notification_service.dart';
 import 'package:lokapandu/env/env.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/notification_settings_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
@@ -30,6 +34,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
 
+  await FlutterLocalization.instance.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await NotificationService().initialize();
@@ -90,6 +95,13 @@ Future<void> main() async {
           create: (_) => di.locator<UserSettingsNotifier>()..init(),
         ),
         ChangeNotifierProvider(create: (_) => NotificationSettingsNotifier()),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<TourPlanEditorNotifier>(),
+        ),
+        ChangeNotifierProvider(create: (_) => di.locator<TourPlanNotifier>()),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<TourPlanFindingNotifier>(),
+        ),
       ],
       child: const App(),
     ),

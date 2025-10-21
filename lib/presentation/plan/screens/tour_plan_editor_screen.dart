@@ -1,94 +1,156 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-
+import 'package:lokapandu/common/routes/routing_list.dart';
+import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
-import 'package:lokapandu/presentation/plan/models/plan_item_model.dart';
+import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
+import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
+import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:lokapandu/presentation/plan/widgets/selected_tour_card.dart';
+import 'package:provider/provider.dart';
 
 class TourPlanEditorScreen extends StatefulWidget {
-  final PlanItem? planItem;
+  final TourPlanModel? editorModel;
+  final TourismSpot? tourismSpot;
 
-  const TourPlanEditorScreen({super.key, this.planItem});
+  const TourPlanEditorScreen({super.key, this.editorModel, this.tourismSpot});
 
   @override
   State<TourPlanEditorScreen> createState() => _TourPlanEditorScreenState();
 }
 
 class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
-  final _titleController = TextEditingController();
-  final _noteController = TextEditingController();
-  DateTime? _selectedDate;
-  TimeOfDay? _startTime;
-  TimeOfDay? _endTime;
-  TourismSpot? _selectedTour;
-
-  bool get isEditing => widget.planItem != null;
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _nameController;
+  late final TextEditingController _notesController;
 
   @override
   void initState() {
+    // Controller initialization
+    _nameController = TextEditingController();
+    _notesController = TextEditingController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final notifier = context.read<TourPlanEditorNotifier>();
+        notifier.resetState();
+
+        notifier.selectedTour = widget.tourismSpot;
+
+        if (widget.editorModel != null) {
+          notifier.populateFormWithItineraryData(widget.editorModel!);
+        }
+
+        _nameController.text = notifier.name;
+        _notesController.text = notifier.notes;
+      }
+    });
     super.initState();
-    if (isEditing) {
-      // TODO: Logika untuk mengisi data saat mode edit
-    } else {
-      _selectedDate = DateTime(2025, 10, 3);
-      _titleController.text = 'Jelajah Air Terjun di Sekitar Ngoro';
-    }
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _noteController.dispose();
+    _nameController.dispose();
+    _notesController.dispose();
     super.dispose();
   }
 
   Future<void> _navigateToSearchScreen() async {
     // Navigasi ke halaman pencarian wisata, menunggu hasil berupa TourismSpot
-    final result = await context.push<TourismSpot>('/plan/search-tour');
+    // Using pushNamed with unique key to avoid duplicate page keys
+    final result = await context.push<TourismSpot>(
+      Routing.planSearch.fullPath,
+      extra: {'key': UniqueKey().toString()},
+    );
 
     if (result != null && mounted) {
-      setState(() {
-        _selectedTour = result;
-      });
+      context.read<TourPlanEditorNotifier>().selectedTour = result;
     }
   }
 
-  Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      locale: const Locale('id', 'ID'),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
+  Future<void> _proceedSavePlan(TourPlanEditorNotifier notifier) async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
 
-  Future<void> _selectTime(bool isStart) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: (isStart ? _startTime : _endTime) ?? TimeOfDay.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isStart) {
-          _startTime = picked;
-        } else {
-          _endTime = picked;
+      var itemSaved = notifier.selectedTour != null
+          ? notifier.selectedTour?.name
+          : notifier.notes;
+
+      String successMessage = '$itemSaved Berhasil ditambahkan!';
+
+      if (notifier.isSameValue) {
+        // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
+        context.go(Routing.plan.fullPath);
+        // Tampilkan pesan sukses menggunakan SnackBar
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackbar(successMessage));
         }
-      });
+      } else {
+        final result = await notifier.savePlan();
+
+        if (mounted) {
+          result.fold(
+            (failure) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(snackbar('Gagal: ${failure.message}'));
+            },
+            (_) {
+              context.read<TourPlanNotifier>().fetchItineraries();
+              // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
+              context.go(Routing.plan.fullPath);
+              // Tampilkan pesan sukses menggunakan SnackBar
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(snackbar(successMessage));
+            },
+          );
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
     }
   }
+
+  InputDecoration textInputDecoration(BuildContext context, String hint) =>
+      InputDecoration(
+        hintText: hint,
+        hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+        ),
+        filled: true,
+
+        fillColor: Theme.of(context).colorScheme.surface,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+            width: 2,
+          ),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
@@ -103,7 +165,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          isEditing ? 'Edit Rencana' : 'Tambah Rencana',
+          widget.editorModel != null ? 'Edit Rencana' : 'Tambah Rencana',
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -112,172 +174,137 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTextField(
-              theme: theme,
-              label: 'Nama Rencana',
-              controller: _titleController,
-              hint: 'Contoh: Jelajahi Candi Jedong',
-            ),
-            const SizedBox(height: 24),
-            _buildDateTimeField(
-              theme: theme,
-              label: 'Tanggal',
-              value: _selectedDate != null
-                  ? DateFormat(
-                      'EEEE, dd MMMM yyyy',
-                      'id_ID',
-                    ).format(_selectedDate!)
-                  : 'Pilih Tanggal',
-              icon: Icons.calendar_today_outlined,
-              onTap: _selectDate,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildDateTimeField(
-                    theme: theme,
-                    label: 'Waktu Mulai',
-                    value: _startTime?.format(context) ?? 'Pilih Waktu',
-                    icon: Icons.access_time_outlined,
-                    onTap: () => _selectTime(true),
+        child: Consumer<TourPlanEditorNotifier>(
+          builder: (context, notifier, child) {
+            return Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('Nama Rencana', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _nameController,
+                    maxLines: 1,
+                    style: textTheme.bodyLarge,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nama Rencana tidak boleh kosong!';
+                      }
+                      return null;
+                    },
+                    decoration: textInputDecoration(
+                      context,
+                      'Contoh: Jelajahi Candi Jedong',
+                    ),
+                    onSaved: (value) => notifier.name = value ?? '',
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildDateTimeField(
-                    theme: theme,
-                    label: 'Waktu Selesai',
-                    value: _endTime?.format(context) ?? 'Pilih Waktu',
-                    icon: Icons.access_time_outlined,
-                    onTap: () => _selectTime(false),
+                  const SizedBox(height: 24),
+                  Text("Tanggal", style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  DateTimeFormField(
+                    label: 'Tanggal',
+                    hint: 'Pilih Tanggal',
+                    icon: Icons.calendar_today_outlined,
+                    initialDateTime: notifier.date,
+                    mode: DateTimeInputMode.date,
+                    onDateTimeSelected: (date) => notifier.date = date,
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SelectedTourCard(
-              selectedTour: _selectedTour,
-              onTap: _navigateToSearchScreen,
-            ),
-            const SizedBox(height: 24),
-            _buildTextField(
-              theme: theme,
-              label: 'Catatan',
-              controller: _noteController,
-              hint: 'Tulis catatan di sini (opsional)',
-              maxLines: 4,
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
-              onPressed: () {
-                // Implementasi logika penyimpanan
-                context.pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Waktu Mulai", style: textTheme.titleMedium),
+                            const SizedBox(height: 8),
+                            DateTimeFormField(
+                              label: "Waktu Mulai",
+                              hint: 'HH:mm',
+                              icon: Icons.access_time_outlined,
+                              mode: DateTimeInputMode.time,
+                              initialDateTime: notifier.startTime?.toDateTime(),
+                              onDateTimeSelected: (date) =>
+                                  notifier.startTime = date?.toTimeOfDay(),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Waktu Selesai", style: textTheme.titleMedium),
+                            const SizedBox(height: 8),
+                            DateTimeFormField(
+                              label: "Waktu Selesai",
+                              hint: 'HH:mm',
+                              icon: Icons.access_time_outlined,
+                              mode: DateTimeInputMode.time,
+                              initialDateTime: notifier.endTime?.toDateTime(),
+                              onDateTimeSelected: (date) =>
+                                  notifier.endTime = date?.toTimeOfDay(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  SelectedTourCard(
+                    selectedTour: notifier.selectedTour,
+                    onTap: _navigateToSearchScreen,
+                  ),
+                  const SizedBox(height: 24),
+                  Text('Catatan', style: textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _notesController,
+                    maxLines: 4,
+                    style: textTheme.bodyLarge,
+                    decoration: textInputDecoration(
+                      context,
+                      'Tulis catatan di sini (opsional)',
+                    ),
+                    onSaved: (value) => notifier.notes = value ?? '',
+                  ),
+                  const SizedBox(height: 40),
+                  ElevatedButton.icon(
+                    onPressed: notifier.isSubmitting
+                        ? null
+                        : () => _proceedSavePlan(notifier),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    icon: notifier.isSubmitting
+                        ? ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 16,
+                              maxWidth: 16,
+                            ),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : null,
+                    label: Text(
+                      notifier.isSubmitting ? 'Menyimpan...' : 'Simpan Rencana',
+                    ),
+                  ),
+                ],
               ),
-              child: Text(
-                'Simpan Rencana',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required ThemeData theme,
-    required String label,
-    required TextEditingController controller,
-    required String hint,
-    int maxLines = 1,
-  }) {
-    final colorScheme = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        TextField(
-          controller: controller,
-          maxLines: maxLines,
-          style: theme.textTheme.bodyLarge,
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: theme.textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            filled: true,
-
-            fillColor: colorScheme.surface,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: colorScheme.surfaceContainerHighest,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: colorScheme.primary, width: 2),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateTimeField({
-    required ThemeData theme,
-    required String label,
-    required String value,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    final colorScheme = theme.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: theme.textTheme.titleMedium),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colorScheme.surfaceContainerHighest),
-            ),
-            child: Row(
-              children: [
-                Icon(icon, color: colorScheme.onSurfaceVariant, size: 20),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    value,
-                    style: theme.textTheme.bodyLarge,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

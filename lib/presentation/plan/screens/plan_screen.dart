@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../models/plan_item_model.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import '../widgets/expanding_fab.dart';
+import '../widgets/plan_shimmer_loading.dart';
 import '../widgets/plan_timeline_item.dart';
 
 class PlanScreen extends StatefulWidget {
@@ -12,35 +15,44 @@ class PlanScreen extends StatefulWidget {
 }
 
 class _PlanScreenState extends State<PlanScreen> {
-  // Data dummy yang lebih relevan dengan konteks Bali
-  final List<PlanItem> _planItems = [
-    const PlanItem(
-      type: PlanItemType.activity,
-      title: 'Perjalanan ke Tirta Gangga',
-      timeRange: '09.00 - 09.30',
-    ),
-    const PlanItem(
-      type: PlanItemType.tour,
-      title: 'Eksplorasi Tirta Gangga',
-      timeRange: '09.30 - 11.00',
-      tourImageUrl:
-          'assets/images/tirta_gangga.jpg', // Ganti dengan path gambar Anda
-      tourLocation: 'Bali, Indonesia',
-    ),
-    const PlanItem(
-      type: PlanItemType.activity,
-      title: 'Makan Siang di Warung Lokal',
-      timeRange: '11.15 - 12.15',
-    ),
-    const PlanItem(
-      type: PlanItemType.tour,
-      title: 'Menikmati Pemandangan',
-      timeRange: '13.00 - 15.00',
-      tourImageUrl:
-          'assets/images/taman_ujung.jpg', // Ganti dengan path gambar Anda
-      tourLocation: 'Bali, Indonesia',
-    ),
-  ];
+  DateTime? selectedDate;
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() async {
+      if (mounted) {
+        final error = await context.read<TourPlanNotifier>().fetchItineraries();
+        if (error != null) {
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(error)));
+          }
+        }
+      }
+    });
+  }
+
+  Future<void> _selectDate() async {
+    final notifier = context.read<TourPlanNotifier>();
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: notifier.selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2030),
+    );
+
+    if (pickedDate != null) {
+      // Mengatur tanggal yang dipilih ke awal hari (00:00:00) untuk memastikan filter bekerja dengan benar
+      final startOfDay = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+      );
+      notifier.setSelectedDate(startOfDay);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,25 +80,37 @@ class _PlanScreenState extends State<PlanScreen> {
               Icons.calendar_today_outlined,
               color: colorScheme.onSurface,
             ),
-            onPressed: () {
-              // TODO: Implementasi logika untuk membuka kalender
-            },
+            onPressed: () => _selectDate(),
           ),
           const SizedBox(width: 8),
         ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          100,
-        ), // Padding bawah ditambah
-        itemCount: _planItems.length,
-        itemBuilder: (context, index) {
-          return PlanTimelineItem(item: _planItems[index]);
+      body: Consumer<TourPlanNotifier>(
+        builder: (context, notifier, child) {
+          if (notifier.isLoading) {
+            return const PlanShimmerLoading();
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(
+              24,
+              16,
+              24,
+              100,
+            ), // Padding bawah ditambah
+            itemCount: notifier.planItems.length,
+            itemBuilder: (context, index) {
+              final isSameDate =
+                  index > 0 &&
+                  notifier.planItems[index].date.day ==
+                      notifier.planItems[index - 1].date.day;
+              return PlanTimelineItem(
+                item: notifier.planItems[index],
+                showDate: !isSameDate,
+              );
+            },
+          );
         },
-        separatorBuilder: (context, index) => const SizedBox(height: 16),
       ),
       floatingActionButton: const ExpandingFab(),
     );

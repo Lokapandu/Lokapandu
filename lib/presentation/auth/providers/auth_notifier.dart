@@ -120,7 +120,7 @@ class AuthNotifier extends ChangeNotifier {
             'screen': 'auth',
             'user_id': response.user!.id,
             'email': response.user!.email,
-            'provider': 'google',
+            'providers': 'google',
           },
         );
 

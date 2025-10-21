@@ -1,13 +1,14 @@
-// File: lib/features/plan/widgets/plan_timeline_item.dart
-
 import 'package:flutter/material.dart';
+
+import 'package:intl/intl.dart';
 
 import '../models/plan_item_model.dart';
 import 'plan_card.dart';
 
 class PlanTimelineItem extends StatelessWidget {
   final PlanItem item;
-  const PlanTimelineItem({super.key, required this.item});
+  final bool showDate;
+  const PlanTimelineItem({super.key, required this.item, this.showDate = true});
 
   // Helper untuk menentukan warna berdasarkan tipe
   Color _getIndicatorColor(PlanItemType type, ColorScheme colorScheme) {
@@ -27,11 +28,11 @@ class PlanTimelineItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildTimelineIndicator(context),
+          SizedBox(width: 30, child: _buildTimelineIndicator(context)),
           const SizedBox(width: 16),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 24.0),
+              padding: const EdgeInsets.only(bottom: 6.0),
               child: PlanCard(item: item),
             ),
           ),
@@ -45,13 +46,16 @@ class PlanTimelineItem extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          item.timeRange.split(' - ').first,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: 4),
+        if (showDate) ...[
+          Text(
+            '${DateFormat('EEE').format(item.date)}\n${DateFormat('d').format(item.date)}',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 4),
+        ],
         Container(
           width: 20,
           height: 20,

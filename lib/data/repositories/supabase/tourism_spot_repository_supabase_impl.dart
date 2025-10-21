@@ -50,8 +50,12 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   }
 
   @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
-    return _executeSpotListCall(() => _remoteDataSource.getTourismSpots());
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots(
+    String? query,
+  ) async {
+    return _executeSpotListCall(
+      () => _remoteDataSource.getTourismSpots(query: query),
+    );
   }
 
   @override

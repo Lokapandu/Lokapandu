@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
 import '../widgets/search_result_card.dart';
 
 class TourSearchScreen extends StatefulWidget {
@@ -13,63 +16,49 @@ class TourSearchScreen extends StatefulWidget {
 }
 
 class _TourSearchScreenState extends State<TourSearchScreen> {
-  List<TourismSpot> _searchResults = [];
-  TourismSpot? _selectedSpot;
+  // Timer untuk debouncing
+  Timer? _debounce;
 
   // Data pencarian sekarang menggunakan model TourismSpot yang asli
-  void _searchWisata(String query) {
-    // TODO: Ganti dengan panggilan API Backend
-    if (query.isNotEmpty) {
-      setState(() {
-        _searchResults = [
-          TourismSpot(
-            id: 101,
-            name: 'Candi Jedong',
-            description: 'Deskripsi Candi Jedong...',
-            category: 'Sejarah',
-            city: 'Ngoro',
-            province: 'Mojokerto',
-            address: 'Alamat Candi Jedong...',
-            latitude: -7.6,
-            longitude: 112.6,
-            openTime: '08:00',
-            closeTime: '16:00',
-            mapsLink: '',
-            images: [], // Isi dengan TourismImage jika ada
-            facilities: 'Toilet,Parkir',
-            createdAt: DateTime.now(),
-          ),
-          TourismSpot(
-            id: 102,
-            name: 'Air Terjun Tretes',
-            description: 'Deskripsi Air Terjun Tretes...',
-            category: 'Alam',
-            city: 'Pacet',
-            province: 'Mojokerto',
-            address: 'Alamat Air Terjun Tretes...',
-            latitude: -7.7,
-            longitude: 112.5,
-            openTime: '07:00',
-            closeTime: '17:00',
-            mapsLink: '',
-            images: [],
-            facilities: 'Warung,Toilet',
-            createdAt: DateTime.now(),
-          ),
-        ];
-      });
-    } else {
-      setState(() {
-        _searchResults = [];
-      });
-    }
+  Future<void> _searchTourism(String query) async {
+    // Batalkan timer sebelumnya jika masih berjalan
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    // Buat timer baru dengan delay 500ms
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      // Panggil search di notifier setelah delay
+      Provider.of<TourPlanFindingNotifier>(
+        context,
+        listen: false,
+      ).get(query: query);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final notifier = context.read<TourPlanFindingNotifier>();
+    Future.microtask(() {
+      notifier.get(
+        onError: (error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error ?? 'Gagal mencari wisata')),
+          );
+        },
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final bool isSelectionMade = _selectedSpot != null;
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerHigh,
@@ -79,16 +68,20 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
         scrolledUnderElevation: 4.0,
         shadowColor: theme.shadowColor.withValues(alpha: 0.1),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: ElevatedButton(
-              onPressed: isSelectionMade
-                  ? () {
-                      context.pop(_selectedSpot);
-                    }
-                  : null,
-              child: const Text('Pilih'),
-            ),
+          Consumer<TourPlanFindingNotifier>(
+            builder: (context, notifier, child) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: ElevatedButton(
+                  onPressed: notifier.selectedSpot != null
+                      ? () {
+                          context.pop(notifier.selectedSpot);
+                        }
+                      : null,
+                  child: const Text('Pilih'),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -97,7 +90,7 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
-              onChanged: _searchWisata,
+              onChanged: _searchTourism,
               autofocus: true,
               style: theme.textTheme.bodyLarge,
               decoration: InputDecoration(
@@ -126,25 +119,30 @@ class _TourSearchScreenState extends State<TourSearchScreen> {
               ),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _searchResults.length,
-              itemBuilder: (context, index) {
-                final spot = _searchResults[index];
-                final bool isSelected = _selectedSpot?.id == spot.id;
+          Consumer<TourPlanFindingNotifier>(
+            builder: (context, notifier, child) {
+              if (notifier.isSearching) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                return SearchResultCard(
-                  spot: spot,
-                  isSelected: isSelected,
-                  onTap: () {
-                    setState(() {
-                      _selectedSpot = spot;
-                    });
+              return Expanded(
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: notifier.searchResults.length,
+                  itemBuilder: (context, index) {
+                    final spot = notifier.searchResults[index];
+                    final bool isSelected =
+                        notifier.selectedSpot?.id == spot.id;
+
+                    return SearchResultCard(
+                      spot: spot,
+                      isSelected: isSelected,
+                      onTap: () => notifier.selectedSpot = spot,
+                    );
                   },
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),

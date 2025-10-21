@@ -13,7 +13,7 @@ abstract class Itinerary with _$Itinerary {
     required DateTime startTime,
     required DateTime endTime,
     required DateTime createdAt,
-
     TourismSpot? tourismSpot,
+    required String userId,
   }) = _Itinerary;
 }

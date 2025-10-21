@@ -11,5 +11,6 @@ abstract class EditItinerary with _$EditItinerary {
     DateTime? startTime,
     DateTime? endTime,
     int? tourismSpot,
+    String? userId,
   }) = _EditItinerary;
 }
