@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
 import 'package:lokapandu/presentation/plan/widgets/date_time_form_field.dart';
 import 'package:lokapandu/presentation/plan/widgets/selected_tour_card.dart';
+import 'package:provider/provider.dart';
 
 class TourPlanEditorScreen extends StatefulWidget {
   final TourPlanModel? editorModel;
@@ -99,6 +98,7 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
               ).showSnackBar(snackbar('Gagal: ${failure.message}'));
             },
             (_) {
+              context.read<TourPlanNotifier>().fetchItineraries();
               // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
               context.go(Routing.plan.fullPath);
               // Tampilkan pesan sukses menggunakan SnackBar
