@@ -98,7 +98,9 @@ Future<void> main() async {
           create: (_) => di.locator<TourPlanEditorNotifier>(),
         ),
         ChangeNotifierProvider(create: (_) => di.locator<TourPlanNotifier>()),
-        ChangeNotifierProvider(create: (_) => di.locator<TourPlanFindingNotifier>()),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<TourPlanFindingNotifier>(),
+        ),
       ],
       child: const App(),
     ),
