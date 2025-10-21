@@ -7,7 +7,6 @@ import '../widgets/plan_timeline_item.dart';
 import '../widgets/plan_shimmer_loading.dart';
 
 class PlanScreen extends StatefulWidget {
-
   const PlanScreen({super.key});
 
   @override
@@ -15,15 +14,43 @@ class PlanScreen extends StatefulWidget {
 }
 
 class _PlanScreenState extends State<PlanScreen> {
+  DateTime? selectedDate;
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() async {
       if (mounted) {
-        await context.read<TourPlanNotifier>().fetchItineraries();
+        final error = await context.read<TourPlanNotifier>().fetchItineraries();
+        if (error != null) {
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(error)));
+          }
+        }
       }
     });
+  }
+
+  Future<void> _selectDate() async {
+    final notifier = context.read<TourPlanNotifier>();
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: notifier.selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2025),
+      lastDate: DateTime(2030),
+    );
+
+    if (pickedDate != null) {
+      // Mengatur tanggal yang dipilih ke awal hari (00:00:00) untuk memastikan filter bekerja dengan benar
+      final startOfDay = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+      );
+      notifier.setSelectedDate(startOfDay);
+    }
   }
 
   @override
@@ -31,6 +58,13 @@ class _PlanScreenState extends State<PlanScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notifier = context.read<TourPlanNotifier>();
+      if (mounted) {
+        print('selectedDate: ${notifier.selectedDate}');
+      }
+    });
 
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainerHigh,
@@ -52,9 +86,7 @@ class _PlanScreenState extends State<PlanScreen> {
               Icons.calendar_today_outlined,
               color: colorScheme.onSurface,
             ),
-            onPressed: () {
-              // TODO: Implementasi logika untuk membuka kalender
-            },
+            onPressed: () => _selectDate(),
           ),
           const SizedBox(width: 8),
         ],

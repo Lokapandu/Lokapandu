@@ -10,14 +10,23 @@ class TourPlanNotifier extends ChangeNotifier {
 
   TourPlanNotifier(this._useCase, this._analyticsManager);
 
+  DateTime? _selectedDate;
+  DateTime? get selectedDate => _selectedDate;
+
+  setSelectedDate(DateTime? date) {
+    _selectedDate = date;
+    fetchItineraries();
+  }
+
   List<PlanItem> _planItems = [];
   List<PlanItem> get planItems => _planItems;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchItineraries() async {
+  Future<String?> fetchItineraries() async {
     _isLoading = true;
+    String? error;
     notifyListeners();
 
     final user = Supabase.instance.client.auth.currentUser;
@@ -25,13 +34,17 @@ class TourPlanNotifier extends ChangeNotifier {
       _analyticsManager.trackError(error: 'User is not logged in');
       _isLoading = false;
       notifyListeners();
-      return;
+      return null;
     }
 
-    final result = await _useCase.execute(user.id);
+    final result = await _useCase.execute(
+      user.id,
+      filterByDate: _selectedDate?.toIso8601String(),
+    );
     result.fold(
       (failure) {
         _analyticsManager.trackError(error: failure.message);
+        error = failure.message;
         _isLoading = false;
         notifyListeners();
       },
@@ -46,5 +59,7 @@ class TourPlanNotifier extends ChangeNotifier {
         notifyListeners();
       },
     );
+
+    return error;
   }
 }

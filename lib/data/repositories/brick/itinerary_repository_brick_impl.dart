@@ -151,11 +151,22 @@ class ItineraryRepositoryImpl implements ItineraryRepository {
 
   @override
   Future<Either<Failure, List<Itinerary>>> getUserItineraries(
-    String userId,
-  ) async {
+    String userId, {
+    String? filterByDate,
+  }) async {
     try {
       final itineraryResults = await Repository().getAll<ItineraryModel>(
-        query: Query.where('userId', userId),
+        query: Query(
+          where: [
+            Where.exact('userId', userId, isRequired: true),
+            if (filterByDate != null)
+              Where(
+                'startTime',
+                value: filterByDate,
+                compare: Compare.greaterThanOrEqualTo,
+              ),
+          ],
+        ),
         policy: OfflineFirstGetPolicy.awaitRemoteWhenNoneExist,
       );
 
