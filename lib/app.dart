@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:provider/provider.dart';
+
 import 'package:lokapandu/common/config/app_locale.dart';
 import 'package:lokapandu/common/routes/app_router.dart';
 import 'package:lokapandu/common/themes/theme.dart';
 import 'package:lokapandu/common/themes/util.dart';
 import 'package:lokapandu/presentation/common/widgets/error_boundary.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
-import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
   const App({super.key});

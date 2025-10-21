@@ -2,6 +2,8 @@ import 'dart:developer' as developer;
 
 import 'package:brick_offline_first/brick_offline_first.dart';
 import 'package:dartz/dartz.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:lokapandu/brick/models/itinerary.model.dart';
 import 'package:lokapandu/brick/models/tourism_image.model.dart';
 import 'package:lokapandu/brick/models/tourism_spot.model.dart';
@@ -17,7 +19,6 @@ import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
-import 'package:uuid/uuid.dart';
 
 class ItineraryRepositoryImpl implements ItineraryRepository {
   @override

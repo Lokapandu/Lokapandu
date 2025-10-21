@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
+
 import 'package:provider/provider.dart';
 
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import '../widgets/expanding_fab.dart';
-import '../widgets/plan_timeline_item.dart';
 import '../widgets/plan_shimmer_loading.dart';
+import '../widgets/plan_timeline_item.dart';
 
 class PlanScreen extends StatefulWidget {
   const PlanScreen({super.key});

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
@@ -7,8 +10,6 @@ import 'package:lokapandu/presentation/settings/providers/notification_settings_
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:lokapandu/presentation/settings/widgets/user_profile_section.dart';
-import 'package:provider/provider.dart';
-
 import '../widgets/settings_tile.dart';
 
 class SettingsScreen extends StatelessWidget {

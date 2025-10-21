@@ -1,12 +1,10 @@
 // Flutter imports
+
 import 'package:flutter/material.dart';
 
-// Third-party imports
 import 'package:dartz/dartz.dart';
-import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-// Local imports
 import 'package:lokapandu/common/analytics.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
@@ -14,6 +12,11 @@ import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
+import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
+
+// Third-party imports
+
+// Local imports
 
 /// A notifier class that manages the state and operations for tour plan editing.
 ///

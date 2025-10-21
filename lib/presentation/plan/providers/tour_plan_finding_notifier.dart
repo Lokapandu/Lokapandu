@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';

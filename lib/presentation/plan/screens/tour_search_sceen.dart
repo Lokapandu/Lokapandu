@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
-import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
 import 'package:provider/provider.dart';
 
+import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
 import '../widgets/search_result_card.dart';
 
 class TourSearchScreen extends StatefulWidget {

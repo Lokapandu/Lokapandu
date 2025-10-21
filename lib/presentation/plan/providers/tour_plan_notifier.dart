@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itineraries.dart';
 import 'package:lokapandu/presentation/plan/models/plan_item_model.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TourPlanNotifier extends ChangeNotifier {
   final GetUserItineraries _useCase;
