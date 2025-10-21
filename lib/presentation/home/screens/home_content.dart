@@ -23,7 +23,7 @@ class _HomeContentState extends State<HomeContent> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        context.read<TourismSpotNotifier>().loadTourismSpots();
+        context.read<TourPlanNotifier>().fetchItineraries();
       }
     });
   }
