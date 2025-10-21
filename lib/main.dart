@@ -11,6 +11,7 @@ import 'package:lokapandu/env/env.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/notification_settings_notifier.dart';
@@ -97,6 +98,7 @@ Future<void> main() async {
           create: (_) => di.locator<TourPlanEditorNotifier>(),
         ),
         ChangeNotifierProvider(create: (_) => di.locator<TourPlanNotifier>()),
+        ChangeNotifierProvider(create: (_) => di.locator<TourPlanFindingNotifier>()),
       ],
       child: const App(),
     ),
