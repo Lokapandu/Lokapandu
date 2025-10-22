@@ -20,6 +20,8 @@ Lokapandu is a mobile application that allows users to discover and explore vari
   - 🔗 Google Maps integration
   - 🤖 AI-powered recommendations (Firebase AI)
   - 📱 Responsive design for various screen sizes
+  - 📅 Trip planning and itinerary management
+  - 🔖 Bookmark favorite destinations
 
 -----
 
@@ -29,12 +31,14 @@ This project uses **Clean Architecture** with **Brick Offline-First Architecture
 
 ```
 lib/
-├── data/           # Data layer (models, repositories, data sources)
-├── domain/         # Domain layer (entities, repositories, use cases)
-├── presentation/   # Presentation layer (pages, widgets, providers)
-├── common/         # Shared utilities and failure handling
-├── env/            # Environment configuration
-└── injection.dart  # Dependency injection setup
+├── brick/           # Brick offline-first configuration
+├── data/            # Data layer (models, repositories, data sources)
+├── domain/          # Domain layer (entities, repositories, use cases)
+├── presentation/    # Presentation layer (screens, widgets, providers)
+├── features/        # Feature-specific implementations
+├── common/          # Shared utilities and failure handling
+├── env/             # Environment configuration
+└── injection.dart   # Dependency injection setup
 ```
 
 ### 🧱 Brick Offline-First Architecture
@@ -57,14 +61,14 @@ This application uses [Brick](https://github.com/GetDutchie/brick) for its offli
 
 ## 🛠️ Tech Stack
 
-  - **Framework**: Flutter 3.9.2+
+  - **Framework**: Flutter (SDK ^3.9.2)
   - **Language**: Dart
-  - **State Management**: Provider
+  - **State Management**: Provider, Riverpod
   - **Navigation**: Go Router
   - **Backend**: Supabase (Database, Authentication, Storage)
   - **Offline-First**: Brick Architecture with SQLite
   - **AI Integration**: Firebase AI (Gemini)
-  - **Firebase Services**: Analytics, Crashlytics, Authentication
+  - **Firebase Services**: Analytics, Crashlytics, Authentication, Performance
   - **Architecture**: Clean Architecture + Brick Offline-First
   - **Code Generation**: Freezed, JSON Serialization
   - **Environment Management**: Envied
@@ -152,45 +156,54 @@ Make sure you have installed:
 lokapandu/
 ├── android/                   # Android-specific files
 ├── ios/                       # iOS-specific files
+├── assets/                    # App assets (images, icons, illustrations)
 ├── lib/
-│   ├── app.dart             # Main app widget
-│   ├── main.dart            # Entry point
-│   ├── injection.dart       # Dependency injection
-│   ├── brick/               # Brick offline-first configuration
-│   │   ├── adapters/        # Data adapters for Brick
-│   │   ├── db/              # SQLite database setup
-│   │   ├── models/          # Brick models
-│   │   └── repositories/    # Brick repository implementations
-│   ├── common/              # Shared utilities
-│   │   ├── failure.dart     # Error handling
-│   │   └── failure.freezed.dart
+│   ├── app.dart               # Main app widget
+│   ├── main.dart              # Entry point
+│   ├── injection.dart         # Dependency injection
+│   ├── firebase_options.dart  # Firebase configuration
+│   ├── brick/                 # Brick offline-first configuration
+│   │   ├── adapters/          # Data adapters for Brick
+│   │   ├── db/                # SQLite database setup
+│   │   ├── models/            # Brick models
+│   │   └── repositories/      # Brick repository implementations
+│   ├── common/                # Shared utilities
+│   │   ├── analytics.dart     # Analytics tracking
+│   │   ├── config/            # App configuration
+│   │   ├── errors/            # Error handling
+│   │   ├── observers/         # Navigation observers
+│   │   ├── routes/            # Routing configuration
+│   │   ├── services/          # Common services
+│   │   ├── themes/            # App theming
+│   │   └── utils/             # Utility functions
 │   ├── data/
-│   │   ├── datasources/     # Remote & local data sources
-│   │   ├── models/          # Data models
-│   │   ├── mappers/         # Data mappers
-│   │   └── repositories/    # Repository implementations
+│   │   ├── datasources/       # Remote & local data sources
+│   │   ├── models/            # Data models
+│   │   ├── mappers/           # Data mappers
+│   │   └── repositories/      # Repository implementations
 │   ├── domain/
-│   │   ├── entities/        # Business entities
-│   │   ├── repositories/    # Repository contracts
-│   │   └── usecases/        # Business logic
-│   ├── features/            # Feature-based organization
-│   │   ├── ai_chat/         # AI chat feature
-│   │   ├── bookmark/        # Bookmark feature
-│   │   ├── plan/            # Trip planning feature
-│   │   └── tour/            # Tourism feature
+│   │   ├── entities/          # Business entities
+│   │   ├── repositories/      # Repository contracts
+│   │   ├── usecases/          # Business logic
+│   │   └── validators/        # Input validation
+│   ├── features/              # Feature-based organization
+│   │   └── ai_chat/           # AI chat feature
 │   ├── env/
-│   │   └── env.dart         # Environment configuration
+│   │   └── env.dart           # Environment configuration
 │   └── presentation/
-│       ├── ai_chat/         # AI chat UI
-│       ├── auth/            # Authentication UI
-│       ├── common/          # Shared UI components
-│       ├── home/            # Home screen
-│       ├── settings/        # Settings UI
-│       └── tourism_spot/    # Tourism spot UI
+│       ├── ai_chat/           # AI chat UI
+│       ├── auth/              # Authentication UI
+│       ├── bookmark/          # Bookmark UI
+│       ├── common/            # Shared UI components
+│       ├── home/              # Home screen
+│       ├── plan/              # Trip planning UI
+│       ├── settings/          # Settings UI
+│       └── tourism_spot/      # Tourism spot UI
 ├── test/                      # Unit & widget tests
-├── .env.example             # Environment variables template
-├── pubspec.yaml             # Dependencies & project config
-└── README.md                # Project documentation
+├── docs/                      # Project documentation
+├── .env.example               # Environment variables template
+├── pubspec.yaml               # Dependencies & project config
+└── README.md                  # Project documentation
 ```
 
 -----
@@ -204,9 +217,23 @@ flutter test
 # Run tests with coverage
 flutter test --coverage
 
-# Run a specific test file
-flutter test test/widget_test.dart
+# Run specific test file
+flutter test test/path/to/test_file.dart
 ```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the terms of the license found in the [LICENSE](LICENSE) file.
 
 -----
 
