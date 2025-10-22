@@ -65,7 +65,7 @@ class MaterialTheme {
   ThemeData dark() => theme(darkScheme());
 
   final OutlineInputBorder _inputBorderStyle = OutlineInputBorder(
-    borderRadius: BorderRadius.circular(12),
+    borderRadius: BorderRadius.circular(30),
     borderSide: BorderSide(width: 2),
   );
 

@@ -3,11 +3,17 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 
 class _FabOption extends StatelessWidget {
-  const _FabOption({required this.icon, required this.label, this.onTap});
+  const _FabOption({
+    required this.icon,
+    required this.label,
+    this.onTap,
+    required this.heroTag,
+  });
 
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final String heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +21,7 @@ class _FabOption extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return FloatingActionButton.extended(
+      heroTag: heroTag,
       onPressed: onTap,
       label: Text(label),
       icon: Icon(icon, size: 20),
@@ -88,6 +95,7 @@ class _ExpandingFabState extends State<ExpandingFab>
             distance: 80,
             progress: _expandAnimation,
             child: _FabOption(
+              heroTag: 'fab_note',
               icon: Icons.note_add_outlined,
               label: 'Buat Catatan',
               onTap: () {
@@ -100,6 +108,7 @@ class _ExpandingFabState extends State<ExpandingFab>
             distance: 150,
             progress: _expandAnimation,
             child: _FabOption(
+              heroTag: 'fab_plan',
               icon: Icons.map_outlined,
               label: 'Buat Rencana',
               onTap: () {
@@ -109,7 +118,7 @@ class _ExpandingFabState extends State<ExpandingFab>
             ),
           ),
           FloatingActionButton(
-            heroTag: 'open_fab',
+            heroTag: 'main_fab',
             shape: const CircleBorder(),
             backgroundColor: colorScheme.primary,
             onPressed: _toggle,

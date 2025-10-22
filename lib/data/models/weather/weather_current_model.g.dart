@@ -27,11 +27,11 @@ _WeatherCurrentModel _$WeatherCurrentModelFromJson(Map<String, dynamic> json) =>
       humidity: (json['humidity'] as num).toInt(),
       cloud: (json['cloud'] as num).toInt(),
       feelslikeC: (json['feelslike_c'] as num).toDouble(),
-      feelslikeF: (json['feelslike_f'] as num).toDouble(),
+      feelslikeF: (json['feelslike_f'] as num).toInt(),
       windchillC: (json['windchill_c'] as num).toDouble(),
       windchillF: (json['windchill_f'] as num).toDouble(),
       heatindexC: (json['heatindex_c'] as num).toDouble(),
-      heatindexF: (json['heatindex_f'] as num).toDouble(),
+      heatindexF: (json['heatindex_f'] as num).toInt(),
       dewpointC: (json['dewpoint_c'] as num).toDouble(),
       dewpointF: (json['dewpoint_f'] as num).toDouble(),
       visKm: (json['vis_km'] as num).toInt(),
@@ -39,10 +39,6 @@ _WeatherCurrentModel _$WeatherCurrentModelFromJson(Map<String, dynamic> json) =>
       uv: (json['uv'] as num).toDouble(),
       gustMph: (json['gust_mph'] as num).toDouble(),
       gustKph: (json['gust_kph'] as num).toDouble(),
-      shortRad: (json['short_rad'] as num).toInt(),
-      diffRad: (json['diff_rad'] as num).toInt(),
-      dni: (json['dni'] as num).toInt(),
-      gti: (json['gti'] as num).toInt(),
     );
 
 Map<String, dynamic> _$WeatherCurrentModelToJson(
@@ -77,8 +73,4 @@ Map<String, dynamic> _$WeatherCurrentModelToJson(
   'uv': instance.uv,
   'gust_mph': instance.gustMph,
   'gust_kph': instance.gustKph,
-  'short_rad': instance.shortRad,
-  'diff_rad': instance.diffRad,
-  'dni': instance.dni,
-  'gti': instance.gti,
 };

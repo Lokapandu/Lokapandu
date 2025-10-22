@@ -23,10 +23,12 @@ class TourismSpotNotifier extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String _selectedCategory = 'Semua';
+  String _searchQuery = '';
 
   List<TourismSpot> get tourismSpots => _tourismSpots;
   String? get errorMessage => _errorMessage;
   String get selectedCategory => _selectedCategory;
+  String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
   bool get hasError => _errorMessage != null;
   bool get hasData => _tourismSpots.isNotEmpty;
@@ -59,10 +61,12 @@ class TourismSpotNotifier extends ChangeNotifier {
   }
 
   void search(String query) {
+    _searchQuery = query;
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _performSearch(query);
     });
+    notifyListeners();
   }
 
   Future<void> _performSearch(String query) async {

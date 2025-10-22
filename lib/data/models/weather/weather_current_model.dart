@@ -1,7 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 import 'package:lokapandu/data/models/weather/weather_current_condition_model.dart';
 
 part 'weather_current_model.freezed.dart';
@@ -28,11 +27,11 @@ abstract class WeatherCurrentModel with _$WeatherCurrentModel {
     @JsonKey(name: "humidity") required int humidity,
     @JsonKey(name: "cloud") required int cloud,
     @JsonKey(name: "feelslike_c") required double feelslikeC,
-    @JsonKey(name: "feelslike_f") required double feelslikeF,
+    @JsonKey(name: "feelslike_f") required int feelslikeF,
     @JsonKey(name: "windchill_c") required double windchillC,
     @JsonKey(name: "windchill_f") required double windchillF,
     @JsonKey(name: "heatindex_c") required double heatindexC,
-    @JsonKey(name: "heatindex_f") required double heatindexF,
+    @JsonKey(name: "heatindex_f") required int heatindexF,
     @JsonKey(name: "dewpoint_c") required double dewpointC,
     @JsonKey(name: "dewpoint_f") required double dewpointF,
     @JsonKey(name: "vis_km") required int visKm,
@@ -40,10 +39,6 @@ abstract class WeatherCurrentModel with _$WeatherCurrentModel {
     @JsonKey(name: "uv") required double uv,
     @JsonKey(name: "gust_mph") required double gustMph,
     @JsonKey(name: "gust_kph") required double gustKph,
-    @JsonKey(name: "short_rad") required int shortRad,
-    @JsonKey(name: "diff_rad") required int diffRad,
-    @JsonKey(name: "dni") required int dni,
-    @JsonKey(name: "gti") required int gti,
   }) = _WeatherCurrentModel;
 
   factory WeatherCurrentModel.fromJson(Map<String, dynamic> json) =>

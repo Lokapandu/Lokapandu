@@ -130,7 +130,7 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          _buildGalleryThumbnails(context),
+                          _buildGalleryThumbnails(context, notifier.selectedImage),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () {
@@ -177,24 +177,56 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
     if (selectedImage.isEmpty) {
       return Container(
         color: Colors.grey.shade300,
-        child: const Icon(Icons.image_not_supported),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: const Center(child: Icon(Icons.image_not_supported)),
       );
     }
 
-    return _isNetworkUrl(selectedImage)
-        ? CachedNetworkImage(
-            imageUrl: selectedImage,
-            fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) =>
-                const Icon(Icons.broken_image, color: Colors.grey),
-          )
-        : Image.asset(selectedImage, fit: BoxFit.cover);
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 1.2, end: 1.0).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                ),
+              ),
+              child: child,
+            ),
+          );
+        },
+        child: _isNetworkUrl(selectedImage)
+            ? CachedNetworkImage(
+                key: ValueKey<String>(selectedImage),
+                imageUrl: selectedImage,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.broken_image, color: Colors.grey),
+              )
+            : Image.asset(
+                selectedImage,
+                key: ValueKey<String>(selectedImage),
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
   }
 
   // Helper widget untuk menampilkan thumbnail galeri
-  Widget _buildGalleryThumbnails(BuildContext context) {
+  Widget _buildGalleryThumbnails(BuildContext context, String selectedImage) {
     final images = context.watch<TourismSpotDetailNotifier>().images;
     return SizedBox(
       height: 70,
@@ -211,21 +243,34 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                   image.imageUrl,
                 );
               },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: _isNetworkUrl(image.imageUrl)
-                    ? CachedNetworkImage(
-                        imageUrl: image.imageUrl,
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        image.imageUrl,
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                      ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: image.imageUrl == selectedImage
+                      ? Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 3.0,
+                        )
+                      : null,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    image.imageUrl == selectedImage ? 9.0 : 12.0,
+                  ),
+                  child: _isNetworkUrl(image.imageUrl)
+                      ? CachedNetworkImage(
+                          imageUrl: image.imageUrl,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          image.imageUrl,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
+                ),
               ),
             ),
           );
