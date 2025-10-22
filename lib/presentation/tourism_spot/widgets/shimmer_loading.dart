@@ -7,18 +7,23 @@ class TourismSpotShimmerLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: 6,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.75,
+    return SizedBox(
+      height: 500, // Fixed height to solve unbounded height issue
+      child: GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        physics: const NeverScrollableScrollPhysics(), // Disable scrolling since it's in a CustomScrollView
+        shrinkWrap: true, // Ensure it takes only the space it needs
+        itemCount: 6,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.75,
+        ),
+        itemBuilder: (context, index) {
+          return const ShimmerCard();
+        },
       ),
-      itemBuilder: (context, index) {
-        return const ShimmerCard();
-      },
     );
   }
 }

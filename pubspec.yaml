@@ -77,6 +77,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/illustrations/
 
 #import_sorter:
 #  emojis: true

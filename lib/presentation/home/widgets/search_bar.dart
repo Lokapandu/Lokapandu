@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class CustomSearchBar extends StatelessWidget {
   final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
 
-  const CustomSearchBar({super.key, this.onChanged});
+  const CustomSearchBar({super.key, this.onChanged, this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +14,7 @@ class CustomSearchBar extends StatelessWidget {
 
     return TextField(
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
       style: textTheme.bodyLarge,
       decoration: InputDecoration(
         hintText: 'Cari destinasi wisata',

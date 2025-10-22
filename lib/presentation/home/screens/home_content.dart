@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
@@ -7,6 +9,7 @@ import 'package:lokapandu/presentation/home/widgets/dont_miss_carausel.dart';
 import 'package:lokapandu/presentation/home/widgets/search_bar.dart';
 import 'package:lokapandu/presentation/home/widgets/upcoming_tour_card.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:provider/provider.dart';
 
 class HomeContent extends StatefulWidget {
@@ -49,9 +52,14 @@ class _HomeContentState extends State<HomeContent> {
             children: [
               AppHeader(title: 'Yuk, jalan-jalan, $userName!'),
               const SizedBox(height: 22),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 18.0),
-                child: CustomSearchBar(),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                child: CustomSearchBar(
+                  onSubmitted: (query) {
+                    context.push(Routing.tourismSpot.fullPath);
+                    context.read<TourismSpotNotifier>().search(query);
+                  },
+                ),
               ),
               const SizedBox(height: 13),
               const DontMissCarousel(),

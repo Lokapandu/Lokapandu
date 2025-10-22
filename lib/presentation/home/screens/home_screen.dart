@@ -27,12 +27,15 @@ class HomeScreen extends StatelessWidget {
           orElse: () => const MapEntry(0, false),
         )
         .key;
+    
+    // Cek apakah keyboard sedang muncul
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       body: child,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: isNavigationPane
+      floatingActionButton: isNavigationPane && !isKeyboardVisible
           ? _buildAIChatButton(context)
           : null,
       bottomNavigationBar: isNavigationPane
