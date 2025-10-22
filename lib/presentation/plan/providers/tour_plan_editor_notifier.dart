@@ -242,6 +242,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
               'name': _name,
               'notifier': 'TourPlanEditorNotifier',
               'type': _selectedTour == null ? 'note' : 'regular',
+              'stackTrace': StackTrace.current,
             },
           );
         },

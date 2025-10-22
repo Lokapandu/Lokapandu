@@ -63,7 +63,10 @@ class TourPlanNotifier extends ChangeNotifier {
           _analyticsManager.trackError(
             error: failure.runtimeType.toString(),
             description: failure.message,
-            parameters: {'provider': 'TourPlanNotifier'},
+            parameters: {
+              'provider': 'TourPlanNotifier',
+              'stackTrace': StackTrace.current,
+            },
           );
           _handleFailure(failure);
         },

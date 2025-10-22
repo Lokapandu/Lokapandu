@@ -36,6 +36,7 @@ class TourPlanFindingNotifier extends ChangeNotifier {
         parameters: {
           'query': query ?? 'empty',
           'provider': 'TourPlanFindingNotifier',
+          'stackTrace': StackTrace.current,
         },
       );
       onError?.call(failure.message);

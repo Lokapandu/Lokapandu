@@ -80,6 +80,7 @@ class TourPlanDetailNotifier extends ChangeNotifier {
             'id': id,
             'type': 'removeItinerary',
             'provider': 'TourPlanDetailNotifier',
+            'stackTrace': StackTrace.current,
           },
         );
         _handleFailure(failure);
