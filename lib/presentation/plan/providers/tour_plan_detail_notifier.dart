@@ -53,7 +53,7 @@ class TourPlanDetailNotifier extends ChangeNotifier {
         _handleFailure(failure);
       },
       (Itinerary data) {
-        _model = data.toTourPlanModel();
+        _model = TourPlanModel.fromItinerary(data);
         _errorMessage = null;
         _manager.trackEvent(
           eventName: 'fetch_itinerary',

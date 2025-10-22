@@ -27,17 +27,15 @@ class TourPlanModel {
   String toString() {
     return 'TourPlanModel(id: $id, name: $name, startDate: $startDate, endDate: $endDate, startTime: $startTime, endTime: $endTime, notes: $notes, tourismSpot: $tourismSpot)';
   }
-}
 
-extension TourPlanModelFromItinerary on Itinerary {
-  TourPlanModel toTourPlanModel() {
+  factory TourPlanModel.fromItinerary(Itinerary itinerary) {
     return TourPlanModel(
-      id: id,
-      name: name,
-      startDate: startTime,
-      endDate: endTime,
-      notes: notes,
-      tourismSpot: tourismSpot,
+      id: itinerary.id,
+      name: itinerary.name,
+      startDate: itinerary.startTime,
+      endDate: itinerary.endTime,
+      notes: itinerary.notes,
+      tourismSpot: itinerary.tourismSpot,
     );
   }
 }
