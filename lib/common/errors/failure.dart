@@ -6,6 +6,7 @@ part 'failure.freezed.dart';
 sealed class Failure with _$Failure {
   const factory Failure.client(String message) = ClientFailure;
   const factory Failure.server(String message) = ServerFailure;
+  const factory Failure.parsing(String message) = ParsingFailure;
   const factory Failure.connection(String message) = ConnectionFailure;
   const factory Failure.database(String message) = DatabaseFailure;
   const factory Failure.validation(String message) = ValidationFailure;

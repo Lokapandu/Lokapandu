@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Weather {
 
- double get fahrenheitTemperature; double get celciusTemperature; String get text; String get icon;
+ String get city; String get region; String get country; double get lat; double get lon; String get tzId; DateTime get lastUpdated; double get fahrenheitTemperature; double get celciusTemperature; String get text; String get icon;
 /// Create a copy of Weather
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $WeatherCopyWith<Weather> get copyWith => _$WeatherCopyWithImpl<Weather>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Weather&&(identical(other.fahrenheitTemperature, fahrenheitTemperature) || other.fahrenheitTemperature == fahrenheitTemperature)&&(identical(other.celciusTemperature, celciusTemperature) || other.celciusTemperature == celciusTemperature)&&(identical(other.text, text) || other.text == text)&&(identical(other.icon, icon) || other.icon == icon));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Weather&&(identical(other.city, city) || other.city == city)&&(identical(other.region, region) || other.region == region)&&(identical(other.country, country) || other.country == country)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&(identical(other.tzId, tzId) || other.tzId == tzId)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated)&&(identical(other.fahrenheitTemperature, fahrenheitTemperature) || other.fahrenheitTemperature == fahrenheitTemperature)&&(identical(other.celciusTemperature, celciusTemperature) || other.celciusTemperature == celciusTemperature)&&(identical(other.text, text) || other.text == text)&&(identical(other.icon, icon) || other.icon == icon));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fahrenheitTemperature,celciusTemperature,text,icon);
+int get hashCode => Object.hash(runtimeType,city,region,country,lat,lon,tzId,lastUpdated,fahrenheitTemperature,celciusTemperature,text,icon);
 
 @override
 String toString() {
-  return 'Weather(fahrenheitTemperature: $fahrenheitTemperature, celciusTemperature: $celciusTemperature, text: $text, icon: $icon)';
+  return 'Weather(city: $city, region: $region, country: $country, lat: $lat, lon: $lon, tzId: $tzId, lastUpdated: $lastUpdated, fahrenheitTemperature: $fahrenheitTemperature, celciusTemperature: $celciusTemperature, text: $text, icon: $icon)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $WeatherCopyWith<$Res>  {
   factory $WeatherCopyWith(Weather value, $Res Function(Weather) _then) = _$WeatherCopyWithImpl;
 @useResult
 $Res call({
- double fahrenheitTemperature, double celciusTemperature, String text, String icon
+ String city, String region, String country, double lat, double lon, String tzId, DateTime lastUpdated, double fahrenheitTemperature, double celciusTemperature, String text, String icon
 });
 
 
@@ -62,9 +62,16 @@ class _$WeatherCopyWithImpl<$Res>
 
 /// Create a copy of Weather
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? fahrenheitTemperature = null,Object? celciusTemperature = null,Object? text = null,Object? icon = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? city = null,Object? region = null,Object? country = null,Object? lat = null,Object? lon = null,Object? tzId = null,Object? lastUpdated = null,Object? fahrenheitTemperature = null,Object? celciusTemperature = null,Object? text = null,Object? icon = null,}) {
   return _then(_self.copyWith(
-fahrenheitTemperature: null == fahrenheitTemperature ? _self.fahrenheitTemperature : fahrenheitTemperature // ignore: cast_nullable_to_non_nullable
+city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
+as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as String,lat: null == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
+as double,lon: null == lon ? _self.lon : lon // ignore: cast_nullable_to_non_nullable
+as double,tzId: null == tzId ? _self.tzId : tzId // ignore: cast_nullable_to_non_nullable
+as String,lastUpdated: null == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
+as DateTime,fahrenheitTemperature: null == fahrenheitTemperature ? _self.fahrenheitTemperature : fahrenheitTemperature // ignore: cast_nullable_to_non_nullable
 as double,celciusTemperature: null == celciusTemperature ? _self.celciusTemperature : celciusTemperature // ignore: cast_nullable_to_non_nullable
 as double,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,icon: null == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable
@@ -153,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double fahrenheitTemperature,  double celciusTemperature,  String text,  String icon)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String city,  String region,  String country,  double lat,  double lon,  String tzId,  DateTime lastUpdated,  double fahrenheitTemperature,  double celciusTemperature,  String text,  String icon)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Weather() when $default != null:
-return $default(_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,_that.icon);case _:
+return $default(_that.city,_that.region,_that.country,_that.lat,_that.lon,_that.tzId,_that.lastUpdated,_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,_that.icon);case _:
   return orElse();
 
 }
@@ -174,10 +181,10 @@ return $default(_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double fahrenheitTemperature,  double celciusTemperature,  String text,  String icon)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String city,  String region,  String country,  double lat,  double lon,  String tzId,  DateTime lastUpdated,  double fahrenheitTemperature,  double celciusTemperature,  String text,  String icon)  $default,) {final _that = this;
 switch (_that) {
 case _Weather():
-return $default(_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,_that.icon);case _:
+return $default(_that.city,_that.region,_that.country,_that.lat,_that.lon,_that.tzId,_that.lastUpdated,_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,_that.icon);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +201,10 @@ return $default(_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double fahrenheitTemperature,  double celciusTemperature,  String text,  String icon)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String city,  String region,  String country,  double lat,  double lon,  String tzId,  DateTime lastUpdated,  double fahrenheitTemperature,  double celciusTemperature,  String text,  String icon)?  $default,) {final _that = this;
 switch (_that) {
 case _Weather() when $default != null:
-return $default(_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,_that.icon);case _:
+return $default(_that.city,_that.region,_that.country,_that.lat,_that.lon,_that.tzId,_that.lastUpdated,_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,_that.icon);case _:
   return null;
 
 }
@@ -209,9 +216,16 @@ return $default(_that.fahrenheitTemperature,_that.celciusTemperature,_that.text,
 
 
 class _Weather implements Weather {
-  const _Weather({required this.fahrenheitTemperature, required this.celciusTemperature, required this.text, required this.icon});
+  const _Weather({required this.city, required this.region, required this.country, required this.lat, required this.lon, required this.tzId, required this.lastUpdated, required this.fahrenheitTemperature, required this.celciusTemperature, required this.text, required this.icon});
   
 
+@override final  String city;
+@override final  String region;
+@override final  String country;
+@override final  double lat;
+@override final  double lon;
+@override final  String tzId;
+@override final  DateTime lastUpdated;
 @override final  double fahrenheitTemperature;
 @override final  double celciusTemperature;
 @override final  String text;
@@ -227,16 +241,16 @@ _$WeatherCopyWith<_Weather> get copyWith => __$WeatherCopyWithImpl<_Weather>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Weather&&(identical(other.fahrenheitTemperature, fahrenheitTemperature) || other.fahrenheitTemperature == fahrenheitTemperature)&&(identical(other.celciusTemperature, celciusTemperature) || other.celciusTemperature == celciusTemperature)&&(identical(other.text, text) || other.text == text)&&(identical(other.icon, icon) || other.icon == icon));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Weather&&(identical(other.city, city) || other.city == city)&&(identical(other.region, region) || other.region == region)&&(identical(other.country, country) || other.country == country)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&(identical(other.tzId, tzId) || other.tzId == tzId)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated)&&(identical(other.fahrenheitTemperature, fahrenheitTemperature) || other.fahrenheitTemperature == fahrenheitTemperature)&&(identical(other.celciusTemperature, celciusTemperature) || other.celciusTemperature == celciusTemperature)&&(identical(other.text, text) || other.text == text)&&(identical(other.icon, icon) || other.icon == icon));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,fahrenheitTemperature,celciusTemperature,text,icon);
+int get hashCode => Object.hash(runtimeType,city,region,country,lat,lon,tzId,lastUpdated,fahrenheitTemperature,celciusTemperature,text,icon);
 
 @override
 String toString() {
-  return 'Weather(fahrenheitTemperature: $fahrenheitTemperature, celciusTemperature: $celciusTemperature, text: $text, icon: $icon)';
+  return 'Weather(city: $city, region: $region, country: $country, lat: $lat, lon: $lon, tzId: $tzId, lastUpdated: $lastUpdated, fahrenheitTemperature: $fahrenheitTemperature, celciusTemperature: $celciusTemperature, text: $text, icon: $icon)';
 }
 
 
@@ -247,7 +261,7 @@ abstract mixin class _$WeatherCopyWith<$Res> implements $WeatherCopyWith<$Res> {
   factory _$WeatherCopyWith(_Weather value, $Res Function(_Weather) _then) = __$WeatherCopyWithImpl;
 @override @useResult
 $Res call({
- double fahrenheitTemperature, double celciusTemperature, String text, String icon
+ String city, String region, String country, double lat, double lon, String tzId, DateTime lastUpdated, double fahrenheitTemperature, double celciusTemperature, String text, String icon
 });
 
 
@@ -264,9 +278,16 @@ class __$WeatherCopyWithImpl<$Res>
 
 /// Create a copy of Weather
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? fahrenheitTemperature = null,Object? celciusTemperature = null,Object? text = null,Object? icon = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? city = null,Object? region = null,Object? country = null,Object? lat = null,Object? lon = null,Object? tzId = null,Object? lastUpdated = null,Object? fahrenheitTemperature = null,Object? celciusTemperature = null,Object? text = null,Object? icon = null,}) {
   return _then(_Weather(
-fahrenheitTemperature: null == fahrenheitTemperature ? _self.fahrenheitTemperature : fahrenheitTemperature // ignore: cast_nullable_to_non_nullable
+city: null == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as String,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
+as String,country: null == country ? _self.country : country // ignore: cast_nullable_to_non_nullable
+as String,lat: null == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
+as double,lon: null == lon ? _self.lon : lon // ignore: cast_nullable_to_non_nullable
+as double,tzId: null == tzId ? _self.tzId : tzId // ignore: cast_nullable_to_non_nullable
+as String,lastUpdated: null == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
+as DateTime,fahrenheitTemperature: null == fahrenheitTemperature ? _self.fahrenheitTemperature : fahrenheitTemperature // ignore: cast_nullable_to_non_nullable
 as double,celciusTemperature: null == celciusTemperature ? _self.celciusTemperature : celciusTemperature // ignore: cast_nullable_to_non_nullable
 as double,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,icon: null == icon ? _self.icon : icon // ignore: cast_nullable_to_non_nullable

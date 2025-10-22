@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/common/services/weather_api_port.dart';
 import 'package:lokapandu/common/utils/api_call_handler.dart';
@@ -15,6 +14,7 @@ class GetCurrentWeather {
   Future<Either<Failure, Weather>> execute({required String latLon}) async {
     return await executeApiCall<WeatherModel>(
       () => _gateway.getCurrentWeather(latLon),
+      name: 'GetCurrentWeather',
     ).then((value) => value.map((e) => e.toCurrentConditionEntity()));
   }
 }
