@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 
-import 'package:flutter/foundation.dart';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_performance/firebase_performance.dart';
+import 'package:flutter/foundation.dart';
 
 class FirebaseAnalyticsService {
   static final FirebaseAnalyticsService _instance =
@@ -11,6 +11,7 @@ class FirebaseAnalyticsService {
   FirebaseAnalyticsService._internal();
 
   final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+  final FirebasePerformance _performance = FirebasePerformance.instance;
 
   // Debug mode configuration
   static const bool _isDebugMode = kDebugMode;
@@ -267,6 +268,7 @@ class FirebaseAnalyticsService {
       _logDebug('Setting analytics collection enabled: $enabled');
 
       await _analytics.setAnalyticsCollectionEnabled(enabled);
+      await _performance.setPerformanceCollectionEnabled(enabled);
 
       _logDebug('Analytics collection setting updated successfully');
     } catch (e) {

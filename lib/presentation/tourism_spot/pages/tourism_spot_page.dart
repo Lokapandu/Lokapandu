@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
@@ -10,6 +7,7 @@ import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dar
 import 'package:lokapandu/presentation/tourism_spot/widgets/empty_search_state.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
+import 'package:provider/provider.dart';
 
 class TourismSpotPage extends StatefulWidget {
   const TourismSpotPage({super.key});
@@ -45,15 +43,17 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      body: SafeArea(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.translucent,
+      child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const AppHeader(title: 'Temukan wisata'),
-            const SizedBox(height: 16),
+            const SizedBox(height: 22),
             _buildSearchAndFilter(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 13),
             TourCategoryChips(
               categories: _categories,
               selectedCategory: _selectedCategory,
@@ -149,7 +149,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
     final colorScheme = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 18.0),
       child: Row(
         children: [
           Expanded(
@@ -159,38 +159,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
               },
               decoration: InputDecoration(
                 hintText: 'Cari destinasi wisata...',
-                hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
                 prefixIcon: Icon(
                   Icons.search,
                   color: colorScheme.onSurfaceVariant,
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(40),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: colorScheme.surfaceContainerHigh,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
               ),
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.tune, color: colorScheme.onPrimary),
-              onPressed: () {
-                // TODO: Implementasi filter
-              },
             ),
           ),
         ],
