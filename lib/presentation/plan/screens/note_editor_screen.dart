@@ -87,163 +87,168 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-        scrolledUnderElevation: 4.0,
-        shadowColor: theme.shadowColor.withValues(alpha: 0.1),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          widget.editorModel != null ? 'Edit Catatan' : 'Tambah Catatan',
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.translucent,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: colorScheme.surface,
+          elevation: 0,
+          scrolledUnderElevation: 4.0,
+          shadowColor: theme.shadowColor.withValues(alpha: 0.1),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: colorScheme.onSurface),
+            onPressed: () => context.pop(),
           ),
+          title: Text(
+            widget.editorModel != null ? 'Edit Catatan' : 'Tambah Catatan',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Consumer<TourPlanEditorNotifier>(
-          builder: (context, notifier, child) {
-            return Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Judul Catatan', style: textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _nameController,
-                    maxLines: 1,
-                    style: textTheme.bodyLarge,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Judul Catatan tidak boleh kosong!';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Contoh: Beli oleh-oleh khas Bali',
-                    ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Consumer<TourPlanEditorNotifier>(
+            builder: (context, notifier, child) {
+              return Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Judul Catatan', style: textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _nameController,
+                      maxLines: 1,
+                      style: textTheme.bodyLarge,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Judul Catatan tidak boleh kosong!';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hintText: 'Contoh: Beli oleh-oleh khas Bali',
+                      ),
 
-                    onSaved: (value) => notifier.name = value ?? '',
-                  ),
-                  const SizedBox(height: 24),
-                  Text("Waktu Mulai", style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DateTimeFormField(
-                          label: "Tanggal Mulai",
-                          hint: "DD/MM/YYYY",
-                          icon: Icons.calendar_today_outlined,
-                          mode: DateTimeInputMode.date,
-                          initialDateTime: notifier.date,
-                          onDateTimeSelected: (date) => notifier.date = date,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: DateTimeFormField(
-                          label: "Waktu Mulai",
-                          hint: "HH:mm",
-                          icon: Icons.access_time_outlined,
-                          mode: DateTimeInputMode.time,
-                          initialDateTime: notifier.startTime?.toDateTime(),
-                          onDateTimeSelected: (date) {
-                            if (date != null) {
-                              notifier.startTime = date.toTimeOfDay();
-                            }
-                            return;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Text("Waktu Selesai", style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DateTimeFormField(
-                          label: "Tanggal Selesai",
-                          hint: "DD/MM/YYYY",
-                          icon: Icons.calendar_today_outlined,
-                          mode: DateTimeInputMode.date,
-                          initialDateTime: notifier.endDate,
-                          onDateTimeSelected: (date) => notifier.endDate = date,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: DateTimeFormField(
-                          label: "Waktu Selesai",
-                          hint: "HH:mm",
-                          icon: Icons.access_time_outlined,
-                          mode: DateTimeInputMode.time,
-                          initialDateTime: notifier.endTime?.toDateTime(),
-                          onDateTimeSelected: (date) {
-                            if (date != null) {
-                              notifier.endTime = date.toTimeOfDay();
-                            }
-                            return;
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Text('Catatan', style: textTheme.titleMedium),
-                  const SizedBox(height: 8),
-                  TextFormField(
-                    controller: _notesController,
-                    maxLines: 4,
-                    style: textTheme.bodyLarge,
-                    decoration: InputDecoration(
-                      hintText: 'Tulis catatan di sini',
+                      onSaved: (value) => notifier.name = value ?? '',
                     ),
+                    const SizedBox(height: 24),
+                    Text("Waktu Mulai", style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DateTimeFormField(
+                            label: "Tanggal Mulai",
+                            hint: "DD/MM/YYYY",
+                            icon: Icons.calendar_today_outlined,
+                            mode: DateTimeInputMode.date,
+                            initialDateTime: notifier.date,
+                            onDateTimeSelected: (date) => notifier.date = date,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DateTimeFormField(
+                            label: "Waktu Mulai",
+                            hint: "HH:mm",
+                            icon: Icons.access_time_outlined,
+                            mode: DateTimeInputMode.time,
+                            initialDateTime: notifier.startTime?.toDateTime(),
+                            onDateTimeSelected: (date) {
+                              if (date != null) {
+                                notifier.startTime = date.toTimeOfDay();
+                              }
+                              return;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text("Waktu Selesai", style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DateTimeFormField(
+                            label: "Tanggal Selesai",
+                            hint: "DD/MM/YYYY",
+                            icon: Icons.calendar_today_outlined,
+                            mode: DateTimeInputMode.date,
+                            initialDateTime: notifier.endDate,
+                            onDateTimeSelected: (date) =>
+                                notifier.endDate = date,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: DateTimeFormField(
+                            label: "Waktu Selesai",
+                            hint: "HH:mm",
+                            icon: Icons.access_time_outlined,
+                            mode: DateTimeInputMode.time,
+                            initialDateTime: notifier.endTime?.toDateTime(),
+                            onDateTimeSelected: (date) {
+                              if (date != null) {
+                                notifier.endTime = date.toTimeOfDay();
+                              }
+                              return;
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text('Catatan', style: textTheme.titleMedium),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _notesController,
+                      maxLines: 4,
+                      style: textTheme.bodyLarge,
+                      decoration: InputDecoration(
+                        hintText: 'Tulis catatan di sini',
+                      ),
 
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Catatan tidak boleh kosong!'
-                        : null,
-                    onSaved: (value) => notifier.notes = value ?? '',
-                  ),
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: notifier.isSubmitting
-                          ? null
-                          : () => _proceedSaveNote(notifier),
-                      icon: notifier.isSubmitting
-                          ? ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxHeight: 16,
-                                maxWidth: 16,
-                              ),
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Catatan tidak boleh kosong!'
                           : null,
-                      label: Text(
-                        notifier.isSubmitting
-                            ? 'Menyimpan...'
-                            : 'Simpan Catatan',
+                      onSaved: (value) => notifier.notes = value ?? '',
+                    ),
+                    const SizedBox(height: 40),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed: notifier.isSubmitting
+                            ? null
+                            : () => _proceedSaveNote(notifier),
+                        icon: notifier.isSubmitting
+                            ? ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxHeight: 16,
+                                  maxWidth: 16,
+                                ),
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : null,
+                        label: Text(
+                          notifier.isSubmitting
+                              ? 'Menyimpan...'
+                              : 'Simpan Catatan',
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
