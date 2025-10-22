@@ -45,8 +45,8 @@ class ActionButtonsSection extends StatelessWidget {
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.add_location_alt_outlined),
                   label: const Text('Tambah Rencana'),
-                  onPressed: () => context.push(
-                    Routing.planAdd.fullPath,
+                  onPressed: () => context.pushNamed(
+                    Routing.planAdd.routeName,
                     extra: TourPlanEditorExtra(tourismSpot: tour),
                   ),
                   style: ElevatedButton.styleFrom(

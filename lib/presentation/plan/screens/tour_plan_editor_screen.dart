@@ -60,9 +60,8 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
   Future<void> _navigateToSearchScreen() async {
     // Navigasi ke halaman pencarian wisata, menunggu hasil berupa TourismSpot
     // Using pushNamed with unique key to avoid duplicate page keys
-    final result = await context.push<TourismSpot>(
-      Routing.planSearch.fullPath,
-      extra: {'key': UniqueKey().toString()},
+    final result = await context.pushNamed<TourismSpot>(
+      Routing.planSearch.routeName,
     );
 
     if (result != null && mounted) {
@@ -74,39 +73,21 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      var itemSaved = notifier.selectedTour != null
-          ? notifier.selectedTour?.name
-          : notifier.notes;
+      await notifier.savePlan();
 
-      String successMessage = '$itemSaved Berhasil ditambahkan!';
-
-      if (notifier.isSameValue) {
-        // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
-        context.go(Routing.plan.fullPath);
-        // Tampilkan pesan sukses menggunakan SnackBar
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(snackbar(successMessage));
+      if (mounted) {
+        if (notifier.hasError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(snackbar('Gagal: ${notifier.errorMessage}'));
         }
-      } else {
-        final result = await notifier.savePlan();
 
-        if (mounted) {
-          result.fold(
-            (failure) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(snackbar('Gagal: ${failure.message}'));
-            },
-            (_) {
-              context.read<TourPlanNotifier>().fetchItineraries();
-              // Gunakan go() sebagai pengganti push() untuk menghindari duplikasi page keys
-              context.go(Routing.plan.fullPath);
-              // Tampilkan pesan sukses menggunakan SnackBar
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(snackbar(successMessage));
-            },
-          );
+        if (notifier.success) {
+          context.read<TourPlanNotifier>().fetchItineraries();
+          context.goNamed(Routing.plan.routeName);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(snackbar('${notifier.successMessage}'));
         }
       }
     } else {
@@ -115,37 +96,6 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
       ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
     }
   }
-
-  InputDecoration textInputDecoration(BuildContext context, String hint) =>
-      InputDecoration(
-        hintText: hint,
-        hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-        ),
-        filled: true,
-
-        fillColor: Theme.of(context).colorScheme.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
-            width: 2,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.error,
-            width: 2,
-          ),
-        ),
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -193,9 +143,8 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                       }
                       return null;
                     },
-                    decoration: textInputDecoration(
-                      context,
-                      'Contoh: Jelajahi Candi Jedong',
+                    decoration: const InputDecoration(
+                      hintText: 'Contoh: Jelajahi Candi Jedong',
                     ),
                     onSaved: (value) => notifier.name = value ?? '',
                   ),
@@ -264,39 +213,35 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
                     controller: _notesController,
                     maxLines: 4,
                     style: textTheme.bodyLarge,
-                    decoration: textInputDecoration(
-                      context,
-                      'Tulis catatan di sini (opsional)',
+                    decoration: const InputDecoration(
+                      hintText: 'Tulis catatan di sini (opsional)',
                     ),
                     onSaved: (value) => notifier.notes = value ?? '',
                   ),
                   const SizedBox(height: 40),
-                  ElevatedButton.icon(
-                    onPressed: notifier.isSubmitting
-                        ? null
-                        : () => _proceedSavePlan(notifier),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: notifier.isSubmitting
+                          ? null
+                          : () => _proceedSavePlan(notifier),
+                      icon: notifier.isSubmitting
+                          ? ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: 16,
+                                maxWidth: 16,
+                              ),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : null,
+                      label: Text(
+                        notifier.isSubmitting
+                            ? 'Menyimpan...'
+                            : 'Simpan Rencana',
                       ),
-                    ),
-                    icon: notifier.isSubmitting
-                        ? ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: 16,
-                              maxWidth: 16,
-                            ),
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : null,
-                    label: Text(
-                      notifier.isSubmitting ? 'Menyimpan...' : 'Simpan Rencana',
                     ),
                   ),
                 ],

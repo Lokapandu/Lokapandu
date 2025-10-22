@@ -38,7 +38,6 @@ class _PlanScreenState extends State<PlanScreen> {
     );
 
     if (pickedDate != null) {
-      // Mengatur tanggal yang dipilih ke awal hari (00:00:00) untuk memastikan filter bekerja dengan benar
       final startOfDay = DateTime(
         pickedDate.year,
         pickedDate.month,
@@ -55,7 +54,6 @@ class _PlanScreenState extends State<PlanScreen> {
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainerHigh,
       appBar: AppBar(
         backgroundColor: colorScheme.surface,
         elevation: 0,
