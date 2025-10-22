@@ -21,11 +21,12 @@ import 'firebase_options.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'injection.dart' as di;
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
-
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize Firebase Crashlytics
@@ -42,11 +43,11 @@ Future<void> main() async {
     return true;
   };
 
-  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseKey);
+  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseAnonKey);
 
   // Un-comment when needed, This Repository refers to Brick's repository
   await Repository.configure(
-    supabaseAnonKey: Env.supabaseKey,
+    supabaseAnonKey: Env.supabaseAnonKey,
     supabaseUrl: Env.supabaseUrl,
     databaseFactory: databaseFactory,
   );
