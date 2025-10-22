@@ -4,9 +4,6 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
-import 'package:lokapandu/domain/validators/itinerary_validators.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/common/services/impl/location_service_impl.dart';
 import 'package:lokapandu/common/services/impl/routes_api_gateway.dart';
@@ -30,12 +27,18 @@ import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_no
 import 'package:lokapandu/domain/usecases/itineraries/delete_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/edit_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itineraries.dart';
+import 'package:lokapandu/domain/usecases/itineraries/get_user_itinerary_by_id.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
+import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_detail_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
@@ -44,6 +47,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final locator = GetIt.instance;
 
@@ -149,7 +153,7 @@ Future<void> initDependencies() async {
     () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
   );
 
-   locator.registerLazySingleton<GetCurrentWeather>(
+  locator.registerLazySingleton<GetCurrentWeather>(
     () => GetCurrentWeather(locator<WeatherPort>()),
   );
   locator.registerLazySingleton<GetDistance>(
@@ -180,6 +184,9 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<DeleteUserItineraries>(
     () => DeleteUserItineraries(locator<ItineraryRepository>()),
   );
+  locator.registerLazySingleton<GetUserItineraryById>(
+    () => GetUserItineraryById(locator<ItineraryRepository>()),
+  );
   // ========================================
   // PRESENTATION LAYER
   // ========================================
@@ -198,7 +205,7 @@ Future<void> initDependencies() async {
     () => TourismSpotDetailNotifier(locator<GetTourismSpotDetail>()),
   );
 
-  /// Authentication provider - manages auth state
+  /// Authentication providers - manages auth state
   locator.registerFactory<AuthNotifier>(
     () => AuthNotifier(
       authService: locator<AuthService>(),
@@ -234,5 +241,31 @@ Future<void> initDependencies() async {
   locator.registerFactory<PackageInfoNotifier>(() => PackageInfoNotifier());
   locator.registerFactory<UserSettingsNotifier>(
     () => UserSettingsNotifier(locator<SupabaseClient>()),
+  );
+  locator.registerFactory<TourPlanEditorNotifier>(
+    () => TourPlanEditorNotifier(
+      analyticsManager: locator<AnalyticsManager>(),
+      useCase: locator<CreateUserItineraries>(),
+      createItineraryUseCase: locator<CreateUserItinerariesNote>(),
+    ),
+  );
+  locator.registerFactory<TourPlanNotifier>(
+    () => TourPlanNotifier(
+      locator<GetUserItineraries>(),
+      locator<AnalyticsManager>(),
+    ),
+  );
+  locator.registerFactory<TourPlanFindingNotifier>(
+    () => TourPlanFindingNotifier(
+      locator<GetTourismSpotList>(),
+      locator<AnalyticsManager>(),
+    ),
+  );
+  locator.registerFactory<TourPlanDetailNotifier>(
+    () => TourPlanDetailNotifier(
+      locator<GetUserItineraryById>(),
+      locator<AnalyticsManager>(),
+      locator<DeleteUserItineraries>(),
+    ),
   );
 }

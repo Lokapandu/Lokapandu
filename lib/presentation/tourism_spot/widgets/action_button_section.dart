@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
+import 'package:lokapandu/presentation/plan/route/tour_plan_editor_extra.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:provider/provider.dart';
 
 class ActionButtonsSection extends StatelessWidget {
   final TourismSpot tour;
+
   const ActionButtonsSection({super.key, required this.tour});
 
   @override
@@ -19,13 +23,15 @@ class ActionButtonsSection extends StatelessWidget {
         color: colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: theme.shadowColor.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, -4),
           ),
         ],
         border: Border(
-          top: BorderSide(color: colorScheme.outlineVariant.withOpacity(0.5)),
+          top: BorderSide(
+            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
         ),
       ),
       child: Consumer<BookmarkProvider>(
@@ -35,12 +41,14 @@ class ActionButtonsSection extends StatelessWidget {
           return Row(
             children: [
               Expanded(
-                flex: 3, 
+                flex: 3,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.add_location_alt_outlined),
                   label: const Text('Tambah Rencana'),
-                  onPressed: () {
-                  },
+                  onPressed: () => context.pushNamed(
+                    Routing.planAdd.routeName,
+                    extra: TourPlanEditorExtra(tourismSpot: tour),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colorScheme.primary,
                     foregroundColor: colorScheme.onPrimary,
@@ -56,7 +64,7 @@ class ActionButtonsSection extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                flex: 1, 
+                flex: 1,
                 child: OutlinedButton(
                   onPressed: () {
                     bookmarkProvider.toggleBookmark(tour);

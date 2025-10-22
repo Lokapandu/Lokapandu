@@ -16,6 +16,7 @@ Future<ItineraryModel> _$ItineraryModelFromSupabase(
     tourismSpotId: data['tourism_spot_id'] == null
         ? null
         : data['tourism_spot_id'] as int?,
+    userId: data['user_id'] as String,
   );
 }
 
@@ -32,6 +33,7 @@ Future<Map<String, dynamic>> _$ItineraryModelToSupabase(
     'end_time': instance.endTime.toIso8601String(),
     'created_at': instance.createdAt.toIso8601String(),
     'tourism_spot_id': instance.tourismSpotId,
+    'user_id': instance.userId,
   };
 }
 
@@ -50,6 +52,7 @@ Future<ItineraryModel> _$ItineraryModelFromSqlite(
     tourismSpotId: data['tourism_spot_id'] == null
         ? null
         : data['tourism_spot_id'] as int?,
+    userId: data['user_id'] as String,
   )..primaryKey = data['_brick_id'] as int;
 }
 
@@ -66,6 +69,7 @@ Future<Map<String, dynamic>> _$ItineraryModelToSqlite(
     'end_time': instance.endTime.toIso8601String(),
     'created_at': instance.createdAt.toIso8601String(),
     'tourism_spot_id': instance.tourismSpotId,
+    'user_id': instance.userId,
   };
 }
 
@@ -107,6 +111,10 @@ class ItineraryModelAdapter
     'tourismSpotId': const RuntimeSupabaseColumnDefinition(
       association: false,
       columnName: 'tourism_spot_id',
+    ),
+    'userId': const RuntimeSupabaseColumnDefinition(
+      association: false,
+      columnName: 'user_id',
     ),
   };
   @override
@@ -162,6 +170,12 @@ class ItineraryModelAdapter
       columnName: 'tourism_spot_id',
       iterable: false,
       type: int,
+    ),
+    'userId': const RuntimeSqliteColumnDefinition(
+      association: false,
+      columnName: 'user_id',
+      iterable: false,
+      type: String,
     ),
   };
   @override

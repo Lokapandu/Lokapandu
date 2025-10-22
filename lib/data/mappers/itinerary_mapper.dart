@@ -10,18 +10,22 @@ extension ItineraryEntityMapper on Itinerary {
     startTime: startTime,
     endTime: endTime,
     createdAt: createdAt,
-    tourismSpotId: tourismSpot?.id,    
+    tourismSpotId: tourismSpot?.id,
+    userId: userId,
   );
 }
 
 extension ItineraryModelMapper on ItineraryModel {
-  Itinerary toEntity({TourismSpot? tourismSpot}) => Itinerary(
-    id: id,
-    name: name,
-    notes: notes,
-    startTime: startTime,
-    endTime: endTime,
-    createdAt: createdAt,
-    tourismSpot: tourismSpot,    
-  );
+  Itinerary toEntity({TourismSpot? tourismSpot}) {
+    return Itinerary(
+      id: id,
+      name: name,
+      notes: notes,
+      startTime: startTime,
+      endTime: endTime,
+      createdAt: createdAt,
+      tourismSpot: tourismSpot,
+      userId: userId,
+    );
+  }
 }

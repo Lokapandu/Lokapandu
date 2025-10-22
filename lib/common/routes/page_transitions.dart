@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
 
 /// Custom page transitions for smooth navigation animations
@@ -49,14 +50,12 @@ class PageTransitions {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var tween = Tween(begin: begin, end: end).chain(
-          CurveTween(curve: curve),
-        );
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        return SlideTransition(position: animation.drive(tween), child: child);
       },
     );
   }
@@ -82,14 +81,12 @@ class PageTransitions {
         const end = Offset.zero;
         const curve = Curves.easeOutCubic;
 
-        var tween = Tween(begin: begin, end: end).chain(
-          CurveTween(curve: curve),
-        );
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
+        return SlideTransition(position: animation.drive(tween), child: child);
       },
     );
   }
@@ -112,7 +109,7 @@ class PageTransitions {
       reverseTransitionDuration: duration,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const curve = Curves.easeInOutBack;
-        
+
         return ScaleTransition(
           scale: CurveTween(curve: curve).animate(animation),
           child: FadeTransition(
@@ -145,9 +142,10 @@ class PageTransitions {
         const end = Offset.zero;
         const curve = Curves.easeInOutCubic;
 
-        var slideTween = Tween(begin: beginOffset, end: end).chain(
-          CurveTween(curve: curve),
-        );
+        var slideTween = Tween(
+          begin: beginOffset,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
         var fadeTween = CurveTween(curve: Curves.easeInOut);
 

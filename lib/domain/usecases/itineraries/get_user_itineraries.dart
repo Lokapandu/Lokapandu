@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/itinerary_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
@@ -17,7 +18,13 @@ class GetUserItineraries {
   /// It returns a list of [Itinerary] on success or a [Failure] if an error occurs.
   ///
   /// [userId] The ID of the user whose itineraries are to be fetched.
-  Future<Either<Failure, List<Itinerary>>> execute(String userId) async {
-    return await repository.getUserItineraries(userId);
+  Future<Either<Failure, List<Itinerary>>> execute(
+    String userId, {
+    String? filterByDate,
+  }) async {
+    return await repository.getUserItineraries(
+      userId,
+      filterByDate: filterByDate,
+    );
   }
 }

@@ -9,13 +9,13 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
-  provider: ^6.1.5+1
   supabase_flutter: ^2.10.1
   envied: ^1.2.1
   
   firebase_core: ^4.1.0
   firebase_crashlytics: ^5.0.0
   firebase_ai: ^3.2.0
+  firebase_messaging: ^16.0.2
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
   dartz: ^0.10.1
@@ -60,14 +60,17 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_gemini: ^3.0.0
 
-
-
-
+  flutter_riverpod: ^3.0.3
+  flutter_localization: ^0.3.3
+  provider: ^6.1.5+1
+  firebase_performance: ^0.11.1+1
+ 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   brick_offline_first_with_supabase_build: ^2.0.0
+  import_sorter: ^4.6.0
 
   # downgrade
   envied_generator: ^1.1.1
@@ -81,3 +84,12 @@ flutter:
     - .env
     - assets/images/
     - assets/icons/
+    - assets/illustrations/
+
+#import_sorter:
+#  emojis: true
+#  comments: false
+#  ignored_files:
+#    - (\\|\/)?(\w+(\\|\/))*\w+\.g\.dart
+#    - (\\|\/)?(\w+(\\|\/))*\w+\.migration\.dart
+#    - (\\|\/)?(\w+(\\|\/))*\w+.freezed.dart

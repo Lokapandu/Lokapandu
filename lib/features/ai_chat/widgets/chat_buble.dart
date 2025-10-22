@@ -15,8 +15,6 @@ class ChatBubble extends StatelessWidget {
         ? CrossAxisAlignment.end
         : CrossAxisAlignment.start;
 
-
-
     final color = isFromUser ? colorScheme.primary : colorScheme.outlineVariant;
 
     final textColor = isFromUser

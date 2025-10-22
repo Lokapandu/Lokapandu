@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
+
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+
+import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 
 class AboutScreen extends StatefulWidget {
   const AboutScreen({super.key});

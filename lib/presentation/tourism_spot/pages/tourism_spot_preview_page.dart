@@ -1,10 +1,13 @@
 import 'dart:ui';
-import 'package:go_router/go_router.dart';
+
 import 'package:flutter/material.dart';
-import 'package:lokapandu/common/routes/routing_list.dart';
-import 'package:provider/provider.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import 'package:lokapandu/common/routes/routing_list.dart';
+import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 
 class TourismSpotPreviewPage extends StatefulWidget {
   final int id;
@@ -89,13 +92,13 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                       width: double.infinity,
                       padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withOpacity(0.25),
+                        color: colorScheme.surface.withValues(alpha: 0.25),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
                           topRight: Radius.circular(30),
                         ),
                         border: Border.all(
-                          color: colorScheme.onSurface.withOpacity(0.2),
+                          color: colorScheme.onSurface.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Column(
@@ -127,7 +130,7 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          _buildGalleryThumbnails(context),
+                          _buildGalleryThumbnails(context, notifier.selectedImage),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () {
@@ -169,33 +172,61 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
 
   Widget _buildBackgroundImage(BuildContext context) {
     final notifier = context.watch<TourismSpotDetailNotifier>();
-    final selectedImage =
-        notifier.selectedImage ??
-        (notifier.tourismSpot?.images.isNotEmpty == true
-            ? notifier.tourismSpot!.images.first.imageUrl
-            : '');
+    final selectedImage = notifier.selectedImage;
 
     if (selectedImage.isEmpty) {
       return Container(
         color: Colors.grey.shade300,
-        child: const Icon(Icons.image_not_supported),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: const Center(child: Icon(Icons.image_not_supported)),
       );
     }
 
-    return _isNetworkUrl(selectedImage)
-        ? CachedNetworkImage(
-            imageUrl: selectedImage,
-            fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator()),
-            errorWidget: (context, url, error) =>
-                const Icon(Icons.broken_image, color: Colors.grey),
-          )
-        : Image.asset(selectedImage, fit: BoxFit.cover);
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 500),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 1.2, end: 1.0).animate(
+                CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                ),
+              ),
+              child: child,
+            ),
+          );
+        },
+        child: _isNetworkUrl(selectedImage)
+            ? CachedNetworkImage(
+                key: ValueKey<String>(selectedImage),
+                imageUrl: selectedImage,
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+                placeholder: (context, url) =>
+                    const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.broken_image, color: Colors.grey),
+              )
+            : Image.asset(
+                selectedImage,
+                key: ValueKey<String>(selectedImage),
+                width: double.infinity,
+                height: double.infinity,
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
   }
 
   // Helper widget untuk menampilkan thumbnail galeri
-  Widget _buildGalleryThumbnails(BuildContext context) {
+  Widget _buildGalleryThumbnails(BuildContext context, String selectedImage) {
     final images = context.watch<TourismSpotDetailNotifier>().images;
     return SizedBox(
       height: 70,
@@ -212,21 +243,34 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                   image.imageUrl,
                 );
               },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: _isNetworkUrl(image.imageUrl)
-                    ? CachedNetworkImage(
-                        imageUrl: image.imageUrl,
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                      )
-                    : Image.asset(
-                        image.imageUrl,
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                      ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: image.imageUrl == selectedImage
+                      ? Border.all(
+                          color: Theme.of(context).colorScheme.primary,
+                          width: 3.0,
+                        )
+                      : null,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(
+                    image.imageUrl == selectedImage ? 9.0 : 12.0,
+                  ),
+                  child: _isNetworkUrl(image.imageUrl)
+                      ? CachedNetworkImage(
+                          imageUrl: image.imageUrl,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          image.imageUrl,
+                          width: 70,
+                          height: 70,
+                          fit: BoxFit.cover,
+                        ),
+                ),
               ),
             ),
           );

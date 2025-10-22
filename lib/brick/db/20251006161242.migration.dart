@@ -11,11 +11,11 @@ part of 'schema.g.dart';
 
 const List<MigrationCommand> _migration_20251006161242_up = [
   DropColumn('user_id', onTable: 'UserItineraryModel'),
-  InsertColumn('user_id', Column.varchar, onTable: 'UserItineraryModel')
+  InsertColumn('user_id', Column.varchar, onTable: 'UserItineraryModel'),
 ];
 
 const List<MigrationCommand> _migration_20251006161242_down = [
-  DropColumn('user_id', onTable: 'UserItineraryModel')
+  DropColumn('user_id', onTable: 'UserItineraryModel'),
 ];
 
 //

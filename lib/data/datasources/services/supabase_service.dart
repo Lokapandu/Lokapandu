@@ -1,8 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:lokapandu/data/models/tourism_spot_model.dart';
-import 'package:lokapandu/data/models/tourism_image_model.dart';
-import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
+
 import 'package:lokapandu/common/errors/exceptions.dart';
+import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
+import 'package:lokapandu/data/models/tourism_image_model.dart';
+import 'package:lokapandu/data/models/tourism_spot_model.dart';
 
 // Service class that handles all Supabase database operations
 class SupabaseService implements SupabaseServiceInterface {
@@ -19,15 +20,19 @@ class SupabaseService implements SupabaseServiceInterface {
   }
 
   SupabaseClient get client => _client;
+
   // Method to fetch all tourism spots from database
 
   @override
-  Future<List<TourismSpotModel>> getAllTourismSpots() async {
+  Future<List<TourismSpotModel>> getAllTourismSpots({String? query}) async {
     try {
-      final response = await _client
-          .from('tourism_spots')
-          .select('*')
-          .order('created_at', ascending: false);
+      var builder = _client.from('tourism_spots').select('*');
+
+      if (query != null) {
+        builder = builder.ilike('name', '%$query%');
+      }
+
+      final response = await builder.order('created_at', ascending: false);
 
       return (response as List)
           .map((json) => TourismSpotModel.fromJson(json))

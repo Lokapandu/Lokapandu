@@ -10,7 +10,7 @@ class AboutSection extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,6 +27,7 @@ class AboutSection extends StatelessWidget {
               color: theme.colorScheme.onSurfaceVariant,
               height: 1.5,
             ),
+            textAlign: TextAlign.justify,
           ),
         ],
       ),

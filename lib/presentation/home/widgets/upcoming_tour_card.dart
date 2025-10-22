@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:iconify_design/iconify_design.dart';
 
 class UpcomingTourCard extends StatelessWidget {
   final String imageUrl;
@@ -27,17 +28,15 @@ class UpcomingTourCard extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     return Container(
-      padding: const EdgeInsets.all(12.0),
+      margin: const EdgeInsets.only(bottom: 10.0),
+      padding: const EdgeInsets.all(7.0),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withOpacity(0.5),
-          width: 1.0,
-        ),
+        border: Border.all(color: colorScheme.outline, width: .5),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.05),
+            color: colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -61,13 +60,13 @@ class UpcomingTourCard extends StatelessWidget {
                   )
                 : Image.asset(
                     // Fallback untuk gambar lokal
-              imageUrl,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-            ),
+                    imageUrl,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                  ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,7 +74,7 @@ class UpcomingTourCard extends StatelessWidget {
                 Text(
                   'Selanjutnya',
                   style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.outline,
+                    color: colorScheme.onSurface.withValues(alpha: .75),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -91,39 +90,54 @@ class UpcomingTourCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      color: colorScheme.outline,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 4),
-
                     Expanded(
-                      child: Text(
-                      location,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.outline,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                      child: Row(
+                        children: [
+                          IconifyIcon(
+                            icon: 'mdi:location',
+                            color: colorScheme.secondary,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              location,
+                              style: textTheme.labelSmall,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Icon(
-                      Icons.access_time_outlined,
-                      color: colorScheme.outline,
-                      size: 14,
+                    const SizedBox(width: 4),
+                    SizedBox(
+                      height: 20,
+                      child: VerticalDivider(
+                        thickness: 1,
+                        color: colorScheme.outline.withValues(alpha: 0.5),
+                        width: 1,
+                      ),
                     ),
                     const SizedBox(width: 4),
-
                     Expanded(
-                      child: Text(
-                      time,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.outline,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
+                      child: Row(
+                        children: [
+                          IconifyIcon(
+                            icon: 'tabler:clock-filled',
+                            color: colorScheme.secondary,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              time,
+                              style: textTheme.labelSmall,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

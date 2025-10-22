@@ -1,9 +1,10 @@
-import 'dart:io';
 import 'dart:developer' as developer;
+import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:lokapandu/common/errors/failure.dart';
+
 import 'package:lokapandu/common/errors/exceptions.dart';
+import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
 import 'package:lokapandu/data/mappers/supabase_tourism_image_mapper.dart';
 import 'package:lokapandu/data/mappers/supabase_tourism_spot_mapper.dart';
@@ -49,8 +50,12 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   }
 
   @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpots() async {
-    return _executeSpotListCall(() => _remoteDataSource.getTourismSpots());
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots(
+    String? query,
+  ) async {
+    return _executeSpotListCall(
+      () => _remoteDataSource.getTourismSpots(query: query),
+    );
   }
 
   @override
@@ -119,7 +124,7 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
       if (spotsMap.containsKey(image.tourismSpotId)) {
         imagesMap
             .putIfAbsent(image.tourismSpotId, () => [])
-            .add(image.toEntity(spotsMap[image.tourismSpotId]!));
+            .add(image.toEntity());
       }
     }
 

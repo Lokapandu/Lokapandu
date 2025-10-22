@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:lokapandu/common/analytics.dart';
 
 class AnalyticPageObserver extends NavigatorObserver {

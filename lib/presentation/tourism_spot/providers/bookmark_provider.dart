@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 class BookmarkProvider extends ChangeNotifier {
@@ -6,11 +7,9 @@ class BookmarkProvider extends ChangeNotifier {
 
   List<TourismSpot> get bookmarkedSpots => _bookmarkedSpots;
 
-
   bool isBookmarked(TourismSpot spot) {
     return _bookmarkedSpots.any((item) => item.id == spot.id);
   }
-
 
   void toggleBookmark(TourismSpot spot) {
     if (isBookmarked(spot)) {

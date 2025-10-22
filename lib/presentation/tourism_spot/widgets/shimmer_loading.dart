@@ -6,18 +6,25 @@ class TourismSpotShimmerLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: 6,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.75,
+    return SizedBox(
+      height: 500, // Fixed height to solve unbounded height issue
+      child: GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        physics:
+            const NeverScrollableScrollPhysics(), // Disable scrolling since it's in a CustomScrollView
+        shrinkWrap: true, // Ensure it takes only the space it needs
+        itemCount: 6,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio:
+              154 / 162, // Menyesuaikan ukuran card menjadi 154x162
+        ),
+        itemBuilder: (context, index) {
+          return const ShimmerCard();
+        },
       ),
-      itemBuilder: (context, index) {
-        return const ShimmerCard();
-      },
     );
   }
 }
@@ -30,15 +37,16 @@ class ShimmerCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Shimmer.fromColors(
-      baseColor: theme.colorScheme.surfaceContainerHigh,
-      highlightColor: theme.colorScheme.surface,
+      baseColor: theme.colorScheme.primary.withValues(alpha: 0.3),
+      highlightColor: theme.colorScheme.surfaceContainerHigh,
       child: Card(
+        margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
+        elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
-        elevation: 3.0,
-        color: theme.colorScheme.surfaceContainer,
+        color: theme.colorScheme.primary.withValues(alpha: 0.3),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

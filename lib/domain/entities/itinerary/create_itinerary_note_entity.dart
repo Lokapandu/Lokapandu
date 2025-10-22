@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'create_itinerary_note_entity.freezed.dart';
 
 @freezed
@@ -8,6 +9,6 @@ abstract class CreateItineraryNote with _$CreateItineraryNote {
     required String notes,
     required DateTime startTime,
     required DateTime endTime,
-
+    required String userId,
   }) = _CreateItineraryNote;
 }

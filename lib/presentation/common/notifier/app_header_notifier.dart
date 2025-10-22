@@ -1,10 +1,9 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:lokapandu/common/errors/failure.dart';
-import 'dart:developer' as dev;
-
 import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/common/services/location_service.dart';
 import 'package:lokapandu/domain/entities/weather_entity.dart';
@@ -25,6 +24,7 @@ class AppHeaderNotifier extends ChangeNotifier {
        _analyticsManager = analyticsManager;
 
   AppHeaderState _state = const AppHeaderLoading();
+
   AppHeaderState get state => _state;
 
   LocationData? _locationData;
@@ -71,6 +71,7 @@ class AppHeaderNotifier extends ChangeNotifier {
       if (permissionGranted) {
         // Delegasi ke Pasukan Penyerbu
         await _fetchLocationAndUpdateAddress();
+        await getCurrentWeather();
       } else {
         // Fallback dengan state yang jelas
         _updateState(const AppHeaderPermissionDenied());
@@ -80,6 +81,15 @@ class AppHeaderNotifier extends ChangeNotifier {
         '❌ Operasi gagal: $e',
         name: 'AppHeaderNotifier',
         stackTrace: stackTrace,
+      );
+      _analyticsManager.trackError(
+        error: e.runtimeType.toString(),
+        description: '$e',
+        parameters: {
+          'get': 'location',
+          'timestamp': DateTime.now().toIso8601String(),
+          'stackTrace': stackTrace.toString(),
+        },
       );
       _updateState(
         AppHeaderError(
@@ -134,7 +144,7 @@ class AppHeaderNotifier extends ChangeNotifier {
       _locationData = await _locationService.getCurrentLocation();
 
       await _analyticsManager.trackEvent(
-        eventName: 'app_header_location_obtained',
+        eventName: 'appHeader_location_obtained',
         parameters: {
           'latitude': _locationData?.latitude.toString() ?? '0',
           'longitude': _locationData?.longitude.toString() ?? '0',
@@ -186,79 +196,40 @@ class AppHeaderNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Mengambil data cuaca terkini berdasarkan lokasi pengguna.
+  ///
+  /// Jika izin lokasi diberikan, akan menggunakan koordinat pengguna.
+  /// Jika tidak, akan menggunakan lokasi default (Denpasar).
+  ///
+  /// Metode ini menangani state loading, error, dan sukses.
   Future<void> getCurrentWeather() async {
     dev.log('🌡️ Memulai operasi cuaca...', name: 'AppHeaderNotifier');
 
-    _state = switch (_state) {
-      AppHeaderSuccess(location: final location, weather: final weather) =>
-        AppHeaderSuccess(
-          location: location,
-          weather: weather,
-          isWeatherLoading: true,
-        ),
-      AppHeaderPermissionDenied(
-        fallbackLocation: final location,
-        weather: final weather,
-      ) =>
-        AppHeaderPermissionDenied(
-          fallbackLocation: location,
-          weather: weather,
-          isWeatherLoading: true,
-        ),
-      _ =>
-        _state, // Jika state bukan success atau permission denied, jangan update
-    };
-    notifyListeners();
-
-    try {
-      final result = await _currentWeather.execute(
-        latLon: isPermissionGranted()
-            ? '${_locationData?.latitude},${_locationData?.longitude}'
-            : 'Denpasar',
-      );
-
-      result.fold((failure) => _handleFailure(failure), (weather) {
-        dev.log(
-          '🌤️ Cuaca berhasil diperoleh: ${weather.text}',
-          name: 'AppHeaderNotifier',
-        );
-
-        // Update state dengan data weather
-        _state = switch (_state) {
-          AppHeaderSuccess(location: final location) => AppHeaderSuccess(
+    // Fungsi helper untuk mengubah state ke mode loading
+    void setLoadingState() {
+      _state = switch (_state) {
+        AppHeaderSuccess(location: final location, weather: final weather) =>
+          AppHeaderSuccess(
             location: location,
             weather: weather,
-            isWeatherLoading: false,
+            isWeatherLoading: true,
           ),
-          AppHeaderPermissionDenied(fallbackLocation: final location) =>
-            AppHeaderPermissionDenied(
-              fallbackLocation: location,
-              weather: weather,
-              isWeatherLoading: false,
-            ),
-          _ => _state,
-        };
-        notifyListeners();
-      });
+        AppHeaderPermissionDenied(
+          fallbackLocation: final location,
+          weather: final weather,
+        ) =>
+          AppHeaderPermissionDenied(
+            fallbackLocation: location,
+            weather: weather,
+            isWeatherLoading: true,
+          ),
+        _ =>
+          _state, // Jika state bukan success atau permission denied, jangan update
+      };
+    }
 
-      // Analytics tracking
-      await _analyticsManager.trackEvent(
-        eventName: 'get_weather_information',
-        parameters: {
-          'weather_status':
-              currentWeatherData?.toString() ?? 'Cant Get Weather Data',
-          'location_permission': isPermissionGranted().toString(),
-          'timestamp': DateTime.now().toIso8601String(),
-        },
-      );
-    } catch (e, stackTrace) {
-      dev.log(
-        '❌ Error getting weather: $e',
-        name: 'AppHeaderNotifier',
-        stackTrace: stackTrace,
-      );
-
-      // Update state untuk menghilangkan loading
+    // Fungsi helper untuk mengubah state ke mode tidak loading
+    void setNotLoadingState() {
       _state = switch (_state) {
         AppHeaderSuccess(location: final location, weather: final weather) =>
           AppHeaderSuccess(
@@ -277,7 +248,131 @@ class AppHeaderNotifier extends ChangeNotifier {
           ),
         _ => _state,
       };
+    }
+
+    // Set state loading dan notify
+    setLoadingState();
+    notifyListeners();
+
+    try {
+      // Pastikan lokasi sudah diinisialisasi jika akses lokasi dibolehkan
+      if (isPermissionGranted() && _locationData == null) {
+        dev.log('⏳ Menunggu inisialisasi lokasi...', name: 'AppHeaderNotifier');
+        try {
+          _locationData = await _locationService.getCurrentLocation();
+        } catch (e, st) {
+          dev.log(
+            '⚠️ Gagal mendapatkan lokasi: $e, menggunakan fallback',
+            stackTrace: st,
+            name: 'AppHeaderNotifier',
+          );
+          // Lanjutkan dengan fallback, tidak perlu rethrow
+        }
+      }
+
+      // Gunakan lokasi pengguna jika tersedia, atau fallback ke Denpasar
+      final latLonData = (isPermissionGranted() && _locationData != null)
+          ? '${_locationData!.latitude},${_locationData!.longitude}'
+          : 'Denpasar'; // Lokasi default untuk Bali
+
+      // Tambahkan timeout untuk menghindari permintaan yang terlalu lama
+      final result = await _currentWeather.execute(latLon: latLonData);
+
+      // Tangani hasil
+      result.fold(
+        (failure) {
+          // Tangani kegagalan
+          _handleFailure(failure);
+
+          // Tracking analytics untuk kegagalan
+          _analyticsManager.trackEvent(
+            eventName: 'get_weather_information_failed',
+            parameters: {
+              'failure_type': failure.runtimeType.toString(),
+              'failure_message': failure.toString(),
+              'location_permission': isPermissionGranted().toString(),
+              'location_initialized': (_locationData != null).toString(),
+              'timestamp': DateTime.now().toIso8601String(),
+            },
+          );
+        },
+        (weather) {
+          dev.log(
+            '🌤️ Cuaca berhasil diperoleh: ${weather.text}',
+            name: 'AppHeaderNotifier',
+          );
+
+          // Update state dengan data weather yang baru
+          _state = switch (_state) {
+            AppHeaderSuccess(location: final location) => AppHeaderSuccess(
+              location: location,
+              weather: weather,
+              isWeatherLoading: false,
+            ),
+            AppHeaderPermissionDenied(fallbackLocation: final location) =>
+              AppHeaderPermissionDenied(
+                fallbackLocation: location,
+                weather: weather,
+                isWeatherLoading: false,
+              ),
+            _ => _state,
+          };
+          notifyListeners();
+
+          // Tracking analytics untuk keberhasilan
+          _analyticsManager.trackEvent(
+            eventName: 'get_weather_information_success',
+            parameters: {
+              'weather_location': weather.city,
+              'weather_region': weather.region,
+              'weather_country': weather.country,
+              'weather_last_updated': weather.lastUpdated,
+              'weather_timezone': weather.tzId,
+              'weather_temperature': '${weather.celciusTemperature}°C',
+              'weather_text': weather.text,
+              'location_permission': isPermissionGranted().toString(),
+              'location_initialized': (_locationData != null).toString(),
+              'timestamp': DateTime.now().toIso8601String(),
+            },
+          );
+        },
+      );
+    } on TimeoutException catch (e, stackTrace) {
+      dev.log(
+        '⏱️ Timeout getting weather: $e',
+        name: 'AppHeaderNotifier',
+        stackTrace: stackTrace,
+      );
+
+      setNotLoadingState();
       notifyListeners();
+
+      // Tracking untuk timeout
+      _analyticsManager.trackError(
+        error: 'TimeoutException',
+        description: 'Weather request timed out: $e',
+        parameters: {'timestamp': DateTime.now().toIso8601String()},
+      );
+    } catch (e, stackTrace) {
+      dev.log(
+        '❌ Error getting weather: $e',
+        name: 'AppHeaderNotifier',
+        stackTrace: stackTrace,
+      );
+
+      // Update state untuk menghilangkan loading
+      setNotLoadingState();
+      notifyListeners();
+
+      // Tracking untuk error umum
+      _analyticsManager.trackError(
+        error: e.runtimeType.toString(),
+        description: 'Error getting weather: $e',
+        parameters: {
+          'stackTrace': stackTrace.toString(),
+          'timestamp': DateTime.now().toIso8601String(),
+        },
+      );
     }
   }
 }

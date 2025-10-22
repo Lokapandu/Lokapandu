@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'edit_itinerary_entity.freezed.dart';
 
 @freezed
@@ -10,6 +11,6 @@ abstract class EditItinerary with _$EditItinerary {
     DateTime? startTime,
     DateTime? endTime,
     int? tourismSpot,
-
+    String? userId,
   }) = _EditItinerary;
 }

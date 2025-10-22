@@ -1,9 +1,10 @@
 import 'dart:io';
+
+import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
-import 'package:lokapandu/data/models/tourism_spot_model.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
-import 'package:lokapandu/common/errors/exceptions.dart';
+import 'package:lokapandu/data/models/tourism_spot_model.dart';
 
 // Implementation class that acts as data source layer for tourism spots
 class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
@@ -15,9 +16,9 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
 
   // Method to fetch all tourism spots with comprehensive error handling
   @override
-  Future<List<TourismSpotModel>> getTourismSpots() async {
+  Future<List<TourismSpotModel>> getTourismSpots({String? query}) async {
     try {
-      return await _supabaseService.getAllTourismSpots();
+      return await _supabaseService.getAllTourismSpots(query: query);
     } on SupabaseException {
       rethrow;
     } on ServerException {

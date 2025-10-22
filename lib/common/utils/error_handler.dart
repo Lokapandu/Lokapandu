@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'package:lokapandu/common/services/crashlytics_service.dart';
+
 import 'package:lokapandu/common/errors/exceptions.dart';
+import 'package:lokapandu/common/services/crashlytics_service.dart';
 
 /// Utility class untuk menangani berbagai jenis error
 /// dan melaporkannya ke Crashlytics
@@ -82,7 +83,7 @@ class ErrorHandler {
   /// Handle type errors
   static Future<void> handleTypeError(TypeError error) async {
     await CrashlyticsService.setCustomKey('error_type', 'type_error');
-    
+
     await CrashlyticsService.recordError(
       error,
       StackTrace.current,
@@ -149,22 +150,19 @@ class ErrorHandler {
       return fallbackValue;
     } catch (e, stackTrace) {
       if (reportError) {
-        await handleGenericError(
-          e,
-          stackTrace: stackTrace,
-          context: context,
-        );
+        await handleGenericError(e, stackTrace: stackTrace, context: context);
       }
       return fallbackValue;
     }
   }
 
   /// Log user action untuk debugging
-  static Future<void> logUserAction(String action, {
+  static Future<void> logUserAction(
+    String action, {
     Map<String, dynamic>? parameters,
   }) async {
     await CrashlyticsService.log('User Action: $action');
-    
+
     if (parameters != null) {
       await CrashlyticsService.setCustomKeys({
         'last_user_action': action,
@@ -174,11 +172,12 @@ class ErrorHandler {
   }
 
   /// Log navigation events
-  static Future<void> logNavigation(String routeName, {
+  static Future<void> logNavigation(
+    String routeName, {
     Map<String, dynamic>? arguments,
   }) async {
     await CrashlyticsService.log('Navigation: $routeName');
-    
+
     await CrashlyticsService.setCustomKeys({
       'current_route': routeName,
       'route_arguments': arguments?.toString() ?? 'none',

@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
-import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
+import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
 
 class TourismSpotNotifier extends ChangeNotifier {
   final GetTourismSpotList _getTourismSpotList;
@@ -22,10 +23,12 @@ class TourismSpotNotifier extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String _selectedCategory = 'Semua';
+  String _searchQuery = '';
 
   List<TourismSpot> get tourismSpots => _tourismSpots;
   String? get errorMessage => _errorMessage;
   String get selectedCategory => _selectedCategory;
+  String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
   bool get hasError => _errorMessage != null;
   bool get hasData => _tourismSpots.isNotEmpty;
@@ -58,10 +61,12 @@ class TourismSpotNotifier extends ChangeNotifier {
   }
 
   void search(String query) {
+    _searchQuery = query;
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _performSearch(query);
     });
+    notifyListeners();
   }
 
   Future<void> _performSearch(String query) async {

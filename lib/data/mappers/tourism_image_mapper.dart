@@ -1,7 +1,7 @@
 // MAPPER FOR TOURISM IMAGE ENTITY AND MODEL FROM BRICK'S MODEL
+
 import 'package:lokapandu/brick/models/tourism_image.model.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
-
 
 extension TourismImageEntityMapper on TourismImage {
   TourismImageModel toBrickModel() => TourismImageModel(

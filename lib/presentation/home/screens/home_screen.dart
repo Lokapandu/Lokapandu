@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
+import 'package:iconify_design/iconify_design.dart';
+
 import 'package:lokapandu/presentation/home/models/navigation_item_model.dart';
 import 'package:lokapandu/presentation/home/widgets/home_widgets.dart';
-import 'package:iconify_design/iconify_design.dart';
 
 class HomeScreen extends StatelessWidget {
   final Widget child;
@@ -26,11 +28,14 @@ class HomeScreen extends StatelessWidget {
         )
         .key;
 
+    // Cek apakah keyboard sedang muncul
+    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
       body: child,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: isNavigationPane
+      floatingActionButton: isNavigationPane && !isKeyboardVisible
           ? _buildAIChatButton(context)
           : null,
       bottomNavigationBar: isNavigationPane

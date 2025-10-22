@@ -1,5 +1,6 @@
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 /// Service untuk mengelola Firebase Crashlytics
 /// Menyediakan metode untuk logging error, crash, dan informasi debugging
@@ -10,7 +11,7 @@ class CrashlyticsService {
   static Future<void> initialize() async {
     // Set collection enabled berdasarkan mode debug
     await _crashlytics.setCrashlyticsCollectionEnabled(!kDebugMode);
-    
+
     // Log bahwa Crashlytics telah diinisialisasi
     await _crashlytics.log('Crashlytics initialized successfully');
   }
@@ -35,7 +36,9 @@ class CrashlyticsService {
 
   /// Record Flutter error ke Crashlytics
   /// [errorDetails] - Detail error dari Flutter
-  static Future<void> recordFlutterError(FlutterErrorDetails errorDetails) async {
+  static Future<void> recordFlutterError(
+    FlutterErrorDetails errorDetails,
+  ) async {
     await _crashlytics.recordFlutterFatalError(errorDetails);
   }
 
@@ -103,7 +106,7 @@ class CrashlyticsService {
       'status_code': statusCode,
       'error_type': 'network_error',
     });
-    
+
     await recordError(
       'Network Error: $error',
       StackTrace.current,
@@ -125,12 +128,15 @@ class CrashlyticsService {
   /// Record database error
   /// [operation] - Operasi database yang error (insert, update, delete, etc.)
   /// [error] - Error yang terjadi
-  static Future<void> recordDatabaseError(String operation, dynamic error) async {
+  static Future<void> recordDatabaseError(
+    String operation,
+    dynamic error,
+  ) async {
     await setCustomKeys({
       'error_type': 'database_error',
       'database_operation': operation,
     });
-    
+
     await recordError(
       error,
       StackTrace.current,

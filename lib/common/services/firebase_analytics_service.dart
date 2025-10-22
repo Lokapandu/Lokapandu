@@ -1,21 +1,24 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_performance/firebase_performance.dart';
+import 'package:flutter/foundation.dart';
+
 class FirebaseAnalyticsService {
-  static final FirebaseAnalyticsService _instance = FirebaseAnalyticsService._internal();
+  static final FirebaseAnalyticsService _instance =
+      FirebaseAnalyticsService._internal();
   factory FirebaseAnalyticsService() => _instance;
   FirebaseAnalyticsService._internal();
 
   final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
-  
+  final FirebasePerformance _performance = FirebasePerformance.instance;
+
   // Debug mode configuration
   static const bool _isDebugMode = kDebugMode;
   static const String _debugTag = 'FirebaseAnalytics';
 
   /// Filter out null values from parameters map
   Map<String, Object> _filterOutNulls(Map<String, Object?> parameters) {
-    
     final Map<String, Object> filtered = <String, Object>{};
     parameters.forEach((String key, Object? value) {
       if (value != null) {
@@ -34,17 +37,10 @@ class FirebaseAnalyticsService {
   /// Log debug information in development mode
   void _logDebug(String message, {Map<String, Object?>? parameters}) {
     if (_isDebugMode) {
-      developer.log(
-        message,
-        name: _debugTag,
-        time: DateTime.now(),
-      );
-      
+      developer.log(message, name: _debugTag, time: DateTime.now());
+
       if (parameters != null && parameters.isNotEmpty) {
-        developer.log(
-          'Parameters: $parameters',
-          name: _debugTag,
-        );
+        developer.log('Parameters: $parameters', name: _debugTag);
       }
     }
   }
@@ -69,13 +65,13 @@ class FirebaseAnalyticsService {
   }) async {
     try {
       _logDebug('Tracking page view: $screenName', parameters: parameters);
-      
+
       await _analytics.logScreenView(
         screenName: screenName,
         screenClass: screenClass,
         parameters: parameters != null ? _filterOutNulls(parameters) : null,
       );
-      
+
       _logDebug('Page view tracked successfully: $screenName');
     } catch (e) {
       _handleError('trackPageView', e);
@@ -89,12 +85,12 @@ class FirebaseAnalyticsService {
   }) async {
     try {
       _logDebug('Tracking event: $eventName', parameters: parameters);
-      
+
       await _analytics.logEvent(
         name: eventName,
         parameters: parameters != null ? _filterOutNulls(parameters) : null,
       );
-      
+
       _logDebug('Event tracked successfully: $eventName');
     } catch (e) {
       _handleError('trackEvent', e);
@@ -124,7 +120,7 @@ class FirebaseAnalyticsService {
         name: 'user_action',
         parameters: _filterOutNulls(eventParams),
       );
-      
+
       _logDebug('User action tracked successfully: $action');
     } catch (e) {
       _handleError('trackUserAction', e);
@@ -146,13 +142,16 @@ class FirebaseAnalyticsService {
         if (parameters != null) ...parameters,
       };
 
-      _logDebug('Tracking navigation: $source -> $destination', parameters: eventParams);
+      _logDebug(
+        'Tracking navigation: $source -> $destination',
+        parameters: eventParams,
+      );
 
       await _analytics.logEvent(
         name: 'navigation',
         parameters: _filterOutNulls(eventParams),
       );
-      
+
       _logDebug('Navigation tracked successfully: $source -> $destination');
     } catch (e) {
       _handleError('trackNavigation', e);
@@ -176,13 +175,16 @@ class FirebaseAnalyticsService {
         if (parameters != null) ...parameters,
       };
 
-      _logDebug('Tracking timing: $category.$variable = ${timeInMs}ms', parameters: eventParameters);
+      _logDebug(
+        'Tracking timing: $category.$variable = ${timeInMs}ms',
+        parameters: eventParameters,
+      );
 
       await _analytics.logEvent(
         name: 'timing_complete',
         parameters: eventParameters,
       );
-      
+
       _logDebug('Timing tracked successfully: $category.$variable');
     } catch (e) {
       _handleError('trackTiming', e);
@@ -206,11 +208,8 @@ class FirebaseAnalyticsService {
 
       _logDebug('Tracking error: $error', parameters: eventParameters);
 
-      await _analytics.logEvent(
-        name: 'app_error',
-        parameters: eventParameters,
-      );
-      
+      await _analytics.logEvent(name: 'app_error', parameters: eventParameters);
+
       _logDebug('Error tracked successfully: $error');
     } catch (e) {
       _handleError('trackError', e);
@@ -224,15 +223,13 @@ class FirebaseAnalyticsService {
   }) async {
     try {
       _logDebug('Setting user property: $name = $value');
-      
+
       await _analytics.setUserProperty(
         name: name,
         value: value,
-        callOptions: AnalyticsCallOptions(
-          global: true
-        ),
+        callOptions: AnalyticsCallOptions(global: true),
       );
-      
+
       _logDebug('User property set successfully: $name');
     } catch (e) {
       _handleError('setUserProperty', e);
@@ -243,9 +240,9 @@ class FirebaseAnalyticsService {
   Future<void> setUserId(String userId) async {
     try {
       _logDebug('Setting user ID: $userId');
-      
+
       await _analytics.setUserId(id: userId);
-      
+
       _logDebug('User ID set successfully');
     } catch (e) {
       _handleError('setUserId', e);
@@ -256,9 +253,9 @@ class FirebaseAnalyticsService {
   Future<void> resetAnalyticsData() async {
     try {
       _logDebug('Resetting analytics data');
-      
+
       await _analytics.resetAnalyticsData();
-      
+
       _logDebug('Analytics data reset successfully');
     } catch (e) {
       _handleError('resetAnalyticsData', e);
@@ -269,9 +266,10 @@ class FirebaseAnalyticsService {
   Future<void> setAnalyticsCollectionEnabled(bool enabled) async {
     try {
       _logDebug('Setting analytics collection enabled: $enabled');
-      
+
       await _analytics.setAnalyticsCollectionEnabled(enabled);
-      
+      await _performance.setPerformanceCollectionEnabled(enabled);
+
       _logDebug('Analytics collection setting updated successfully');
     } catch (e) {
       _handleError('setAnalyticsCollectionEnabled', e);

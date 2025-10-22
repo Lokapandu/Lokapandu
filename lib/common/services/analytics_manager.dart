@@ -1,10 +1,13 @@
-import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
 
-import 'firebase_analytics_service.dart';
-import 'debug_analytics_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_performance/firebase_performance.dart';
+
 import '../config/environment_config.dart';
 import '../config/firebase_debug_config.dart';
+import 'debug_analytics_service.dart';
+import 'firebase_analytics_service.dart';
+import 'firebase_performance_service.dart';
 
 /// Analytics Manager
 /// Centralized service that manages both Firebase Analytics and Debug Analytics
@@ -18,6 +21,8 @@ class AnalyticsManager {
   final FirebaseAnalyticsService _firebaseAnalytics =
       FirebaseAnalyticsService();
   final DebugAnalyticsService _debugAnalytics = DebugAnalyticsService();
+  final FirebasePerformanceService _performanceService =
+      FirebasePerformanceService();
 
   // Configuration
   late FirebaseAnalyticsConfig _config;
@@ -43,6 +48,9 @@ class AnalyticsManager {
         _config.collectAnalytics,
       );
 
+      // Initialize Firebase Performance
+      await _performanceService.initialize();
+
       _isInitialized = true;
 
       _logDebug('Analytics Manager initialized successfully');
@@ -61,6 +69,139 @@ class AnalyticsManager {
         'Failed to initialize Analytics Manager: $e',
         name: _debugTag,
         level: 1000,
+      );
+    }
+  }
+
+  /// Start a custom trace for performance monitoring
+  ///
+  /// [traceName] - Name of the trace to start
+  /// Returns the trace object or null if there was an error
+  Future<Trace?> startTrace(String traceName) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      final trace = await _performanceService.startTrace(traceName);
+      _logDebug('Started trace: $traceName');
+      return trace;
+    } catch (e, st) {
+      _logDebug('Failed to start trace "$traceName"', error: e, stacktrace: st);
+      return null;
+    }
+  }
+
+  /// Stop a custom trace
+  ///
+  /// [traceName] - Name of the trace to stop
+  Future<void> stopTrace(String traceName) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      await _performanceService.stopTrace(traceName);
+      _logDebug('Stopped trace: $traceName');
+    } catch (e, st) {
+      _logDebug('Failed to stop trace', error: e, stacktrace: st);
+    }
+  }
+
+  /// Add a custom metric to a trace
+  ///
+  /// [traceName] - Name of the trace
+  /// [metricName] - Name of the metric
+  /// [value] - Value to set for the metric
+  Future<void> setTraceMetric(
+    String traceName,
+    String metricName,
+    int value,
+  ) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      await _performanceService.setMetric(traceName, metricName, value);
+      _logDebug('Set metric "$metricName" = $value for trace "$traceName"');
+    } catch (e, st) {
+      _logDebug(
+        'Failed to set metric "$metricName" for trace "$traceName"',
+        error: e,
+        stacktrace: st,
+      );
+    }
+  }
+
+  /// Increment a custom metric in a trace
+  ///
+  /// [traceName] - Name of the trace
+  /// [metricName] - Name of the metric
+  /// [incrementBy] - Value to increment the metric by (default: 1)
+  Future<void> incrementTraceMetric(
+    String traceName,
+    String metricName, [
+    int incrementBy = 1,
+  ]) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      await _performanceService.incrementMetric(
+        traceName,
+        metricName,
+        incrementBy,
+      );
+      _logDebug(
+        'Incremented metric "$metricName" by $incrementBy for trace "$traceName"',
+      );
+    } catch (e, st) {
+      _logDebug(
+        'Failed to increment metric "$metricName" for trace "$traceName"',
+        error: e,
+        stacktrace: st,
+      );
+    }
+  }
+
+  /// Add a custom attribute to a trace
+  ///
+  /// [traceName] - Name of the trace
+  /// [attributeName] - Name of the attribute
+  /// [value] - Value to set for the attribute
+  Future<void> setTraceAttribute(
+    String traceName,
+    String attributeName,
+    String value,
+  ) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      await _performanceService.putAttribute(traceName, attributeName, value);
+      _logDebug(
+        'Added attribute "$attributeName" = "$value" for trace "$traceName"',
+      );
+    } catch (e, st) {
+      _logDebug(
+        'Failed to add attribute "$attributeName" for trace "$traceName"',
+        error: e,
+        stacktrace: st,
+      );
+    }
+  }
+
+  /// Remove a custom attribute from a trace
+  ///
+  /// [traceName] - Name of the trace
+  /// [attributeName] - Name of the attribute to remove
+  Future<void> removeTraceAttribute(
+    String traceName,
+    String attributeName,
+  ) async {
+    if (!_isInitialized) await initialize();
+
+    try {
+      await _performanceService.removeAttribute(traceName, attributeName);
+      _logDebug('Removed attribute "$attributeName" from trace "$traceName"');
+    } catch (e, st) {
+      _logDebug(
+        'Failed to remove attribute "$attributeName" from trace "$traceName"',
+        error: e,
+        stacktrace: st,
       );
     }
   }
@@ -398,9 +539,14 @@ class AnalyticsManager {
   }
 
   /// Log debug information
-  void _logDebug(String message) {
+  void _logDebug(String message, {dynamic error, dynamic stacktrace}) {
     if (_config.enableConsoleLogging && kDebugMode) {
-      developer.log(message, name: _debugTag);
+      developer.log(
+        message,
+        name: _debugTag,
+        error: error,
+        stackTrace: stacktrace,
+      );
     }
   }
 

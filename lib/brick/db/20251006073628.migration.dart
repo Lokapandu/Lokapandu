@@ -14,7 +14,12 @@ const List<MigrationCommand> _migration_20251006073628_up = [
   InsertTable('TourismSpotModel'),
   InsertTable('ItineraryModel'),
   InsertTable('UserItineraryModel'),
-  InsertColumn('id', Column.integer, onTable: 'TourismImageModel', unique: true),
+  InsertColumn(
+    'id',
+    Column.integer,
+    onTable: 'TourismImageModel',
+    unique: true,
+  ),
   InsertColumn('tourism_spot_id', Column.integer, onTable: 'TourismImageModel'),
   InsertColumn('label', Column.varchar, onTable: 'TourismImageModel'),
   InsertColumn('image_url', Column.varchar, onTable: 'TourismImageModel'),
@@ -40,14 +45,19 @@ const List<MigrationCommand> _migration_20251006073628_up = [
   InsertColumn('end_time', Column.datetime, onTable: 'ItineraryModel'),
   InsertColumn('created_at', Column.datetime, onTable: 'ItineraryModel'),
   InsertColumn('tourism_spot_id', Column.integer, onTable: 'ItineraryModel'),
-  InsertColumn('id', Column.integer, onTable: 'UserItineraryModel', unique: true),
+  InsertColumn(
+    'id',
+    Column.integer,
+    onTable: 'UserItineraryModel',
+    unique: true,
+  ),
   InsertColumn('user_id', Column.integer, onTable: 'UserItineraryModel'),
   InsertColumn('itineraries_id', Column.integer, onTable: 'UserItineraryModel'),
   InsertColumn('created_at', Column.datetime, onTable: 'UserItineraryModel'),
   CreateIndex(columns: ['id'], onTable: 'TourismImageModel', unique: true),
   CreateIndex(columns: ['id'], onTable: 'TourismSpotModel', unique: true),
   CreateIndex(columns: ['id'], onTable: 'ItineraryModel', unique: true),
-  CreateIndex(columns: ['id'], onTable: 'UserItineraryModel', unique: true)
+  CreateIndex(columns: ['id'], onTable: 'UserItineraryModel', unique: true),
 ];
 
 const List<MigrationCommand> _migration_20251006073628_down = [
@@ -88,7 +98,7 @@ const List<MigrationCommand> _migration_20251006073628_down = [
   DropIndex('index_TourismImageModel_on_id'),
   DropIndex('index_TourismSpotModel_on_id'),
   DropIndex('index_ItineraryModel_on_id'),
-  DropIndex('index_UserItineraryModel_on_id')
+  DropIndex('index_UserItineraryModel_on_id'),
 ];
 
 //

@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:dartz/dartz.dart';
+
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
@@ -28,23 +29,27 @@ class EditUserItineraries {
   /// will be updated.
   Future<Either<Failure, Unit>> execute(EditItinerary itineraryInput) async {
     try {
-      final existingItineraryResult = await repository.getItineraryById(itineraryInput.id);
-      
+      final existingItineraryResult = await repository.getItineraryById(
+        itineraryInput.id,
+      );
+
       if (existingItineraryResult.isLeft()) {
         return Left(ServerFailure('Itinerary not found'));
       }
-      
+
       final existingItinerary = existingItineraryResult.fold(
         (failure) => throw Exception('Itinerary not found'),
         (itinerary) => itinerary,
       );
-      
-      final userIdResult = await repository.getUserIdByItineraryId(itineraryInput.id);
-      
+
+      final userIdResult = await repository.getUserIdByItineraryId(
+        itineraryInput.id,
+      );
+
       if (userIdResult.isLeft()) {
         return Left(ServerFailure('User itinerary association not found'));
       }
-      
+
       final userId = userIdResult.fold(
         (failure) => throw Exception('User ID not found'),
         (id) => id,
@@ -65,10 +70,8 @@ class EditUserItineraries {
       }
 
       if (itineraryInput.tourismSpot != null) {
-        final tourismSpotValidation =
-            await validators.validateTourismSpotExists(
-              itineraryInput.tourismSpot,
-            );
+        final tourismSpotValidation = await validators
+            .validateTourismSpotExists(itineraryInput.tourismSpot);
         if (tourismSpotValidation.isLeft()) {
           return tourismSpotValidation;
         }
@@ -92,13 +95,12 @@ class EditUserItineraries {
           return timeRangeValidation;
         }
 
-        final conflictCheck =
-            await validators.checkSchedulingConflicts(
-              userId,
-              finalStartTime,
-              finalEndTime,
-              itineraryInput.id,
-            );
+        final conflictCheck = await validators.checkSchedulingConflicts(
+          userId,
+          finalStartTime,
+          finalEndTime,
+          itineraryInput.id,
+        );
         if (conflictCheck.isLeft()) {
           return conflictCheck;
         }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 
@@ -8,11 +10,7 @@ class DestinationCard extends StatelessWidget {
   final TourismSpot tourismSpot;
   final VoidCallback? onTap;
 
-  const DestinationCard({
-    super.key,
-    required this.tourismSpot,
-    this.onTap,
-  });
+  const DestinationCard({super.key, required this.tourismSpot, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +38,9 @@ class DestinationCard extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       CachedNetworkImage(
-                        imageUrl: tourismSpot.images.isNotEmpty ? tourismSpot.images.first.imageUrl : '',
+                        imageUrl: tourismSpot.images.isNotEmpty
+                            ? tourismSpot.images.first.imageUrl
+                            : '',
                         fit: BoxFit.cover,
                       ),
                       Positioned(
@@ -48,13 +48,17 @@ class DestinationCard extends StatelessWidget {
                         right: 8,
                         child: CircleAvatar(
                           radius: 18,
-                          backgroundColor: Colors.black.withOpacity(0.4),
+                          backgroundColor: Colors.black.withValues(alpha: 0.4),
                           child: IconButton(
                             padding: EdgeInsets.zero,
                             iconSize: 22,
                             icon: Icon(
-                              isFavorited ? Icons.bookmark : Icons.bookmark_border,
-                              color: isFavorited ? colorScheme.primary : Colors.white,
+                              isFavorited
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              color: isFavorited
+                                  ? colorScheme.primary
+                                  : Colors.white,
                             ),
                             onPressed: () {
                               bookmarkProvider.toggleBookmark(tourismSpot);
@@ -72,19 +76,27 @@ class DestinationCard extends StatelessWidget {
                     children: [
                       Text(
                         tourismSpot.name,
-                        style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                        style: textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.location_on_outlined, size: 14, color: colorScheme.onSurfaceVariant),
+                          Icon(
+                            Icons.location_on_outlined,
+                            size: 14,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               '${tourismSpot.city}, ${tourismSpot.province}',
-                              style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

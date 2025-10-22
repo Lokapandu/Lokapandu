@@ -18,6 +18,7 @@ class GetDistance {
   }) async {
     return await executeApiCall<MapsRoutesModel>(
       () => _gateway.calculateRoute(origin: origin, destination: destination),
+      name: 'GetDistance',
     ).then((value) => value.map((e) => e.toDomain()));
   }
 }

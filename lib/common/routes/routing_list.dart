@@ -4,12 +4,12 @@ enum Routing {
   home('/home', 'home'),
   tourismSpot('/tourism_spot', 'tourism_spot'),
   tourismSpotPreview(
-    'preview/:id', // inside tourism_spot
+    '/preview/:id', // inside tourism_spot
     'tourism_spot.preview',
     parent: '/tourism_spot',
   ),
   tourismSpotDetail(
-    'detail', // inside tourism_spot
+    '/detail', // inside tourism_spot
     'tourism_spot.detail',
     parent: '/tourism_spot',
   ),
@@ -18,9 +18,10 @@ enum Routing {
   aiChat('/ai_chat', 'ai_chat'),
   bookmarks('/bookmarks', 'bookmarks', parent: '/settings'),
   plan('/plan', 'plan'),
-  planSearch('/search-tour', 'plan.search_tour', parent: '/plan'),
-  planAdd('/add-tour', 'plan.add_tour', parent: '/plan'),
-  planAddNote('/add-note', 'plan.add_note', parent: '/plan');
+  planDetail('/:id', 'plan.detail', parent: '/plan'),
+  planSearch('/search-tour', 'plan.search', parent: '/plan'),
+  planAdd('/add-tour', 'plan.add_tour'),
+  planAddNote('/add-note', 'plan.add_note');
 
   final String? parent;
   final String path;

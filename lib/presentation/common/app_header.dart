@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'package:iconify_design/iconify_design.dart';
+import 'package:provider/provider.dart';
+import 'package:text_scroll/text_scroll.dart';
+
 import 'package:lokapandu/domain/entities/weather_entity.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_state.dart';
-import 'package:provider/provider.dart';
-import 'package:iconify_design/iconify_design.dart';
-import 'package:text_scroll/text_scroll.dart';
 
 class AppHeader extends StatefulWidget {
   final String title;
@@ -380,143 +382,5 @@ class WeatherDisplayWidget extends StatelessWidget {
     }
 
     return const SizedBox.shrink();
-  }
-}
-
-class _MarqueeText extends StatefulWidget {
-  final String text;
-  final TextStyle? temperatureStyle;
-  final TextStyle? descriptionStyle;
-  final String temperatureText;
-
-  const _MarqueeText({
-    required this.text,
-    this.temperatureStyle,
-    this.descriptionStyle,
-    required this.temperatureText,
-  });
-
-  @override
-  State<_MarqueeText> createState() => _MarqueeTextState();
-}
-
-class _MarqueeTextState extends State<_MarqueeText>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  bool _needsScrolling = false;
-  double _textWidth = 0;
-  double _containerWidth = 0;
-  final GlobalKey _textKey = GlobalKey();
-  final GlobalKey _containerKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 10),
-      vsync: this,
-    );
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkIfScrollingNeeded();
-    });
-  }
-
-  @override
-  void didUpdateWidget(_MarqueeText oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.text != widget.text) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _checkIfScrollingNeeded();
-      });
-    }
-  }
-
-  void _checkIfScrollingNeeded() {
-    final RenderBox? textRenderBox =
-        _textKey.currentContext?.findRenderObject() as RenderBox?;
-    final RenderBox? containerRenderBox =
-        _containerKey.currentContext?.findRenderObject() as RenderBox?;
-
-    if (textRenderBox != null && containerRenderBox != null) {
-      _textWidth = textRenderBox.size.width;
-      _containerWidth = containerRenderBox.size.width;
-
-      final needsScrolling = _textWidth > _containerWidth;
-
-      if (needsScrolling != _needsScrolling) {
-        setState(() {
-          _needsScrolling = needsScrolling;
-        });
-
-        if (_needsScrolling) {
-          // Calculate the distance needed to scroll
-          final scrollDistance =
-              _textWidth - _containerWidth + 20; // Add some padding
-
-          _animation = Tween<double>(
-            begin: 0.0,
-            end: scrollDistance,
-          ).animate(CurvedAnimation(parent: _controller, curve: Curves.linear));
-
-          // Start animation with a delay, then repeat
-          Future.delayed(const Duration(seconds: 1), () {
-            if (mounted && _needsScrolling) {
-              _controller.repeat(reverse: false);
-            }
-          });
-        } else {
-          _controller.stop();
-          _controller.reset();
-        }
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      key: _containerKey,
-      width: double.infinity,
-      child: ClipRect(
-        child: _needsScrolling
-            ? AnimatedBuilder(
-                animation: _animation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(-_animation.value, 0),
-                    child: _buildText(),
-                  );
-                },
-              )
-            : _buildText(),
-      ),
-    );
-  }
-
-  Widget _buildText() {
-    return Text.rich(
-      key: _textKey,
-      TextSpan(
-        text: widget.temperatureText,
-        style: widget.temperatureStyle,
-        children: [
-          TextSpan(
-            text: widget.text.substring(widget.temperatureText.length),
-            style: widget.descriptionStyle,
-          ),
-        ],
-      ),
-      maxLines: 1,
-      overflow: TextOverflow.visible,
-      softWrap: false,
-    );
   }
 }

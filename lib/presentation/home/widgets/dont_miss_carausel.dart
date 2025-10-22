@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:cached_network_image/cached_network_image.dart';
 
 class _CarouselItem {
@@ -18,26 +19,22 @@ class DontMissCarousel extends StatelessWidget {
 
   static final List<_CarouselItem> _carouselItems = [
     _CarouselItem(
-      imageUrl:
-          'assets/images/taman_ujung.jpg', 
+      imageUrl: 'assets/images/taman_ujung.jpg',
       title: 'Taman Ujung',
       location: 'Bali',
     ),
     _CarouselItem(
-      imageUrl:
-          'assets/images/tirta_gangga.jpg', 
+      imageUrl: 'assets/images/tirta_gangga.jpg',
       title: 'Tirta Gangga',
       location: 'Bali',
     ),
     _CarouselItem(
-      imageUrl:
-          'assets/images/taman_ujung.jpg', 
+      imageUrl: 'assets/images/taman_ujung.jpg',
       title: 'Taman Ujung',
       location: 'Bali',
     ),
   ];
 
-  
   Widget _buildCarouselImage(String imageUrl, ColorScheme colorScheme) {
     bool isNetwork = imageUrl.startsWith('http');
 
@@ -55,7 +52,6 @@ class DontMissCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
@@ -67,7 +63,7 @@ class DontMissCarousel extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Text(
             'Jangan Lewatkan Ini!',
-            
+
             style: textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
@@ -91,29 +87,26 @@ class DontMissCarousel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20.0),
                 ),
                 elevation: 4,
-                shadowColor: colorScheme.shadow.withOpacity(0.1),
+                shadowColor: colorScheme.shadow.withValues(alpha: 0.1),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                   
                     _buildCarouselImage(item.imageUrl, colorScheme),
 
-                  
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
                             Colors.transparent,
-                            colorScheme.scrim.withOpacity(0.8),
+                            colorScheme.scrim.withValues(alpha: 0.8),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           stops: const [0.5, 1.0],
-                  ),
-                ),
+                        ),
+                      ),
                     ),
 
-                  
                     Positioned(
                       bottom: 16,
                       left: 16,
@@ -132,7 +125,9 @@ class DontMissCarousel extends StatelessWidget {
                           Text(
                             item.location,
                             style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onPrimary.withOpacity(0.9),
+                              color: colorScheme.onPrimary.withValues(
+                                alpha: 0.9,
+                              ),
                             ),
                           ),
                         ],
