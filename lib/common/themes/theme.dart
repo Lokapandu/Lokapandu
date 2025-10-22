@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 class MaterialTheme {
   final TextTheme textTheme;
 
-  const MaterialTheme(this.textTheme);
+  MaterialTheme(this.textTheme);
 
   static ColorScheme lightScheme() {
     return const ColorScheme(
@@ -64,6 +64,11 @@ class MaterialTheme {
 
   ThemeData dark() => theme(darkScheme());
 
+  final OutlineInputBorder _inputBorderStyle = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(12),
+    borderSide: BorderSide(width: 2),
+  );
+
   ThemeData theme(ColorScheme colorScheme) => ThemeData(
     useMaterial3: true,
     brightness: colorScheme.brightness,
@@ -72,7 +77,25 @@ class MaterialTheme {
       bodyColor: colorScheme.onSurface,
       displayColor: colorScheme.onSurface,
     ),
-
+    inputDecorationTheme: InputDecorationTheme(
+      hintStyle: textTheme.bodyLarge?.copyWith(
+        color: colorScheme.onSurface.withValues(alpha: 0.5),
+      ),
+      filled: true,
+      // border
+      border: _inputBorderStyle,
+      enabledBorder: _inputBorderStyle.copyWith(
+        borderSide: BorderSide(color: colorScheme.outline),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        elevation: 1,
+        disabledForegroundColor: colorScheme.onInverseSurface,
+        disabledBackgroundColor: colorScheme.outline,
+      ),
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(),
     scaffoldBackgroundColor: colorScheme.surface,
     canvasColor: colorScheme.surface,
   );

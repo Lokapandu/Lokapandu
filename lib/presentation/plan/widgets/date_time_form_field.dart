@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
 
 enum DateTimeInputMode { date, time }
@@ -41,10 +40,8 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
   void didUpdateWidget(covariant DateTimeFormField oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Perbarui state jika initialDateTime berubah
     if (widget.initialDateTime != oldWidget.initialDateTime) {
       _selectedDateTime = widget.initialDateTime;
-      // Tunda pembaruan controller hingga setelah build selesai
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _updateControllerText();
@@ -56,7 +53,7 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
   String _getFormatString() {
     switch (widget.mode) {
       case DateTimeInputMode.date:
-        return 'EEEE, dd MMMM yyyy';
+        return 'dd/MM/yyyy';
       case DateTimeInputMode.time:
         return 'HH:mm';
     }
@@ -138,35 +135,12 @@ class _DateTimeFormFieldState extends State<DateTimeFormField> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     return TextFormField(
       maxLines: 1,
       controller: _controller,
-      style: textTheme.bodyLarge,
       decoration: InputDecoration(
         prefixIcon: Icon(widget.icon),
         hintText: widget.hint,
-        hintStyle: textTheme.bodyLarge?.copyWith(
-          color: colorScheme.onSurface.withValues(alpha: 0.5),
-        ),
-        filled: true,
-        fillColor: colorScheme.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.surfaceContainerHighest),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: colorScheme.error, width: 2),
-        ),
-        errorStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: Theme.of(context).colorScheme.error,
-        ),
       ),
       readOnly: true,
       onTap: () => _selectDateTime(context),

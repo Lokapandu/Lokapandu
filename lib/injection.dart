@@ -265,6 +265,7 @@ Future<void> initDependencies() async {
     () => TourPlanDetailNotifier(
       locator<GetUserItineraryById>(),
       locator<AnalyticsManager>(),
+      locator<DeleteUserItineraries>(),
     ),
   );
 }

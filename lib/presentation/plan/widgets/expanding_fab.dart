@@ -16,14 +16,10 @@ class _FabOption extends StatelessWidget {
 
     return FloatingActionButton.extended(
       onPressed: onTap,
-      heroTag: null,
-      label: Text(
-        label,
-        style: theme.textTheme.labelLarge?.copyWith(color: Colors.white),
-      ),
+      label: Text(label),
       icon: Icon(icon, size: 20),
-      backgroundColor: colorScheme.primary,
-      foregroundColor: colorScheme.onPrimary,
+      foregroundColor: colorScheme.secondary,
+      backgroundColor: colorScheme.surfaceContainerHigh,
       elevation: 4,
     );
   }
@@ -40,6 +36,7 @@ class _ExpandingFabState extends State<ExpandingFab>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _expandAnimation;
+  late final Animation<double> _iconAnimation;
   bool _open = false;
 
   @override
@@ -55,6 +52,7 @@ class _ExpandingFabState extends State<ExpandingFab>
       reverseCurve: Curves.easeOutQuad,
       parent: _controller,
     );
+    _iconAnimation = Tween<double>(begin: 0.0, end: 0.125).animate(_controller);
   }
 
   @override
@@ -86,12 +84,6 @@ class _ExpandingFabState extends State<ExpandingFab>
         alignment: Alignment.bottomRight,
         clipBehavior: Clip.none,
         children: [
-          FloatingActionButton(
-            heroTag: 'close_fab',
-            backgroundColor: colorScheme.primary,
-            onPressed: _toggle,
-            child: Icon(Icons.close, color: colorScheme.onPrimary),
-          ),
           _buildExpandingAction(
             distance: 80,
             progress: _expandAnimation,
@@ -118,12 +110,12 @@ class _ExpandingFabState extends State<ExpandingFab>
           ),
           FloatingActionButton(
             heroTag: 'open_fab',
+            shape: const CircleBorder(),
             backgroundColor: colorScheme.primary,
             onPressed: _toggle,
-            child: AnimatedIcon(
-              icon: AnimatedIcons.menu_close,
-              progress: _expandAnimation,
-              color: colorScheme.onPrimary,
+            child: RotationTransition(
+              turns: _iconAnimation,
+              child: Icon(Icons.add, color: colorScheme.onPrimary, size: 32),
             ),
           ),
         ],

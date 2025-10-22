@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_detail_notifier.dart';
+import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/plan/route/tour_plan_editor_extra.dart';
+import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
 import 'package:provider/provider.dart';
 
 class PlanDetailScreen extends StatefulWidget {
@@ -27,38 +29,67 @@ class _PlanDetailScreenState extends State<PlanDetailScreen> {
     });
   }
 
-  void _showDeleteConfirmationDialog(
+  Future<void> _showDeleteConfirmationDialog(
     BuildContext context,
     TourPlanDetailNotifier notifier,
-  ) {
-    showDialog(
+  ) async {
+    final bool? result = await showDialog<bool>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Konfirmasi Hapus'),
-          content: Text('Apakah Anda yakin ingin menghapus rencana ini?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Tutup dialog
-              },
-              child: Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () {
-                // TODO: Implementasi fungsi delete
-                // notifier.deleteItinerary(widget.id);
-                Navigator.of(context).pop(); // Tutup dialog
-              },
-              child: Text(
-                'Hapus',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
-              ),
-            ),
-          ],
+      builder: (BuildContext dialogContext) {
+        bool isLoading = false;
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Konfirmasi Hapus'),
+              content: isLoading
+                  ? Container(
+                      height: 100,
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(),
+                    )
+                  : const Text(
+                      'Apakah Anda yakin ingin menghapus rencana ini?',
+                    ),
+              actions: isLoading
+                  ? []
+                  : [
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(false),
+                        child: const Text('Batal'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+                          await notifier.removeItinerary(widget.id);
+                          if (dialogContext.mounted) {
+                            Navigator.of(
+                              dialogContext,
+                            ).pop(notifier.hasRemoved);
+                          }
+                        },
+                        child: Text(
+                          'Hapus',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ],
+            );
+          },
         );
       },
     );
+
+    if (result == true && context.mounted) {
+      context.read<TourPlanNotifier>().fetchItineraries();
+      context.pop();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(snackbar('Rencana berhasil dihapus!'));
+    }
   }
 
   @override

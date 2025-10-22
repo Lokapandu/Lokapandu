@@ -38,7 +38,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           notifier.populateFormWithItineraryData(widget.editorModel!);
         }
 
-        // 4. Set nilai controller dari notifier SETELAH state di-update
         _nameController.text = notifier.name;
         _notesController.text = notifier.notes;
       }
@@ -58,31 +57,22 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      var itemSaved = notifier.name.isEmpty ? notifier.notes : notifier.name;
-      String successMessage = '$itemSaved Berhasil ditambahkan!';
+      await notifier.savePlan();
 
-      if (notifier.isSameValue) {
-        context.goNamed(Routing.plan.routeName);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(snackbar(successMessage));
+      if (mounted) {
+        if (notifier.hasError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(snackbar('Gagal: ${notifier.errorMessage}'));
         }
-      } else {
-        final result = await notifier.savePlan();
 
-        result.fold(
-          (failure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(snackbar('Gagal: ${failure.message}'));
-          },
-          (_) {
-            context.read<TourPlanNotifier>().fetchItineraries();
-            context.goNamed(Routing.plan.routeName);
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(snackbar(successMessage));
-          },
-        );
+        if (notifier.success) {
+          context.read<TourPlanNotifier>().fetchItineraries();
+          context.goNamed(Routing.plan.routeName);
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(snackbar('${notifier.successMessage}'));
+        }
       }
     } else {
       ScaffoldMessenger.of(
@@ -90,37 +80,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
     }
   }
-
-  InputDecoration textInputDecoration(BuildContext context, String hint) =>
-      InputDecoration(
-        hintText: hint,
-        hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-        ),
-        filled: true,
-
-        fillColor: Theme.of(context).colorScheme.surface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
-            width: 2,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.error,
-            width: 2,
-          ),
-        ),
-      );
 
   @override
   Widget build(BuildContext context) {
@@ -167,10 +126,10 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       }
                       return null;
                     },
-                    decoration: textInputDecoration(
-                      context,
-                      'Contoh: Beli oleh-oleh khas Bali',
+                    decoration: InputDecoration(
+                      hintText: 'Contoh: Beli oleh-oleh khas Bali',
                     ),
+
                     onSaved: (value) => notifier.name = value ?? '',
                   ),
                   const SizedBox(height: 24),
@@ -179,10 +138,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   Row(
                     children: [
                       Expanded(
-                        flex: 3,
                         child: DateTimeFormField(
                           label: "Tanggal Mulai",
-                          hint: "dd MM YYYY",
+                          hint: "DD/MM/YYYY",
                           icon: Icons.calendar_today_outlined,
                           mode: DateTimeInputMode.date,
                           initialDateTime: notifier.date,
@@ -191,7 +149,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        flex: 2,
                         child: DateTimeFormField(
                           label: "Waktu Mulai",
                           hint: "HH:mm",
@@ -214,10 +171,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                   Row(
                     children: [
                       Expanded(
-                        flex: 3,
                         child: DateTimeFormField(
                           label: "Tanggal Selesai",
-                          hint: "dd MM YYYY",
+                          hint: "DD/MM/YYYY",
                           icon: Icons.calendar_today_outlined,
                           mode: DateTimeInputMode.date,
                           initialDateTime: notifier.endDate,
@@ -226,7 +182,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        flex: 2,
                         child: DateTimeFormField(
                           label: "Waktu Selesai",
                           hint: "HH:mm",
@@ -250,39 +205,39 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                     controller: _notesController,
                     maxLines: 4,
                     style: textTheme.bodyLarge,
-                    decoration: textInputDecoration(
-                      context,
-                      'Tulis catatan di sini (opsional)',
+                    decoration: InputDecoration(
+                      hintText: 'Tulis catatan di sini',
                     ),
+
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Catatan tidak boleh kosong!'
+                        : null,
                     onSaved: (value) => notifier.notes = value ?? '',
                   ),
                   const SizedBox(height: 40),
-                  ElevatedButton.icon(
-                    onPressed: notifier.isSubmitting
-                        ? null
-                        : () => _proceedSaveNote(notifier),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: colorScheme.onPrimary,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: notifier.isSubmitting
+                          ? null
+                          : () => _proceedSaveNote(notifier),
+                      icon: notifier.isSubmitting
+                          ? ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxHeight: 16,
+                                maxWidth: 16,
+                              ),
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : null,
+                      label: Text(
+                        notifier.isSubmitting
+                            ? 'Menyimpan...'
+                            : 'Simpan Catatan',
                       ),
-                    ),
-                    icon: notifier.isSubmitting
-                        ? ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: 16,
-                              maxWidth: 16,
-                            ),
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : null,
-                    label: Text(
-                      notifier.isSubmitting ? 'Menyimpan...' : 'Simpan Catatan',
                     ),
                   ),
                 ],

@@ -1,10 +1,7 @@
 // Flutter imports
 
-import 'package:flutter/material.dart';
-
 import 'package:dartz/dartz.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'package:flutter/material.dart';
 import 'package:lokapandu/common/analytics.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
@@ -13,6 +10,7 @@ import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart'
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
 import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Third-party imports
 
@@ -39,7 +37,8 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   TourismSpot? _selectedTour;
   bool _isSubmitting = false;
   TourPlanModel? _editModel;
-  bool _isSameValue = false;
+  String? _errorMessage;
+  String? _successMessage;
 
   // ========== Constants ==========
   static const String _errorUserNotFound = "Gagal mendapatkan data user";
@@ -62,15 +61,30 @@ class TourPlanEditorNotifier extends ChangeNotifier {
 
   // ========== Getters ==========
   String get name => _name;
-  DateTime? get date => _date;
-  DateTime? get endDate => _endDate;
-  TimeOfDay? get startTime => _startTime;
-  TimeOfDay? get endTime => _endTime;
-  String get notes => _notes;
-  TourismSpot? get selectedTour => _selectedTour;
-  bool get isSubmitting => _isSubmitting;
-  bool get isSameValue => _isSameValue;
 
+  DateTime? get date => _date;
+
+  DateTime? get endDate => _endDate;
+
+  TimeOfDay? get startTime => _startTime;
+
+  TimeOfDay? get endTime => _endTime;
+
+  String get notes => _notes;
+
+  TourismSpot? get selectedTour => _selectedTour;
+
+  bool get isSubmitting => _isSubmitting;
+
+  String? get errorMessage => _errorMessage;
+
+  bool get hasError => _errorMessage != null;
+
+  String? get successMessage => _successMessage;
+
+  bool get success => _successMessage != null;
+
+  // ========== Validation ==========
   /// Validates the form fields to ensure all required data is present
   ///
   /// Returns true if validation fails (form is invalid)
@@ -144,13 +158,15 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     _selectedTour = null;
     _editModel = null;
     _isSubmitting = false;
+    _errorMessage = null;
+    _successMessage = null;
 
     _analyticsManager.trackEvent(eventName: 'reset_plan');
     notifyListeners();
   }
 
-  void _validateSameValue() {
-    if (_editModel == null) return;
+  bool _validateSameValue() {
+    if (_editModel == null) return false;
 
     final modelName = _editModel!.name;
     final modelStartTime = _editModel!.startTime;
@@ -160,16 +176,13 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     final modelNote = _editModel!.notes;
     final modelTourism = _editModel!.tourismSpot;
 
-    final validate =
-        modelName == _name &&
+    return modelName == _name &&
         modelDate == _date &&
         modelEndDate == _endDate &&
         modelStartTime == _startTime &&
         modelEndTime == _endTime &&
         modelNote == _notes &&
         modelTourism == _selectedTour;
-
-    _isSameValue = validate;
   }
 
   /// Saves the current plan as either a regular itinerary or a note-based itinerary
@@ -177,42 +190,80 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   /// Returns Either&lt;Failure, void&gt; indicating success or failure of the operation.
   /// The method handles validation, user authentication, and different save scenarios
   /// based on whether notes are provided or a tourism spot is selected.
-  Future<Either<Failure, void>> savePlan() async {
-    if (_isSubmitting) return const Right(null);
+  Future<void> savePlan() async {
+    if (_isSubmitting) return;
 
     _setSubmittingState(true);
 
     try {
+      // validate samevalue
+      if (_validateSameValue()) {
+        _setSubmittingState(false);
+        var itemSaved = _name.isEmpty ? _notes : _name;
+        _successMessage = '$itemSaved Berhasil ditambahkan!';
+        return;
+      }
+
       // Validate user authentication
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) {
         _trackSavePlanFailed(_errorUserNotFound, userId: 'null');
-        return Left(Failure.client(_errorUserNotFound));
+        throw _errorUserNotFound;
       }
 
       // Validate form data
       if (isFormInvalid) {
         _trackSavePlanFailed(_errorValidationFailed);
-        return Left(Failure.validation(_errorValidationFailed));
+        throw _errorValidationFailed;
       }
 
       Either<Failure, Unit> result;
 
-      // Save based on whether notes are provided or tourism spot is selected
-      if (_notes.isNotEmpty) {
+      // Save based on whether tourism spot is selected or not
+      if (_selectedTour == null) {
+        // If no tourism spot is selected, save as note-based itinerary
         if (_endDate == null) {
           _trackSavePlanFailed(_errorValidationFailed);
-          return Left(Failure.validation(_errorValidationFailed));
+          throw _errorValidationFailed;
         }
-        result = await _saveItineraryWithNote(user.id);
+        result = await _saveNote(user.id);
       } else {
-        result = await _saveRegularItinerary(user.id);
+        // If tourism spot is selected, save as regular itinerary
+        result = await _saveItinerary(user.id);
       }
 
-      return result;
+      result.fold(
+        (failure) {
+          _handleFailure(failure);
+          _analyticsManager.trackError(
+            error: failure.runtimeType.toString(),
+            description: failure.message,
+            parameters: {
+              'name': _name,
+              'notifier': 'TourPlanEditorNotifier',
+              'type': _selectedTour == null ? 'note' : 'regular',
+            },
+          );
+        },
+        (_) {
+          var itemSaved = _name.isEmpty ? _notes : _name;
+          _successMessage = '$itemSaved Berhasil ditambahkan!';
+        },
+      );
+    } catch (e) {
+      _errorMessage = 'Error: ${e.toString()}';
     } finally {
       _setSubmittingState(false);
     }
+  }
+
+  void _handleFailure(Failure failure) {
+    failure.maybeWhen(
+      server: (message) => _errorMessage = 'Server Error: $message',
+      connection: (message) => _errorMessage = 'Connection Error: $message',
+      database: (message) => _errorMessage = 'Database Error: $message',
+      orElse: () => _errorMessage = 'Unknown Error',
+    );
   }
 
   // ========== Private Helper Methods ==========
@@ -223,9 +274,9 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   }
 
   /// Saves an itinerary with notes
-  Future<Either<Failure, Unit>> _saveItineraryWithNote(String userId) async {
+  Future<Either<Failure, Unit>> _saveNote(String userId) async {
     _analyticsManager.trackEvent(
-      eventName: 'save_plan_with_note',
+      eventName: 'save_note',
       parameters: {
         'name': _name,
         'notes': _notes,
@@ -246,14 +297,14 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   }
 
   /// Saves a regular itinerary with tourism spot
-  Future<Either<Failure, Unit>> _saveRegularItinerary(String userId) async {
+  Future<Either<Failure, Unit>> _saveItinerary(String userId) async {
     if (_selectedTour == null) {
       _trackSavePlanFailed(_errorSelectTourismSpot);
       return Left(Failure.validation(_errorSelectTourismSpot));
     }
 
     _analyticsManager.trackEvent(
-      eventName: 'save_plan_without_note',
+      eventName: 'save_itinerary',
       parameters: {
         'name': _name,
         'tourism_spot_id': _selectedTour!.id,
