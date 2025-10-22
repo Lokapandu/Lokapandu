@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
           orElse: () => const MapEntry(0, false),
         )
         .key;
-    
+
     // Cek apakah keyboard sedang muncul
     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
 

@@ -82,37 +82,44 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
               // Konten utama menggunakan Consumer
               Consumer<TourismSpotNotifier>(
                 builder: (context, notifier, child) {
+                  // notifier.isLoading
                   if (notifier.isLoading) {
                     return const SliverToBoxAdapter(
                       child: TourismSpotShimmerLoading(),
                     );
                   }
-
+                  // Handle error state
                   if (notifier.hasError) {
                     return SliverToBoxAdapter(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              size: 64,
-                              color: theme.colorScheme.error,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: SizedBox(
+                            height: 450,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  size: 64,
+                                  color: theme.colorScheme.error,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  notifier.errorMessage ?? 'Terjadi kesalahan',
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                FilledButton(
+                                  onPressed: () => notifier.loadTourismSpots(),
+                                  child: const Text('Coba Lagi'),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              notifier.errorMessage!,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.error,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () => notifier.loadTourismSpots(),
-                              child: const Text('Coba Lagi'),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     );
