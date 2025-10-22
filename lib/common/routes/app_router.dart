@@ -55,29 +55,34 @@ class AppRouter {
           routes: [
             GoRoute(
               path: Routing.home.path,
-              name: 'home',
-              pageBuilder: (context, state) =>
-                  PageTransitions.noTransition(const HomeContent()),
+              name: Routing.home.routeName,
+              pageBuilder: (context, state) => PageTransitions.noTransition(
+                const HomeContent(),
+                name: Routing.home.routeName,
+              ),
             ),
             GoRoute(
               path: Routing.tourismSpot.path,
-              name: 'tourismSpot',
-              pageBuilder: (context, state) =>
-                  PageTransitions.noTransition(const TourismSpotPage()),
+              name: Routing.tourismSpot.routeName,
+              pageBuilder: (context, state) => PageTransitions.noTransition(
+                const TourismSpotPage(),
+                name: Routing.tourismSpot.routeName,
+              ),
               routes: [
                 GoRoute(
                   path: Routing.tourismSpotPreview.path,
-                  name: 'tourismSpotPreview',
+                  name: Routing.tourismSpotPreview.routeName,
                   pageBuilder: (context, state) {
                     final id = int.parse(state.pathParameters['id']!);
                     return PageTransitions.slideFromRightTransition(
                       TourismSpotPreviewPage(key: ValueKey(id), id: id),
+                      name: Routing.tourismSpotPreview.routeName,
                     );
                   },
                 ),
                 GoRoute(
                   path: Routing.tourismSpotDetail.path,
-                  name: 'tourismSpotDetail',
+                  name: Routing.tourismSpotDetail.routeName,
                   pageBuilder: (context, state) {
                     final tour = state.extra as TourismSpot?;
                     if (tour == null) {
@@ -95,12 +100,13 @@ class AppRouter {
 
                     return PageTransitions.scaleTransition(
                       TourismSpotDetailPage(tour: tour),
+                      name: Routing.tourismSpotDetail.routeName,
                     );
                   },
                   routes: [
                     GoRoute(
                       path: Routing.planAdd.path,
-                      name: 'plan.add_tour',
+                      name: Routing.planAdd.routeName,
                       pageBuilder: (context, state) {
                         final extra = state.extra as TourPlanEditorExtra?;
 
@@ -109,26 +115,29 @@ class AppRouter {
                             editorModel: extra?.editorModel,
                             tourismSpot: extra?.tourismSpot,
                           ),
+                          name: Routing.planAdd.routeName,
                         );
                       },
                       routes: [
                         GoRoute(
                           path: Routing.planSearch.path,
-                          name: 'plan.search',
+                          name: Routing.planSearch.routeName,
                           pageBuilder: (context, state) =>
                               PageTransitions.slideFromBottomTransition(
                                 const TourSearchScreen(),
+                                name: Routing.planSearch.routeName,
                               ),
                         ),
                       ],
                     ),
                     GoRoute(
                       path: Routing.planAddNote.path,
-                      name: 'plan.add_note',
+                      name: Routing.planAddNote.routeName,
                       pageBuilder: (context, state) {
                         final extra = state.extra as TourPlanEditorExtra?;
                         return PageTransitions.slideFromBottomTransition(
                           NoteEditorScreen(editorModel: extra?.editorModel),
+                          name: Routing.planAddNote.routeName,
                         );
                       },
                     ),
@@ -138,7 +147,7 @@ class AppRouter {
             ),
             GoRoute(
               path: Routing.plan.path,
-              name: 'plan',
+              name: Routing.plan.routeName,
               pageBuilder: (context, state) {
                 return PageTransitions.noTransition(
                   PlanScreen(),
@@ -148,11 +157,12 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: Routing.planDetail.path,
-                  name: 'plan.detail',
+                  name: Routing.planDetail.routeName,
                   pageBuilder: (context, state) {
                     final id = state.pathParameters['id']!;
                     return PageTransitions.fadeTransition(
                       PlanDetailScreen(key: ValueKey(id), id: id),
+                      name: Routing.planDetail.routeName,
                     );
                   },
                 ),
@@ -160,9 +170,12 @@ class AppRouter {
             ),
             GoRoute(
               path: Routing.settings.path,
-              name: 'settings',
+              name: Routing.settings.routeName,
               pageBuilder: (context, state) {
-                return PageTransitions.noTransition(const SettingsScreen());
+                return PageTransitions.noTransition(
+                  const SettingsScreen(),
+                  name: Routing.settings.routeName,
+                );
               },
               routes: [
                 GoRoute(
@@ -171,13 +184,17 @@ class AppRouter {
                   pageBuilder: (context, state) =>
                       PageTransitions.slideFromRightTransition(
                         const BookmarkScreen(),
+                        name: Routing.bookmarks.routeName,
                       ),
                 ),
                 GoRoute(
                   path: Routing.about.path,
                   name: Routing.about.routeName,
                   pageBuilder: (context, state) {
-                    return PageTransitions.scaleTransition(const AboutScreen());
+                    return PageTransitions.scaleTransition(
+                      const AboutScreen(),
+                      name: Routing.about.routeName,
+                    );
                   },
                 ),
               ],
@@ -189,7 +206,10 @@ class AppRouter {
           path: Routing.aiChat.path,
           name: Routing.aiChat.routeName,
           pageBuilder: (context, state) =>
-              PageTransitions.slideFromBottomTransition(const AiChatScreen()),
+              PageTransitions.slideFromBottomTransition(
+                const AiChatScreen(),
+                name: Routing.aiChat.routeName,
+              ),
         ),
       ],
     );

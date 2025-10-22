@@ -82,7 +82,7 @@ class PlanCard extends StatelessWidget {
                 context.push(
                   Routing.planDetail.fullPath.replaceFirst(
                     ':id',
-                    item.tourPlanModel.id.toString(),
+                    '${item.tourPlanModel.id}',
                   ),
                 );
               },
