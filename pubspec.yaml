@@ -64,7 +64,7 @@ dependencies:
   flutter_localization: ^0.3.3
   provider: ^6.1.5+1
   firebase_performance: ^0.11.1+1
- 
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

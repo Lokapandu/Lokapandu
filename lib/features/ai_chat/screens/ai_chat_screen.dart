@@ -4,8 +4,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/chat_message_model.dart';
 import '../widgets/chat_buble.dart';
 
-import 'package:go_router/go_router.dart'; // Import GoRouter untuk navigasi
-
 class AiChatScreen extends StatefulWidget {
   const AiChatScreen({super.key});
 
@@ -13,7 +11,7 @@ class AiChatScreen extends StatefulWidget {
   State<AiChatScreen> createState() => _AiChatScreenState();
 }
 
-  class _AiChatScreenState extends State<AiChatScreen> {
+class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -200,7 +198,7 @@ class AiChatScreen extends StatefulWidget {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Riwayat chat berhasil dihapus.'),
-            backgroundColor: theme.colorScheme.primary, 
+            backgroundColor: theme.colorScheme.primary,
           ),
         );
       }
@@ -214,7 +212,7 @@ class AiChatScreen extends StatefulWidget {
         scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Gagal menghapus riwayat chat. Coba lagi.'),
-            backgroundColor: theme.colorScheme.error, 
+            backgroundColor: theme.colorScheme.error,
           ),
         );
       }
