@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:lokapandu/app.dart';
@@ -26,10 +27,10 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notif
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'firebase_options.dart';
 import 'injection.dart' as di;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
- 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
@@ -37,7 +38,7 @@ Future<void> main() async {
 
   await FlutterLocalization.instance.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  
+
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await NotificationService().initialize();
@@ -57,13 +58,11 @@ Future<void> main() async {
   };
 
   await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseAnonKey);
-  await Supabase.initialize(url: Env.supabaseUrl, anonKey: Env.supabaseAnonKey);
 
   // Un-comment when needed, This Repository refers to Brick's repository
   await Repository.configure(
-    supabaseAnonKey: Env.supabaseAnonKey,
-    supabaseAnonKey: Env.supabaseAnonKey,
     supabaseUrl: Env.supabaseUrl,
+    supabaseAnonKey: Env.supabaseAnonKey,
     databaseFactory: databaseFactory,
   );
   await Repository().initialize();

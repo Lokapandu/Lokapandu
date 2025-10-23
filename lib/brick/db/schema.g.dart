@@ -44,6 +44,7 @@ final schema = Schema(
         SchemaColumn('end_time', Column.datetime),
         SchemaColumn('created_at', Column.datetime),
         SchemaColumn('tourism_spot_id', Column.integer),
+        SchemaColumn('user_id', Column.varchar),
       },
       indices: <SchemaIndex>{
         SchemaIndex(columns: ['id'], unique: true),
@@ -98,6 +99,5 @@ final schema = Schema(
         SchemaIndex(columns: ['id'], unique: true),
       },
     ),
-
   },
 );

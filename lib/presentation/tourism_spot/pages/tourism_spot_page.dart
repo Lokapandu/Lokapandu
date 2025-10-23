@@ -189,8 +189,9 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
           Expanded(
             child: Consumer<TourismSpotNotifier>(
               builder: (context, notifier, _) {
+                final TextEditingController controller = TextEditingController(text: notifier.searchQuery);
                 return TextField(
-                  controller: TextEditingController(text: notifier.searchQuery),
+                  controller: controller,
                   onChanged: (query) {
                     context.read<TourismSpotNotifier>().search(query);
                   },
@@ -200,6 +201,18 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       Icons.search,
                       color: colorScheme.onSurfaceVariant,
                     ),
+                    suffixIcon: notifier.searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.clear,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            onPressed: () {
+                              controller.clear();
+                              context.read<TourismSpotNotifier>().search('');
+                            },
+                          )
+                        : null,
                   ),
                 );
               },

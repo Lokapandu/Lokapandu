@@ -2,7 +2,6 @@ import 'package:envied/envied.dart';
 
 part 'env.g.dart';
 
-
 @Envied(path: '.env')
 abstract class Env {
   @EnviedField(varName: 'SUPABASE_URL')
@@ -10,7 +9,7 @@ abstract class Env {
 
   @EnviedField(varName: 'SUPABASE_ANON_KEY')
   static const String supabaseAnonKey = _Env.supabaseAnonKey;
-  
+
   @EnviedField(varName: 'WEATHER_API_KEY')
   static const String weatherApiKey = _Env.weatherApiKey;
 

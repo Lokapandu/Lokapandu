@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lokapandu/features/ai_chat/provider/ai_chat_notifier.dart';
+import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
 import 'package:provider/provider.dart';
 
 class ClearChatButton extends StatelessWidget {
