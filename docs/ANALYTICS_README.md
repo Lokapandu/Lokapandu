@@ -11,6 +11,9 @@ Implementasi Firebase Analytics yang komprehensif untuk Flutter dengan dukungan 
 - ✅ **Comprehensive Tracking**: Page views, events, user actions, navigation, timing, errors
 - ✅ **Error Handling**: Silent error handling dengan logging untuk debugging
 - ✅ **Type Safety**: Strongly typed parameters dan return values
+- ✅ **User Journey Tracking**: Pelacakan perjalanan pengguna dalam aplikasi
+- ✅ **Feature Usage Analytics**: Analisis penggunaan fitur seperti AI Chat, Bookmark, dan Trip Planning
+- ✅ **Offline Event Queueing**: Antrian event saat offline untuk dikirim saat online
 
 ## 🚀 Quick Start
 
@@ -58,6 +61,23 @@ class HomeScreen extends StatefulWidget {
       label: 'primary_button',
     );
   }
+  
+  void _onTourismSpotSelected(String spotId) {
+    // Track feature usage
+    AnalyticsManager().trackFeatureUsage(
+      feature: 'tourism_spot',
+      action: 'view_detail',
+      parameters: {'spot_id': spotId},
+    );
+  }
+  
+  void _onBookmarkAdded(String spotId) {
+    // Track user journey
+    AnalyticsManager().trackUserJourney(
+      step: 'add_bookmark',
+      parameters: {'spot_id': spotId},
+    );
+  }
 }
 ```
 
@@ -74,6 +94,115 @@ class HomeScreen extends StatefulWidget {
 - DebugView: **Disabled**
 - Console logging: **Disabled**
 - Event upload delay: **Standard**
+
+## 🤖 AI Chat Analytics
+
+Fitur AI Chat memiliki tracking khusus untuk memahami penggunaan dan efektivitas fitur.
+
+### Event Tracking
+
+```dart
+// Saat pengguna memulai chat baru
+AnalyticsManager().trackFeatureUsage(
+  feature: 'ai_chat',
+  action: 'start_new_chat',
+);
+
+// Saat pengguna mengirim pesan
+AnalyticsManager().trackFeatureUsage(
+  feature: 'ai_chat',
+  action: 'send_message',
+  parameters: {
+    'message_length': message.length,
+    'contains_question': message.contains('?'),
+  },
+);
+
+// Saat AI memberikan rekomendasi tempat wisata
+AnalyticsManager().trackFeatureUsage(
+  feature: 'ai_chat',
+  action: 'recommendation_given',
+  parameters: {
+    'spot_count': spots.length,
+    'recommendation_type': 'tourism_spot',
+  },
+);
+```
+
+## 🗺️ Trip Planning Analytics
+
+Fitur Trip Planning memiliki tracking khusus untuk memahami pola perencanaan perjalanan pengguna.
+
+### Event Tracking
+
+```dart
+// Saat pengguna membuat rencana perjalanan baru
+AnalyticsManager().trackFeatureUsage(
+  feature: 'trip_planning',
+  action: 'create_plan',
+  parameters: {
+    'destination': destination,
+    'duration_days': durationDays,
+  },
+);
+
+// Saat pengguna menambahkan tempat wisata ke rencana
+AnalyticsManager().trackFeatureUsage(
+  feature: 'trip_planning',
+  action: 'add_spot_to_plan',
+  parameters: {
+    'plan_id': planId,
+    'spot_id': spotId,
+    'day_number': dayNumber,
+  },
+);
+
+// Saat pengguna menyelesaikan rencana perjalanan
+AnalyticsManager().trackUserJourney(
+  step: 'complete_trip_plan',
+  parameters: {
+    'plan_id': planId,
+    'total_spots': totalSpots,
+    'total_days': totalDays,
+  },
+);
+```
+
+## 🔖 Bookmark Analytics
+
+Fitur Bookmark memiliki tracking untuk memahami preferensi pengguna terhadap tempat wisata.
+
+### Event Tracking
+
+```dart
+// Saat pengguna menambahkan bookmark
+AnalyticsManager().trackFeatureUsage(
+  feature: 'bookmark',
+  action: 'add_bookmark',
+  parameters: {
+    'spot_id': spotId,
+    'spot_category': spotCategory,
+  },
+);
+
+// Saat pengguna menghapus bookmark
+AnalyticsManager().trackFeatureUsage(
+  feature: 'bookmark',
+  action: 'remove_bookmark',
+  parameters: {
+    'spot_id': spotId,
+    'bookmark_duration_days': bookmarkDurationDays,
+  },
+);
+
+// Saat pengguna melihat daftar bookmark
+AnalyticsManager().trackScreenView(
+  screenName: 'bookmark_list',
+  parameters: {
+    'total_bookmarks': totalBookmarks,
+  },
+);
+```
 
 ## 🐛 Debug Mode Setup
 

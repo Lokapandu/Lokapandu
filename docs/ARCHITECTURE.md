@@ -16,7 +16,7 @@ Dokumen ini menjelaskan arsitektur aplikasi Lokapandu yang dibangun menggunakan 
 
 ## 🏗️ Overview
 
-Lokapandu menggunakan **Clean Architecture** yang dikombinasikan dengan **Provider** untuk state management. Arsitektur ini memisahkan concerns ke dalam layer yang berbeda, membuat kode lebih maintainable, testable, dan scalable.
+Lokapandu menggunakan **Clean Architecture** yang dikombinasikan dengan **Provider** dan **Riverpod** untuk state management. Arsitektur ini memisahkan concerns ke dalam layer yang berbeda, membuat kode lebih maintainable, testable, dan scalable. Aplikasi juga mengimplementasikan **Brick Offline-First Architecture** untuk mendukung penggunaan aplikasi tanpa koneksi internet.
 
 ### Prinsip Utama
 
@@ -24,6 +24,7 @@ Lokapandu menggunakan **Clean Architecture** yang dikombinasikan dengan **Provid
 2. **Dependency Inversion** - Layer dalam tidak bergantung pada layer luar
 3. **Testability** - Setiap komponen dapat ditest secara independen
 4. **Maintainability** - Mudah untuk modify dan extend
+5. **Offline-First** - Aplikasi dapat berfungsi dengan atau tanpa koneksi internet
 
 ## 🎯 Clean Architecture
 
@@ -31,7 +32,7 @@ Lokapandu menggunakan **Clean Architecture** yang dikombinasikan dengan **Provid
 ┌─────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                       │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │    Pages    │  │   Widgets   │  │      Providers      │  │
+│  │  Features   │  │   Widgets   │  │ Providers/Riverpod  │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -55,6 +56,15 @@ Lokapandu menggunakan **Clean Architecture** yang dikombinasikan dengan **Provid
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
+│                       Brick Layer                           │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   Models    │  │ Repositories│  │     Adapters        │  │
+│  │             │  │             │  │                     │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────┐
 │                   External Services                         │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
 │  │  Supabase   │  │  Firebase   │  │    Google Maps      │  │
@@ -70,9 +80,17 @@ Layer ini bertanggung jawab untuk UI dan interaksi user.
 
 ```
 presentation/
-├── pages/          # Screen/halaman aplikasi
-├── widgets/        # Reusable UI components
-└── provider/       # State management dengan Provider
+├── ai_chat/        # Fitur AI Chat
+├── auth/           # Fitur Autentikasi
+├── bookmark/       # Fitur Bookmark
+├── common/         # Komponen UI yang digunakan di berbagai fitur
+├── home/           # Halaman utama aplikasi
+├── plan/           # Fitur perencanaan perjalanan
+├── settings/       # Pengaturan aplikasi
+└── tourism_spot/   # Fitur tempat wisata
+    ├── pages/      # Screen/halaman aplikasi
+    ├── widgets/    # Reusable UI components
+    └── provider/   # State management dengan Provider
 ```
 
 #### Pages
@@ -187,7 +205,20 @@ Layer ini menangani data dari berbagai sumber.
 data/
 ├── datasources/    # Remote & local data sources
 ├── models/         # Data transfer objects
+├── mappers/        # Object mappers
 └── repositories/   # Repository implementations
+```
+
+### 4. Brick Layer (`lib/brick/`)
+
+Layer ini menangani penyimpanan data offline dengan Brick.
+
+```
+brick/
+├── adapters/       # Adapters untuk Brick
+├── db/             # Database migrations
+├── models/         # Model untuk Brick
+└── repositories/   # Repository implementations untuk Brick
 ```
 
 #### Models
@@ -384,6 +415,24 @@ final GoRouter appRouter = GoRouter(
       path: '/ai-chat',
       name: 'ai-chat',
       builder: (context, state) => const AiChatScreen(),
+    ),
+    GoRoute(
+      path: '/bookmark',
+      name: 'bookmark',
+      builder: (context, state) => const BookmarkScreen(),
+    ),
+    GoRoute(
+      path: '/plan',
+      name: 'plan',
+      builder: (context, state) => const PlanScreen(),
+    ),
+    GoRoute(
+      path: '/plan/:id',
+      name: 'plan-detail',
+      builder: (context, state) {
+        final id = state.pathParameters['id']!;
+        return PlanDetailScreen(planId: id);
+      },
     ),
     GoRoute(
       path: '/settings',
