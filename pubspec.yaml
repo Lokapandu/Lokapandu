@@ -54,6 +54,12 @@ dependencies:
   dotted_border: ^2.1.0
   text_scroll: ^0.2.1
   package_info_plus: ^9.0.0
+
+  # chat gemini
+  google_generative_ai: ^0.4.0
+  flutter_dotenv: ^5.1.0
+  flutter_gemini: ^3.0.0
+
   flutter_riverpod: ^3.0.3
   flutter_localization: ^0.3.3
   provider: ^6.1.5+1
@@ -75,6 +81,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/images/
     - assets/icons/
     - assets/illustrations/

@@ -22,6 +22,22 @@
           }
         },
         {
+          "client_id": "815598506761-eg8e2jcc0qh67it6f048c3m3l2nbl14s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.lokapandu.lokapandu",
+            "certificate_hash": "324d83992a9eab24c833a42273eccbd8d08db819"
+          }
+        },
+        {
+          "client_id": "815598506761-guj65iu544ncmdkai8hnnsd5k6ljniai.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.lokapandu.lokapandu",
+            "certificate_hash": "9bdb8e7c0c3c1ef4ddcd6ec15b26ad7ddecebd9b"
+          }
+        },
+        {
           "client_id": "815598506761-j8c2icgmo1h77a6or9nbu900kdgnltsb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
