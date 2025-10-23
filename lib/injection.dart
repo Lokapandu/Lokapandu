@@ -18,8 +18,13 @@ import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart'
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source_impl.dart';
 import 'package:lokapandu/data/repositories/brick/itinerary_repository_brick_impl.dart';
 import 'package:lokapandu/data/repositories/supabase/tourism_spot_repository_supabase_impl.dart';
+import 'package:lokapandu/domain/repositories/chat_repository.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
+import 'package:lokapandu/domain/usecases/chats/ask_ai.dart';
+import 'package:lokapandu/domain/usecases/chats/delete_chats.dart';
+import 'package:lokapandu/domain/usecases/chats/store_chat.dart';
+import 'package:lokapandu/domain/usecases/chats/stream_chats.dart';
 import 'package:lokapandu/domain/usecases/get_current_weather.dart';
 import 'package:lokapandu/domain/usecases/get_distance.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
@@ -33,6 +38,7 @@ import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.da
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
 import 'package:lokapandu/domain/validators/itinerary_validators.dart';
+import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_detail_notifier.dart';
@@ -48,6 +54,8 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calcu
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'data/repositories/brick/chat_repository_supabase_impl.dart';
 
 final locator = GetIt.instance;
 
@@ -126,6 +134,8 @@ Future<void> initDependencies() async {
     () => ItineraryRepositoryImpl(),
   );
 
+  locator.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
+
   // ========================================
   // VALIDATORS
   // ========================================
@@ -187,6 +197,16 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<GetUserItineraryById>(
     () => GetUserItineraryById(locator<ItineraryRepository>()),
   );
+  locator.registerLazySingleton<StreamChats>(
+    () => StreamChats(locator<ChatRepository>()),
+  );
+  locator.registerLazySingleton<StoreChat>(
+    () => StoreChat(locator<ChatRepository>()),
+  );
+  locator.registerLazySingleton<ClearChatHistory>(
+    () => ClearChatHistory(locator<ChatRepository>()),
+  );
+  locator.registerLazySingleton<AskAi>(() => AskAi(locator<ChatRepository>()));
   // ========================================
   // PRESENTATION LAYER
   // ========================================
@@ -266,6 +286,14 @@ Future<void> initDependencies() async {
       locator<GetUserItineraryById>(),
       locator<AnalyticsManager>(),
       locator<DeleteUserItineraries>(),
+    ),
+  );
+  locator.registerFactory<AiChatNotifier>(
+    () => AiChatNotifier(
+      streamChats: locator<StreamChats>(),
+      storeChat: locator<StoreChat>(),
+      clearChatHistory: locator<ClearChatHistory>(),
+      askAi: locator<AskAi>(),
     ),
   );
 }

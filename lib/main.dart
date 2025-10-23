@@ -9,6 +9,7 @@ import 'package:lokapandu/brick/repositories/repository.dart';
 import 'package:lokapandu/common/services/crashlytics_service.dart';
 import 'package:lokapandu/common/services/notification_service.dart';
 import 'package:lokapandu/env/env.dart';
+import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_detail_notifier.dart';
@@ -109,6 +110,7 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => di.locator<TourPlanDetailNotifier>(),
         ),
+        ChangeNotifierProvider(create: (_) => di.locator<AiChatNotifier>()),
       ],
       child: const App(),
     ),
