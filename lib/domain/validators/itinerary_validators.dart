@@ -1,6 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/material.dart';
 
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
@@ -22,7 +23,21 @@ class ItineraryValidators {
   ) {
     if (startTime.isAfter(endTime)) {
       return Left(
-        InvalidTimeRangeFailure('Start time must be before end time'),
+        InvalidTimeRangeFailure('Waktu mulai harus sebelum waktu selesai'),
+      );
+    }
+    return Right(unit);
+  }
+
+  Either<Failure, Unit> validateTimeFormat(
+    TimeOfDay? startTime,
+    TimeOfDay? endTime,
+  ) {
+    if (startTime == null || endTime == null) {
+      return Left(
+        InvalidTimeFormatFailure(
+          'Format waktu tidak valid. Silakan masukkan waktu yang valid',
+        ),
       );
     }
     return Right(unit);
@@ -31,7 +46,7 @@ class ItineraryValidators {
   Either<Failure, Unit> validateFutureTime(DateTime startTime) {
     final now = DateTime.now();
     if (startTime.isBefore(now)) {
-      return Left(ValidationFailure('Start time must be in the future'));
+      return Left(ValidationFailure('Waktu mulai harus di masa depan'));
     }
     return Right(unit);
   }
@@ -42,13 +57,15 @@ class ItineraryValidators {
   }) {
     if (name.length > _maxNameLength) {
       return Left(
-        ValidationFailure('Name must not exceed $_maxNameLength characters'),
+        ValidationFailure('Nama tidak boleh melebihi $_maxNameLength karakter'),
       );
     }
 
     if (notes != null && notes.length > _maxNotesLength) {
       return Left(
-        ValidationFailure('Notes must not exceed $_maxNotesLength characters'),
+        ValidationFailure(
+          'Catatan tidak boleh melebihi $_maxNotesLength karakter',
+        ),
       );
     }
 
@@ -69,12 +86,14 @@ class ItineraryValidators {
         (failure) => Left(failure),
         (exists) => exists
             ? Right(unit)
-            : Left(ValidationFailure('Tourism spot not found')),
+            : Left(ValidationFailure('Tempat wisata tidak ditemukan')),
       );
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Validators");
       return Left(
-        ServerFailure('Error validating tourism spot: ${e.toString()}'),
+        ServerFailure(
+          'Kesalahan saat memvalidasi tempat wisata: ${e.toString()}',
+        ),
       );
     }
   }
@@ -98,8 +117,8 @@ class ItineraryValidators {
         (hasConflict) => hasConflict
             ? Left(
                 SchedulingConflictFailure(
-                  'Cannot add itinerary - scheduling conflict detected. '
-                  'Please ensure at least $_bufferTimeMinutes minutes gap between itineraries',
+                  'Tidak dapat menambahkan itinerary - terdeteksi konflik jadwal. '
+                  'Pastikan ada jeda minimal $_bufferTimeMinutes menit antara itinerary',
                 ),
               )
             : Right(unit),
@@ -107,14 +126,16 @@ class ItineraryValidators {
     } catch (e) {
       developer.log(e.toString(), name: "Itinerary Validators");
       return Left(
-        ServerFailure('Error checking scheduling conflicts: ${e.toString()}'),
+        ServerFailure(
+          'Kesalahan saat memeriksa konflik jadwal: ${e.toString()}',
+        ),
       );
     }
   }
 
   Either<Failure, Unit> validateRequiredFields(CreateItinerary itineraryInput) {
     if (itineraryInput.name.trim().isEmpty) {
-      return Left(MissingFieldFailure('Itinerary name is required'));
+      return Left(MissingFieldFailure('Nama itinerary wajib diisi'));
     }
     return Right(unit);
   }
@@ -123,9 +144,9 @@ class ItineraryValidators {
     CreateItineraryNote itineraryInput,
   ) {
     if (itineraryInput.name.trim().isEmpty) {
-      return Left(MissingFieldFailure('Itinerary name is required'));
+      return Left(MissingFieldFailure('Nama itinerary wajib diisi'));
     } else if (itineraryInput.notes.trim().isEmpty) {
-      return Left(MissingFieldFailure('Itinerary content is required'));
+      return Left(MissingFieldFailure('Konten itinerary wajib diisi'));
     }
     return Right(unit);
   }

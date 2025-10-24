@@ -6,9 +6,12 @@ import 'package:lokapandu/common/analytics.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/itinerary/create_itinerary_note_entity.dart';
+import 'package:lokapandu/domain/entities/itinerary/edit_itinerary_entity.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries_note.dart';
+import 'package:lokapandu/domain/usecases/itineraries/edit_user_itineraries.dart';
+import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -25,7 +28,9 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   // ========== Dependencies ==========
   final CreateUserItineraries _createItineraryUseCase;
   final CreateUserItinerariesNote _createItineraryNoteUseCase;
+  final EditUserItineraries _editItineraryUseCase;
   final AnalyticsManager _analyticsManager;
+  final ItineraryValidators _validators;
 
   // ========== Private State Variables ==========
   String _name = '';
@@ -39,6 +44,7 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   TourPlanModel? _editModel;
   String? _errorMessage;
   String? _successMessage;
+  bool _isSnackbarShowing = false;
 
   // ========== Constants ==========
   static const String _errorUserNotFound = "Gagal mendapatkan data user";
@@ -54,10 +60,14 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   TourPlanEditorNotifier({
     required CreateUserItineraries useCase,
     required CreateUserItinerariesNote createItineraryUseCase,
+    required EditUserItineraries editItineraryUseCase,
     required AnalyticsManager analyticsManager,
+    required ItineraryValidators validators,
   }) : _createItineraryUseCase = useCase,
        _createItineraryNoteUseCase = createItineraryUseCase,
-       _analyticsManager = analyticsManager;
+       _editItineraryUseCase = editItineraryUseCase,
+       _analyticsManager = analyticsManager,
+       _validators = validators;
 
   // ========== Getters ==========
   String get name => _name;
@@ -83,6 +93,8 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   String? get successMessage => _successMessage;
 
   bool get success => _successMessage != null;
+
+  bool get isSnackbarShowing => _isSnackbarShowing;
 
   // ========== Validation ==========
   /// Validates the form fields to ensure all required data is present
@@ -160,8 +172,21 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     _isSubmitting = false;
     _errorMessage = null;
     _successMessage = null;
+    _isSnackbarShowing = false;
 
     _analyticsManager.trackEvent(eventName: 'reset_plan');
+    notifyListeners();
+  }
+
+  void _clearMessages() {
+    _errorMessage = null;
+    _successMessage = null;
+    _isSnackbarShowing = false;
+    notifyListeners();
+  }
+
+  void setSnackbarShowing(bool showing) {
+    _isSnackbarShowing = showing;
     notifyListeners();
   }
 
@@ -185,72 +210,45 @@ class TourPlanEditorNotifier extends ChangeNotifier {
         modelTourism == _selectedTour;
   }
 
-  /// Saves the current plan as either a regular itinerary or a note-based itinerary
-  ///
-  /// Returns Either&lt;Failure, void&gt; indicating success or failure of the operation.
-  /// The method handles validation, user authentication, and different save scenarios
-  /// based on whether notes are provided or a tourism spot is selected.
+  /// Saves the plan (either itinerary or note) based on the selected tour
   Future<void> savePlan() async {
-    if (_isSubmitting) return;
-
     _setSubmittingState(true);
+    _clearMessages();
 
     try {
-      // validate samevalue
-      if (_validateSameValue()) {
-        _setSubmittingState(false);
-        var itemSaved = _name.isEmpty ? _notes : _name;
-        _successMessage = '$itemSaved Berhasil ditambahkan!';
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        _errorMessage = _errorUserNotFound;
         return;
       }
 
-      // Validate user authentication
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) {
-        _trackSavePlanFailed(_errorUserNotFound, userId: 'null');
-        throw _errorUserNotFound;
-      }
-
-      // Validate form data
       if (isFormInvalid) {
-        _trackSavePlanFailed(_errorValidationFailed);
-        throw _errorValidationFailed;
+        _errorMessage = _errorValidationFailed;
+        return;
       }
 
-      Either<Failure, Unit> result;
-
-      // Save based on whether tourism spot is selected or not
-      if (_selectedTour == null) {
-        // If no tourism spot is selected, save as note-based itinerary
-        if (_endDate == null) {
-          _trackSavePlanFailed(_errorValidationFailed);
-          throw _errorValidationFailed;
-        }
-        result = await _saveNote(user.id);
-      } else {
-        // If tourism spot is selected, save as regular itinerary
-        result = await _saveItinerary(user.id);
-      }
-
-      result.fold(
-        (failure) {
-          _handleFailure(failure);
-          _analyticsManager.trackError(
-            error: failure.runtimeType.toString(),
-            description: failure.message,
-            parameters: {
-              'name': _name,
-              'notifier': 'TourPlanEditorNotifier',
-              'type': _selectedTour == null ? 'note' : 'regular',
-              'stackTrace': StackTrace.current,
-            },
-          );
-        },
-        (_) {
-          var itemSaved = _name.isEmpty ? _notes : _name;
-          _successMessage = '$itemSaved Berhasil ditambahkan!';
-        },
+      final timeFormatValidation = _validators.validateTimeFormat(
+        _startTime,
+        _endTime,
       );
+      if (timeFormatValidation.isLeft()) {
+        final failure = timeFormatValidation.fold((l) => l, (r) => null);
+        if (failure != null) {
+          _handleFailure(failure);
+          return;
+        }
+      }
+
+      final result = _selectedTour == null
+          ? await _saveNote(user.id)
+          : await _saveItinerary(user.id);
+
+      result.fold((failure) => _handleFailure(failure), (_) {
+        var itemSaved = _name.isEmpty ? _notes : _name;
+        _successMessage = _editModel != null
+            ? '$itemSaved Berhasil diperbarui!'
+            : '$itemSaved Berhasil ditambahkan!';
+      });
     } catch (e) {
       _errorMessage = 'Error: ${e.toString()}';
     } finally {
@@ -263,6 +261,11 @@ class TourPlanEditorNotifier extends ChangeNotifier {
       server: (message) => _errorMessage = 'Server Error: $message',
       connection: (message) => _errorMessage = 'Connection Error: $message',
       database: (message) => _errorMessage = 'Database Error: $message',
+      invalidTimeFormat: (message) => _errorMessage = message,
+      schedulingConflict: (message) => _errorMessage = message,
+      invalidTimeRange: (message) => _errorMessage = message,
+      validation: (message) => _errorMessage = message,
+      missingField: (message) => _errorMessage = message,
       orElse: () => _errorMessage = 'Unknown Error',
     );
   }
@@ -277,24 +280,37 @@ class TourPlanEditorNotifier extends ChangeNotifier {
   /// Saves an itinerary with notes
   Future<Either<Failure, Unit>> _saveNote(String userId) async {
     _analyticsManager.trackEvent(
-      eventName: 'save_note',
+      eventName: _editModel != null ? 'edit_note' : 'save_note',
       parameters: {
         'name': _name,
         'notes': _notes,
         'start_time': _startTime.toString(),
         'end_time': _endTime.toString(),
+        'is_edit': (_editModel != null).toString(),
       },
     );
 
-    return await _createItineraryNoteUseCase.execute(
-      CreateItineraryNote(
-        name: _name,
-        notes: _notes,
-        startTime: _createDateTime(_date!, _startTime!),
-        endTime: _createDateTime(_endDate!, _endTime!),
-        userId: userId,
-      ),
-    );
+    if (_editModel != null) {
+      return await _editItineraryUseCase.execute(
+        EditItinerary(
+          id: _editModel!.id!,
+          name: _name,
+          notes: _notes,
+          startTime: _createDateTime(_date!, _startTime!),
+          endTime: _createDateTime(_date!, _endTime!),
+        ),
+      );
+    } else {
+      return await _createItineraryNoteUseCase.execute(
+        CreateItineraryNote(
+          name: _name,
+          notes: _notes,
+          startTime: _createDateTime(_date!, _startTime!),
+          endTime: _createDateTime(_date!, _endTime!),
+          userId: userId,
+        ),
+      );
+    }
   }
 
   /// Saves a regular itinerary with tourism spot
@@ -305,28 +321,39 @@ class TourPlanEditorNotifier extends ChangeNotifier {
     }
 
     _analyticsManager.trackEvent(
-      eventName: 'save_itinerary',
+      eventName: _editModel != null ? 'edit_itinerary' : 'save_itinerary',
       parameters: {
         'name': _name,
         'tourism_spot_id': _selectedTour!.id,
         'start_time': _startTime.toString(),
         'end_time': _endTime.toString(),
+        'is_edit': (_editModel != null).toString(),
       },
     );
 
-    await _analyticsManager.startTrace('saveItinerary');
-    final result = await _createItineraryUseCase.execute(
-      CreateItinerary(
-        name: _name,
-        notes: _notes,
-        startTime: _createDateTime(_date!, _startTime!),
-        endTime: _createDateTime(_date!, _endTime!),
-        tourismSpot: _selectedTour!.id,
-        userId: userId,
-      ),
-    );
-    await _analyticsManager.stopTrace('saveItinerary');
-    return result;
+    if (_editModel != null) {
+      return await _editItineraryUseCase.execute(
+        EditItinerary(
+          id: _editModel!.id!,
+          name: _name,
+          notes: _notes,
+          startTime: _createDateTime(_date!, _startTime!),
+          endTime: _createDateTime(_date!, _endTime!),
+          tourismSpot: _selectedTour!.id,
+        ),
+      );
+    } else {
+      return await _createItineraryUseCase.execute(
+        CreateItinerary(
+          name: _name,
+          notes: _notes,
+          startTime: _createDateTime(_date!, _startTime!),
+          endTime: _createDateTime(_date!, _endTime!),
+          tourismSpot: _selectedTour!.id,
+          userId: userId,
+        ),
+      );
+    }
   }
 
   /// Creates a DateTime from a date and time of day

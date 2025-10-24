@@ -14,5 +14,7 @@ sealed class Failure with _$Failure {
       SchedulingConflictFailure;
   const factory Failure.invalidTimeRange(String message) =
       InvalidTimeRangeFailure;
+  const factory Failure.invalidTimeFormat(String message) =
+      InvalidTimeFormatFailure;
   const factory Failure.missingField(String message) = MissingFieldFailure;
 }
