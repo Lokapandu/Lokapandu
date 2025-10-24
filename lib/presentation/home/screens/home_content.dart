@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
-import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
@@ -88,7 +87,7 @@ class _HomeContentState extends State<HomeContent> {
                       height: 100,
                       child: Center(
                         child: Text(
-                          'Gagal memuat data: ${notifier.errorMessage}',
+                          'Gagal memuat data: ${notifier.error?.message}',
                         ),
                       ),
                     );
@@ -114,15 +113,7 @@ class _HomeContentState extends State<HomeContent> {
                       itemCount: upcomingSpots.length,
                       itemBuilder: (context, index) {
                         final spot = upcomingSpots[index];
-                        return UpcomingTourCard(
-                          imageUrl: spot.images.isNotEmpty
-                              ? spot.images.first.imageUrl
-                              : '',
-                          title: spot.name,
-                          location: '${spot.city}, ${spot.province}',
-                          time:
-                              '${spot.openTime.toTimeOfDay().toString24()}-${spot.closeTime.toTimeOfDay().toString24()}',
-                        );
+                        return UpcomingTourCard(spot: spot);
                       },
                     ),
                   );

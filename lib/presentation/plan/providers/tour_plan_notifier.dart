@@ -13,7 +13,7 @@ class TourPlanNotifier extends ChangeNotifier {
 
   List<PlanItem> _planItems = [];
   DateTime? _selectedDate;
-  String? _errorMessage;
+  Failure? _error;
   bool _isLoading = false;
 
   List<PlanItem> get planItems => _planItems;
@@ -22,9 +22,9 @@ class TourPlanNotifier extends ChangeNotifier {
 
   DateTime? get selectedDate => _selectedDate;
 
-  String? get errorMessage => _errorMessage;
+  Failure? get error => _error;
 
-  bool get hasError => _errorMessage != null;
+  bool get hasError => _error != null;
 
   bool get hasData => _planItems.isNotEmpty;
 
@@ -35,19 +35,19 @@ class TourPlanNotifier extends ChangeNotifier {
 
   void reset() {
     _planItems = [];
-    _errorMessage = null;
+    _error = null;
     _isLoading = false;
   }
 
   Future<void> fetchItineraries() async {
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     final user = Supabase.instance.client.auth.currentUser;
     if (user == null) {
       _analyticsManager.trackError(error: 'User is not logged in');
-      _errorMessage = 'User is not logged in';
+      _error = const ServerFailure('User is not logged in');
       _isLoading = false;
       notifyListeners();
       return;
@@ -70,7 +70,7 @@ class TourPlanNotifier extends ChangeNotifier {
               'stackTrace': StackTrace.current,
             },
           );
-          _handleFailure(failure);
+          _error = failure;
         },
         (itineraries) {
           _planItems = itineraries.map((e) => e.toPlanItem()).toList()
@@ -85,20 +85,11 @@ class TourPlanNotifier extends ChangeNotifier {
         },
       );
     } catch (e) {
-      _errorMessage = 'Unexpected error: ${e.toString()}';
+      _error = ServerFailure('Unexpected error: ${e.toString()}');
     }
 
     _isLoading = false;
     notifyListeners();
-  }
-
-  void _handleFailure(Failure failure) {
-    failure.maybeWhen(
-      server: (message) => _errorMessage = 'Server Error: $message',
-      connection: (message) => _errorMessage = 'Connection Error: $message',
-      database: (message) => _errorMessage = 'Database Error: $message',
-      orElse: () => _errorMessage = 'Unknown Error',
-    );
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
-import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/error_message_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/expanding_fab.dart';
@@ -83,12 +83,11 @@ class _PlanScreenState extends State<PlanScreen> {
             return const PlanShimmerLoading();
           }
 
-          if (notifier.hasError && mounted) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(snackbar(notifier.errorMessage!));
-            });
+          if (notifier.hasError) {
+            return ErrorMessageViewer(
+              error: notifier.error!,
+              reload: () => notifier.fetchItineraries(),
+            );
           }
 
           return ListView.builder(
