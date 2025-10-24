@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/analytics.dart';
 
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_image_entity.dart';
@@ -7,29 +8,31 @@ import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.
 
 class TourismSpotDetailNotifier extends ChangeNotifier {
   final GetTourismSpotDetail _getTourismSpotDetail;
+  final AnalyticsManager _analyticsManager;
 
-  TourismSpotDetailNotifier(this._getTourismSpotDetail);
+  TourismSpotDetailNotifier(this._getTourismSpotDetail, this._analyticsManager);
 
   TourismSpot? _tourismSpot;
   List<TourismImage> _tourismImages = [];
   bool _isLoading = false;
-  String? _errorMessage;
+  Failure? _error;
   String _selectedImage = '';
 
   TourismSpot? get tourismSpot => _tourismSpot;
 
   List<TourismImage> get images => _tourismImages;
 
-  String? get errorMessage => _errorMessage;
   String get selectedImage => _selectedImage;
 
   bool get isLoading => _isLoading;
-  bool get hasError => _errorMessage != null;
+  Failure? get error => _error;
+  // bool get hasError => _errorMessage != null;
+  bool get hasError => _error != null;
   bool get hasData => _tourismSpot != null;
 
   Future<void> loadTourismSpotDetail(int id) async {
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     try {
@@ -37,7 +40,11 @@ class TourismSpotDetailNotifier extends ChangeNotifier {
 
       result.fold(
         (failure) {
-          _handleFailure(failure);
+          _analyticsManager.trackError(
+            error: '${failure.runtimeType}',
+            description: failure.message,
+          );
+          _error = failure;
         },
         (spot) {
           _tourismSpot = spot;
@@ -45,11 +52,15 @@ class TourismSpotDetailNotifier extends ChangeNotifier {
           if (_tourismImages.isNotEmpty) {
             _selectedImage = _tourismImages.first.imageUrl;
           }
-          _errorMessage = null;
+          _error = null;
         },
       );
     } catch (e) {
-      _errorMessage = 'Unexpected error: ${e.toString()}';
+      _analyticsManager.trackError(
+        error: 'ServerFailure',
+        description: 'Unexpected error: ${e.toString()}',
+      );
+      _error = ServerFailure('Kesalahan tak terduga');
     }
 
     _isLoading = false;
@@ -61,18 +72,8 @@ class TourismSpotDetailNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  //TODO: Implement more end-user friendly error message. Keep this as is for now.
-  void _handleFailure(Failure failure) {
-    failure.maybeWhen(
-      server: (message) => _errorMessage = 'Server Error: $message',
-      connection: (message) => _errorMessage = 'Connection Error: $message',
-      database: (message) => _errorMessage = 'Database Error: $message',
-      orElse: () => _errorMessage = 'Unknown Error',
-    );
-  }
-
   void clearError() {
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
   }
 

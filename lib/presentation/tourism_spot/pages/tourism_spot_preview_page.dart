@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/error_message_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lokapandu/common/routes/routing_list.dart';
@@ -62,8 +63,13 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
           if (notifier.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (notifier.errorMessage != null) {
-            return Center(child: Text(notifier.errorMessage!));
+          if (notifier.error != null) {
+            return ErrorMessageViewer(
+              error: notifier.error!,
+              reload: () => context
+                  .read<TourismSpotDetailNotifier>()
+                  .loadTourismSpotDetail(widget.id),
+            );
           }
           if (notifier.tourismSpot == null) {
             return const Center(child: Text('Wisata tidak ditemukan'));

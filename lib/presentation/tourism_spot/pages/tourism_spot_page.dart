@@ -6,9 +6,9 @@ import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/error_message_widget.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
-import 'package:open_settings_plus/core/open_settings_plus.dart';
 import 'package:provider/provider.dart';
 
 class TourismSpotPage extends StatefulWidget {
@@ -94,7 +94,12 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                     return SliverFillRemaining(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Center(child: _buildErrorState(error, context)),
+                        child: ErrorMessageViewer(
+                          error: error,
+                          reload: () => context
+                              .read<TourismSpotNotifier>()
+                              .loadTourismSpots(),
+                        ),
                       ),
                     );
                   }
@@ -235,71 +240,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildErrorState(Failure errorType, BuildContext context) {
-    final theme = Theme.of(context);
-
-    final (imagePath, buttonText, onPressed) = switch (errorType) {
-      ConnectionFailure() => (
-        'assets/illustrations/connection-error.webp',
-        'Buka pengaturan jaringan',
-        () {
-          if (OpenSettingsPlus.shared is OpenSettingsPlusAndroid) {
-            (OpenSettingsPlus.shared as OpenSettingsPlusAndroid).wifi();
-          }
-        },
-      ),
-      _ => (
-        'assets/illustrations/server-error.webp',
-        'Coba Lagi',
-        () => context.read<TourismSpotNotifier>().loadTourismSpots(),
-      ),
-    };
-
-    return _buildErrorStateContent(
-      context: context,
-      theme: theme,
-      imagePath: imagePath,
-      message: errorType.message,
-      buttonText: buttonText,
-      onPressed: onPressed,
-    );
-  }
-
-  Widget _buildErrorStateContent({
-    required BuildContext context,
-    required ThemeData theme,
-    required String imagePath,
-    required String message,
-    required String buttonText,
-    required VoidCallback onPressed,
-  }) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(
-          imagePath,
-          height: 300,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) => Icon(
-            Icons.error_outline,
-            size: 100,
-            color: theme.colorScheme.error,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          message,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: theme.colorScheme.error,
-          ),
-        ),
-        const SizedBox(height: 16),
-        FilledButton(onPressed: onPressed, child: Text(buttonText)),
-      ],
     );
   }
 }

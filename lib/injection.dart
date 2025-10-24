@@ -221,7 +221,10 @@ Future<void> initDependencies() async {
   );
 
   locator.registerFactory<TourismSpotDetailNotifier>(
-    () => TourismSpotDetailNotifier(locator<GetTourismSpotDetail>()),
+    () => TourismSpotDetailNotifier(
+      locator<GetTourismSpotDetail>(),
+      locator<AnalyticsManager>(),
+    ),
   );
 
   /// Authentication providers - manages auth state
