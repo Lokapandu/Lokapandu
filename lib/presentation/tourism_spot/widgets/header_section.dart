@@ -42,7 +42,7 @@ class _HeaderSectionState extends State<HeaderSection> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -53,11 +53,11 @@ class _HeaderSectionState extends State<HeaderSection> {
               Expanded(
                 child: Text(
                   widget.tour.name,
-                  style: theme.textTheme.headlineLarge?.copyWith(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
+                  maxLines: 2,
                 ),
               ),
               Column(
@@ -109,7 +109,7 @@ class _HeaderSectionState extends State<HeaderSection> {
                     if (notifier.isPermissionGranted()) {
                       data = notifier.isLoading
                           ? ''
-                          : '| ${notifier.distance} dri lokasimu';
+                          : '| ${notifier.distance} dari lokasimu';
                     }
 
                     return Text(
