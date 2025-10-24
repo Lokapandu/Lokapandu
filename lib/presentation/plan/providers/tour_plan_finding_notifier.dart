@@ -32,7 +32,7 @@ class TourPlanFindingNotifier extends ChangeNotifier {
     await _analyticsManager.startTrace('searchTourismSpot');
     final result = await useCase.execute(query: query);
     await _analyticsManager.stopTrace('searchTourismSpot');
-    
+
     _searchResults = result.fold((failure) {
       _analyticsManager.trackError(
         error: failure.message,

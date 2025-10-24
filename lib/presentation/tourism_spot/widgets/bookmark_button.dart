@@ -22,7 +22,11 @@ class BookmarkButton extends StatelessWidget {
 
     return Consumer<BookmarkProvider>(
       builder: (context, bookmarkProvider, child) {
-        final isBookmarked = bookmarkProvider.bookmarkedSpots?.any((spot) => spot.id == tour.id) ?? false;
+        final isBookmarked =
+            bookmarkProvider.bookmarkedSpots?.any(
+              (spot) => spot.id == tour.id,
+            ) ??
+            false;
 
         if (buttonType == BookmarkButtonType.outlined) {
           return OutlinedButton(

@@ -23,5 +23,4 @@ abstract class TourismSpot with _$TourismSpot {
     required String facilities,
     required DateTime createdAt,
   }) = _TourismSpot;
-
 }

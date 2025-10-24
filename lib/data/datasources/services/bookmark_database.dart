@@ -91,13 +91,19 @@ class BookmarkDatabaseServiceImpl implements BookmarkDatabaseService {
         'openTime': spot.openTime,
         'closeTime': spot.closeTime,
         'mapsLink': spot.mapsLink,
-        'images': jsonEncode(spot.images.map((img) => {
-          'id': img.id,
-          'tourismSpotId': img.tourismSpotId,
-          'label': img.label,
-          'imageUrl': img.imageUrl,
-          'createdAt': img.createdAt.toIso8601String(),
-        }).toList()),
+        'images': jsonEncode(
+          spot.images
+              .map(
+                (img) => {
+                  'id': img.id,
+                  'tourismSpotId': img.tourismSpotId,
+                  'label': img.label,
+                  'imageUrl': img.imageUrl,
+                  'createdAt': img.createdAt.toIso8601String(),
+                },
+              )
+              .toList(),
+        ),
         'facilities': spot.facilities,
         'createdAt': spot.createdAt.toIso8601String(),
       };
@@ -153,18 +159,19 @@ class BookmarkDatabaseServiceImpl implements BookmarkDatabaseService {
   }
 
   TourismSpot _mapToTourismSpot(Map<String, dynamic> map) {
-    
-
-
     final imagesJson = map['images'] as String;
     final imagesList = jsonDecode(imagesJson) as List<dynamic>;
-    final images = imagesList.map((imgMap) => TourismImage(
-      id: imgMap['id'] as int,
-      tourismSpotId: imgMap['tourismSpotId'] as int,
-      label: imgMap['label'] as String,
-      imageUrl: imgMap['imageUrl'] as String,
-      createdAt: DateTime.parse(imgMap['createdAt'] as String),
-    )).toList();
+    final images = imagesList
+        .map(
+          (imgMap) => TourismImage(
+            id: imgMap['id'] as int,
+            tourismSpotId: imgMap['tourismSpotId'] as int,
+            label: imgMap['label'] as String,
+            imageUrl: imgMap['imageUrl'] as String,
+            createdAt: DateTime.parse(imgMap['createdAt'] as String),
+          ),
+        )
+        .toList();
 
     return TourismSpot(
       id: map['id'] as int,
