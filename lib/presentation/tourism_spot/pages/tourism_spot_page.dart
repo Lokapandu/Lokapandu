@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/presentation/common/app_header.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/destination_card.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/shimmer_loading.dart';
 import 'package:lokapandu/presentation/tourism_spot/widgets/tour_category_chips.dart';
+import 'package:open_settings_plus/core/open_settings_plus.dart';
 import 'package:provider/provider.dart';
 
 class TourismSpotPage extends StatefulWidget {
@@ -41,8 +43,6 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.translucent,
@@ -90,37 +90,11 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
                   // Handle error state
                   if (notifier.hasError) {
-                    return SliverToBoxAdapter(
+                    final error = notifier.error as Failure;
+                    return SliverFillRemaining(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: SizedBox(
-                            height: 450,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  size: 64,
-                                  color: theme.colorScheme.error,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  notifier.errorMessage ?? 'Terjadi kesalahan',
-                                  textAlign: TextAlign.center,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme.colorScheme.error,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                FilledButton(
-                                  onPressed: () => notifier.loadTourismSpots(),
-                                  child: const Text('Coba Lagi'),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        child: Center(child: _buildErrorState(error, context)),
                       ),
                     );
                   }
@@ -261,6 +235,71 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildErrorState(Failure errorType, BuildContext context) {
+    final theme = Theme.of(context);
+
+    final (imagePath, buttonText, onPressed) = switch (errorType) {
+      ConnectionFailure() => (
+        'assets/illustrations/connection-error.webp',
+        'Buka pengaturan jaringan',
+        () {
+          if (OpenSettingsPlus.shared is OpenSettingsPlusAndroid) {
+            (OpenSettingsPlus.shared as OpenSettingsPlusAndroid).wifi();
+          }
+        },
+      ),
+      _ => (
+        'assets/illustrations/server-error.webp',
+        'Coba Lagi',
+        () => context.read<TourismSpotNotifier>().loadTourismSpots(),
+      ),
+    };
+
+    return _buildErrorStateContent(
+      context: context,
+      theme: theme,
+      imagePath: imagePath,
+      message: errorType.message,
+      buttonText: buttonText,
+      onPressed: onPressed,
+    );
+  }
+
+  Widget _buildErrorStateContent({
+    required BuildContext context,
+    required ThemeData theme,
+    required String imagePath,
+    required String message,
+    required String buttonText,
+    required VoidCallback onPressed,
+  }) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          imagePath,
+          height: 300,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) => Icon(
+            Icons.error_outline,
+            size: 100,
+            color: theme.colorScheme.error,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          message,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.titleMedium?.copyWith(
+            color: theme.colorScheme.error,
+          ),
+        ),
+        const SizedBox(height: 16),
+        FilledButton(onPressed: onPressed, child: Text(buttonText)),
+      ],
     );
   }
 }

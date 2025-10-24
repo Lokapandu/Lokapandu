@@ -216,6 +216,7 @@ Future<void> initDependencies() async {
       locator<GetTourismSpotList>(),
       locator<SearchTourismSpots>(),
       locator<GetTourismSpotsByCategory>(),
+      locator<AnalyticsManager>(),
     ),
   );
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/analytics.dart';
 
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
@@ -12,48 +13,62 @@ class TourismSpotNotifier extends ChangeNotifier {
   final GetTourismSpotList _getTourismSpotList;
   final SearchTourismSpots _searchTourismSpots;
   final GetTourismSpotsByCategory _getTourismSpotsByCategory;
+  final AnalyticsManager _analyticsManager;
 
   TourismSpotNotifier(
     this._getTourismSpotList,
     this._searchTourismSpots,
     this._getTourismSpotsByCategory,
+    this._analyticsManager,
   );
 
   List<TourismSpot> _tourismSpots = [];
   bool _isLoading = false;
-  String? _errorMessage;
+  Failure? _error;
   String _selectedCategory = 'Semua';
   String _searchQuery = '';
 
   List<TourismSpot> get tourismSpots => _tourismSpots;
-  String? get errorMessage => _errorMessage;
   String get selectedCategory => _selectedCategory;
   String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
-  bool get hasError => _errorMessage != null;
+  Failure? get error => _error;
+  bool get hasError => _error != null;
+
   bool get hasData => _tourismSpots.isNotEmpty;
 
   Timer? _debounce;
 
   Future<void> loadTourismSpots() async {
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     try {
+      _analyticsManager.startTrace('loadTourismSpots');
       final result = await _getTourismSpotList.execute();
+      _analyticsManager.setTraceMetric(
+        'loadTourismSpots',
+        'spotsCount',
+        _tourismSpots.length,
+      );
+      _analyticsManager.stopTrace('loadTourismSpots');
 
       result.fold(
         (failure) {
-          _handleFailure(failure);
+          _analyticsManager.trackError(
+            error: '${failure.runtimeType}',
+            description: failure.message,
+          );
+          _error = failure;
         },
         (spots) {
           _tourismSpots = spots;
-          _errorMessage = null;
+          _error = null;
         },
       );
     } catch (e) {
-      _errorMessage = 'Unexpected error: ${e.toString()}';
+      _error = ServerFailure('Kesalahan tak terduga');
     }
 
     _isLoading = false;
@@ -71,7 +86,7 @@ class TourismSpotNotifier extends ChangeNotifier {
 
   Future<void> _performSearch(String query) async {
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     if (query.isEmpty) {
@@ -80,35 +95,37 @@ class TourismSpotNotifier extends ChangeNotifier {
     }
 
     try {
+      _analyticsManager.startTrace('searchTourismSpots');
       final result = await _searchTourismSpots.execute(query);
+      _analyticsManager.setTraceMetric(
+        'searchTourismSpots',
+        'spotsCount',
+        _tourismSpots.length,
+      );
+      _analyticsManager.stopTrace('searchTourismSpots');
       result.fold(
         (failure) {
-          _handleFailure(failure);
+          _analyticsManager.trackError(
+            error: '${failure.runtimeType}',
+            description: failure.message,
+          );
+          _error = failure;
         },
         (spots) {
           _tourismSpots = spots;
-          _errorMessage = null;
+          _error = null;
         },
       );
     } catch (e) {
-      _errorMessage = 'Unexpected error: ${e.toString()}';
+      _error = ServerFailure('Kesalahan tak terduga');
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  void _handleFailure(Failure failure) {
-    failure.maybeWhen(
-      server: (message) => _errorMessage = 'Server Error: $message',
-      connection: (message) => _errorMessage = 'Connection Error: $message',
-      database: (message) => _errorMessage = 'Database Error: $message',
-      orElse: () => _errorMessage = 'Unknown Error',
-    );
-  }
-
   void clearError() {
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
   }
 
@@ -129,22 +146,26 @@ class TourismSpotNotifier extends ChangeNotifier {
     }
 
     _isLoading = true;
-    _errorMessage = null;
+    _error = null;
     notifyListeners();
 
     try {
       final result = await _getTourismSpotsByCategory.execute(category);
       result.fold(
         (failure) {
-          _handleFailure(failure);
+          _analyticsManager.trackError(
+            error: '${failure.runtimeType}',
+            description: failure.message,
+          );
+          _error = failure;
         },
         (spots) {
           _tourismSpots = spots;
-          _errorMessage = null;
+          _error = null;
         },
       );
     } catch (e) {
-      _errorMessage = 'Unexpected error: ${e.toString()}';
+      _error = ServerFailure('Kesalahan tak terduga');
     }
 
     _isLoading = false;
