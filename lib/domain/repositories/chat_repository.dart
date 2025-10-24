@@ -9,5 +9,8 @@ abstract class ChatRepository {
 
   Future<void> storeChat(String message, bool isUser);
 
+  /// Store multiple chat messages in a single atomic operation
+  Future<void> storeMultipleChats(List<({String message, bool isUser})> messages);
+
   Future<void> clearHistory();
 }

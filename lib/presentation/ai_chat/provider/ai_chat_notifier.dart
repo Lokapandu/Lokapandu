@@ -173,8 +173,10 @@ class AiChatNotifier extends ChangeNotifier {
 
       // store response
       _manager.startTrace('Store Response');
-      await _repository.storeChat(userMessageText, true);
-      await _repository.storeChat(responseText, false);
+      await _repository.storeMultipleChats([
+        (message: userMessageText, isUser: true),
+        (message: responseText, isUser: false),
+      ]);
       _manager.setTraceMetric('ChatSize', 'AfterAdd', _chats.length);
       _manager.stopTrace('Store Response');
     } catch (e) {

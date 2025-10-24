@@ -141,4 +141,36 @@ class ChatRepositoryImpl implements ChatRepository {
       throw ServerFailure(e.toString());
     }
   }
+
+  @override
+  Future<void> storeMultipleChats(List<({String message, bool isUser})> messages) async {
+    try {
+      if (messages.isEmpty) return;
+
+      final now = DateTime.now();
+      final chatModels = messages.map((msg) => AiChatModel(
+        id: Uuid().v4(),
+        userId: _currentUser.id,
+        content: msg.message,
+        isFromUser: msg.isUser,
+        createdAt: now,
+      )).toList();
+
+      final jsonList = chatModels.map((model) => model.toJson()).toList();
+      
+      // Batch insert - atomic operation
+      await _client.from('chat_messages').insert(jsonList);
+      
+      dev.log('Stored ${messages.length} chat messages in batch', name: 'Chat Repository');
+    } on ConnectionException catch (e, st) {
+      dev.log(e.message, name: 'Chat Repository', stackTrace: st);
+      throw ConnectionFailure(e.message);
+    } on SchedulingConflictException catch (e) {
+      dev.log(e.toString(), name: "Chat Repository");
+      throw SchedulingConflictFailure(e.message);
+    } catch (e, st) {
+      dev.log(e.toString(), name: 'Chat Repository', stackTrace: st);
+      throw ServerFailure(e.toString());
+    }
+  }
 }
