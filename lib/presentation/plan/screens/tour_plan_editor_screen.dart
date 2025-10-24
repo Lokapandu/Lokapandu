@@ -73,27 +73,43 @@ class _TourPlanEditorScreenState extends State<TourPlanEditorScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
+      if (notifier.isSnackbarShowing) return;
+
       await notifier.savePlan();
 
       if (mounted) {
         if (notifier.hasError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(snackbar('Gagal: ${notifier.errorMessage}'));
+          notifier.setSnackbarShowing(true);
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(snackbar('Gagal: ${notifier.errorMessage}'))
+              .closed
+              .then((_) => notifier.setSnackbarShowing(false));
         }
 
         if (notifier.success) {
+          notifier.setSnackbarShowing(true);
+          ScaffoldMessenger.of(context).clearSnackBars();
           context.read<TourPlanNotifier>().fetchItineraries();
-          context.goNamed(Routing.plan.routeName);
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(snackbar('${notifier.successMessage}'));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(snackbar('${notifier.successMessage}'))
+              .closed
+              .then((_) {
+                notifier.setSnackbarShowing(false);
+                if (mounted) {
+                  context.goNamed(Routing.plan.routeName);
+                }
+              });
         }
       }
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
+      if (notifier.isSnackbarShowing) return;
+      notifier.setSnackbarShowing(true);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(snackbar('Mohon isi semua field yang wajib.'))
+          .closed
+          .then((_) => notifier.setSnackbarShowing(false));
     }
   }
 
