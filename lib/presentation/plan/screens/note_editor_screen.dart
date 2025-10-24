@@ -54,6 +54,8 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   }
 
   Future<void> _proceedSaveNote(TourPlanEditorNotifier notifier) async {
+    if (notifier.isSnackbarShowing) return;
+
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
@@ -61,23 +63,33 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
       if (mounted) {
         if (notifier.hasError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(snackbar('Gagal: ${notifier.errorMessage}'));
+          notifier.setSnackbarShowing(true);
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(snackbar('Gagal: ${notifier.errorMessage}'))
+              .closed
+              .then((_) => notifier.setSnackbarShowing(false));
         }
 
         if (notifier.success) {
+          notifier.setSnackbarShowing(true);
+          ScaffoldMessenger.of(context).clearSnackBars();
           context.read<TourPlanNotifier>().fetchItineraries();
           context.goNamed(Routing.plan.routeName);
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(snackbar('${notifier.successMessage}'));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(snackbar('${notifier.successMessage}'))
+              .closed
+              .then((_) => notifier.setSnackbarShowing(false));
         }
       }
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(snackbar('Mohon isi semua field yang wajib.'));
+      if (notifier.isSnackbarShowing) return;
+      notifier.setSnackbarShowing(true);
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(snackbar('Mohon isi semua field yang wajib.'))
+          .closed
+          .then((_) => notifier.setSnackbarShowing(false));
     }
   }
 
@@ -91,6 +103,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
       onTap: () => FocusScope.of(context).unfocus(),
       behavior: HitTestBehavior.translucent,
       child: Scaffold(
+        backgroundColor: colorScheme.surface,
         appBar: AppBar(
           backgroundColor: colorScheme.surface,
           elevation: 0,
@@ -129,75 +142,64 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                         }
                         return null;
                       },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Contoh: Beli oleh-oleh khas Bali',
                       ),
-
                       onSaved: (value) => notifier.name = value ?? '',
                     ),
                     const SizedBox(height: 24),
-                    Text("Waktu Mulai", style: theme.textTheme.titleMedium),
+                    Text("Tanggal", style: textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: DateTimeFormField(
-                            label: "Tanggal Mulai",
-                            hint: "DD/MM/YYYY",
-                            icon: Icons.calendar_today_outlined,
-                            mode: DateTimeInputMode.date,
-                            initialDateTime: notifier.date,
-                            onDateTimeSelected: (date) => notifier.date = date,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: DateTimeFormField(
-                            label: "Waktu Mulai",
-                            hint: "HH:mm",
-                            icon: Icons.access_time_outlined,
-                            mode: DateTimeInputMode.time,
-                            initialDateTime: notifier.startTime?.toDateTime(),
-                            onDateTimeSelected: (date) {
-                              if (date != null) {
-                                notifier.startTime = date.toTimeOfDay();
-                              }
-                              return;
-                            },
-                          ),
-                        ),
-                      ],
+                    DateTimeFormField(
+                      label: 'Tanggal',
+                      hint: 'Pilih Tanggal',
+                      icon: Icons.calendar_today_outlined,
+                      initialDateTime: notifier.date,
+                      mode: DateTimeInputMode.date,
+                      onDateTimeSelected: (date) => notifier.date = date,
                     ),
-                    const SizedBox(height: 24),
-                    Text("Waktu Selesai", style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
-                          child: DateTimeFormField(
-                            label: "Tanggal Selesai",
-                            hint: "DD/MM/YYYY",
-                            icon: Icons.calendar_today_outlined,
-                            mode: DateTimeInputMode.date,
-                            initialDateTime: notifier.endDate,
-                            onDateTimeSelected: (date) =>
-                                notifier.endDate = date,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Waktu Mulai", style: textTheme.titleMedium),
+                              const SizedBox(height: 8),
+                              DateTimeFormField(
+                                label: "Waktu Mulai",
+                                hint: 'HH:mm',
+                                icon: Icons.access_time_outlined,
+                                mode: DateTimeInputMode.time,
+                                initialDateTime: notifier.startTime
+                                    ?.toDateTime(),
+                                onDateTimeSelected: (date) =>
+                                    notifier.startTime = date?.toTimeOfDay(),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 8),
                         Expanded(
-                          child: DateTimeFormField(
-                            label: "Waktu Selesai",
-                            hint: "HH:mm",
-                            icon: Icons.access_time_outlined,
-                            mode: DateTimeInputMode.time,
-                            initialDateTime: notifier.endTime?.toDateTime(),
-                            onDateTimeSelected: (date) {
-                              if (date != null) {
-                                notifier.endTime = date.toTimeOfDay();
-                              }
-                              return;
-                            },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Waktu Selesai",
+                                style: textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              DateTimeFormField(
+                                label: "Waktu Selesai",
+                                hint: 'HH:mm',
+                                icon: Icons.access_time_outlined,
+                                mode: DateTimeInputMode.time,
+                                initialDateTime: notifier.endTime?.toDateTime(),
+                                onDateTimeSelected: (date) =>
+                                    notifier.endTime = date?.toTimeOfDay(),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -209,10 +211,9 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       controller: _notesController,
                       maxLines: 4,
                       style: textTheme.bodyLarge,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Tulis catatan di sini',
                       ),
-
                       validator: (value) => value == null || value.isEmpty
                           ? 'Catatan tidak boleh kosong!'
                           : null,

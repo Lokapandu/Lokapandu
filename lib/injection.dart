@@ -259,6 +259,8 @@ Future<void> initDependencies() async {
       analyticsManager: locator<AnalyticsManager>(),
       useCase: locator<CreateUserItineraries>(),
       createItineraryUseCase: locator<CreateUserItinerariesNote>(),
+      editItineraryUseCase: locator<EditUserItineraries>(),
+      validators: locator<ItineraryValidators>(),
     ),
   );
   locator.registerFactory<TourPlanNotifier>(
