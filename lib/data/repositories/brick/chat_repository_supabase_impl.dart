@@ -54,6 +54,10 @@ class ChatRepositoryImpl implements ChatRepository {
             .toList();
         yield chats;
       }
+    } on RealtimeSubscribeException catch (e, st) {
+      dev.log('Realtime subscription error: ${e.toString()}', 
+              name: 'Chat Repository', stackTrace: st);
+      throw ConnectionFailure('Realtime connection failed: ${e.toString()}');
     } on ConnectionException catch (e, st) {
       dev.log(e.message, name: 'Chat Repository', stackTrace: st);
       throw ConnectionFailure(e.message);

@@ -7,19 +7,43 @@ import 'package:lokapandu/domain/repositories/chat_repository.dart';
 import 'package:lokapandu/presentation/ai_chat/models/chat_message_model.dart';
 
 class AiChatNotifier extends ChangeNotifier {
-  final ChatRepository _repository;
-  final AnalyticsManager _manager;
-
   AiChatNotifier({
     required ChatRepository repository,
     required AnalyticsManager manager,
   }) : _repository = repository,
        _manager = manager;
 
+  final ChatRepository _repository;
+  final AnalyticsManager _manager;
+
   final List<ChatMessage> _chats = [];
   StreamSubscription<List<Chat>>? _chatsStream;
 
+  bool _isLoading = false;
+  bool _isClearing = false;
+  bool _isRetrying = false;
+  int _retryCount = 0;
+  static const int _maxRetries = 3;
+  String? _errorMessage;
+
   List<ChatMessage> get chats => _chats;
+
+  bool get isLoading => _isLoading;
+
+  bool get isClearing => _isClearing;
+
+  bool get isRetrying => _isRetrying;
+
+  bool get hasError => _errorMessage != null;
+
+  String? get errorMessage => _errorMessage;
+
+  void calculateScreenRendering(int buildMs, int rasterMs) {
+    _manager.startTrace('_ai_chat_frame_rendering');
+    _manager.setTraceMetric('_ai_chat_frame_rendering', 'build_duration_ms', buildMs);
+    _manager.setTraceMetric('_ai_chat_frame_rendering', 'raster_duration_ms', rasterMs);
+    _manager.stopTrace('_ai_chat_frame_rendering');
+  }
 
   Future<void> loadChatHistory() async {
     try {
@@ -45,41 +69,73 @@ class AiChatNotifier extends ChangeNotifier {
     }
   }
 
-  void initStream() {
-    _chatsStream = _repository.subscribeChat().listen((newChats) {
-      // Remove typing indicators and clear existing chats
-      _chats.removeWhere((chat) => chat.isTyping);
-      _chats.clear();
-
-      // Add welcome message if no chats exist
-      if (newChats.isEmpty) {
-        _chats.add(
-          ChatMessage(
-            text:
-                'Hai! Aku adalah asisten wisatamu. Ada yang bisa aku bantu untuk liburanmu di Bali?',
-            isFromUser: false,
-          ),
-        );
-      } else {
-        // Add all chats from the stream
-        _chats.addAll(newChats.map((chat) => chat.toChatMessage()));
-      }
-
-      notifyListeners();
-    });
+  void retryConnection() {
+    _retryCount = 0;
+    _isRetrying = false;
+    _errorMessage = null;
+    _chatsStream?.cancel();
+    initStream();
   }
 
-  bool _isLoading = false;
-  bool _isClearing = false;
-  String? _errorMessage;
+  void initStream() {
+    _chatsStream = _repository.subscribeChat().listen(
+      (newChats) {
+        // Remove typing indicators and clear existing chats
+        _chats.removeWhere((chat) => chat.isTyping);
+        _chats.clear();
 
-  bool get isLoading => _isLoading;
+        // Add welcome message if no chats exist
+        if (newChats.isEmpty) {
+          _chats.add(
+            ChatMessage(
+              text:
+                  'Hai! Aku adalah asisten wisatamu. Ada yang bisa aku bantu untuk liburanmu di Bali?',
+              isFromUser: false,
+            ),
+          );
+        } else {
+          // Add all chats from the stream
+          _chats.addAll(newChats.map((chat) => chat.toChatMessage()));
+        }
 
-  bool get isClearing => _isClearing;
-
-  bool get hasError => _errorMessage != null;
-
-  String? get errorMessage => _errorMessage;
+        // Clear any previous error messages and reset retry counter
+         _errorMessage = null;
+         _retryCount = 0;
+         _isRetrying = false;
+         notifyListeners();
+      },
+      onError: (error) {
+         // Handle stream errors gracefully
+         _manager.trackError(
+           error: '${error.runtimeType}', 
+           description: 'Chat stream error: ${error.toString()}'
+         );
+         
+         if (_retryCount < _maxRetries) {
+           _retryCount++;
+           _isRetrying = true;
+           _errorMessage = 'Koneksi terputus. Mencoba menghubungkan kembali... ($_retryCount/$_maxRetries)';
+           notifyListeners();
+           
+           // Exponential backoff: 2^retryCount seconds
+           final delaySeconds = Duration(seconds: 2 << (_retryCount - 1));
+           Future.delayed(delaySeconds, () {
+             if (_chatsStream != null) {
+               _chatsStream!.cancel();
+               _isRetrying = false;
+               initStream(); // Retry connection
+             }
+           });
+         } else {
+           // Max retries reached
+           _isRetrying = false;
+           _errorMessage = 'Koneksi gagal. Silakan periksa koneksi internet Anda dan coba lagi.';
+           notifyListeners();
+         }
+       },
+      cancelOnError: false, // Keep the stream alive for retry
+    );
+  }
 
   Future<void> sendMessage(String userMessageText) async {
     if (userMessageText.isEmpty || _isLoading) return;

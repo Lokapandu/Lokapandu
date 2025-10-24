@@ -138,26 +138,29 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ),
         ],
       ),
-      body: Consumer<AiChatNotifier>(
-        builder: (context, notifier, child) {
-          final messages = notifier.chats;
-
-          if (messages.isNotEmpty) _scrollDown();
-
-          return ListView.separated(
-            controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            itemCount: messages.length,
-            itemBuilder: (context, index) {
-              final message = messages[index];
-              return ChatBubble(
-                text: message.text,
-                isFromUser: message.isFromUser,
-              );
-            },
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-          );
-        },
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Consumer<AiChatNotifier>(
+          builder: (context, notifier, child) {
+            final messages = notifier.chats;
+        
+            if (messages.isNotEmpty) _scrollDown();
+        
+            return ListView.separated(
+              controller: _scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: messages.length,
+              itemBuilder: (context, index) {
+                final message = messages[index];
+                return ChatBubble(
+                  text: message.text,
+                  isFromUser: message.isFromUser,
+                );
+              },
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+            );
+          },
+        ),
       ),
       bottomNavigationBar: Selector<AiChatNotifier, bool>(
         selector: (context, notifier) => notifier.isLoading,
