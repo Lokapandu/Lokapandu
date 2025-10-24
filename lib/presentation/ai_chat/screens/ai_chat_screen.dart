@@ -22,10 +22,21 @@ class _AiChatScreenState extends State<AiChatScreen> {
     super.initState();
 
     final notifier = context.read<AiChatNotifier>();
+    
+    // Add listener untuk auto-scroll ketika ada perubahan data
+    notifier.addListener(_onChatDataChanged);
+    
     Future.microtask(() {
       notifier.loadChatHistory();
       notifier.initStream();
     });
+  }
+
+  void _onChatDataChanged() {
+    final notifier = context.read<AiChatNotifier>();
+    if (notifier.chats.isNotEmpty) {
+      _scrollDown();
+    }
   }
 
   void _showClearConfirmationDialog() {
@@ -95,6 +106,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   @override
   void dispose() {
+    // Remove listener untuk mencegah memory leak
+    final notifier = context.read<AiChatNotifier>();
+    notifier.removeListener(_onChatDataChanged);
+    
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -143,8 +158,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
         child: Consumer<AiChatNotifier>(
           builder: (context, notifier, child) {
             final messages = notifier.chats;
-        
-            if (messages.isNotEmpty) _scrollDown();
         
             return ListView.separated(
               controller: _scrollController,
