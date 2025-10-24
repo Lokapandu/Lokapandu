@@ -100,7 +100,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                   }
 
                   if (!notifier.hasData) {
-                    return SliverToBoxAdapter(
+                    return SliverFillRemaining(
                       child: _buildEmptyState(
                         context,
                         'Pencarian tidak ditemukan!',

@@ -81,7 +81,6 @@ class TourismSpotNotifier extends ChangeNotifier {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _performSearch(query);
     });
-    notifyListeners();
   }
 
   Future<void> _performSearch(String query) async {
@@ -95,6 +94,10 @@ class TourismSpotNotifier extends ChangeNotifier {
     }
 
     try {
+      _analyticsManager.trackUserAction(
+        action: 'user_typing_query',
+        parameters: {'query': query},
+      );
       _analyticsManager.startTrace('searchTourismSpots');
       final result = await _searchTourismSpots.execute(query);
       _analyticsManager.setTraceMetric(
@@ -130,9 +133,14 @@ class TourismSpotNotifier extends ChangeNotifier {
   }
 
   void refresh() {
+    _analyticsManager.trackUserAction(action: 'user_refresh');
     if (_selectedCategory == 'Semua') {
       loadTourismSpots();
     } else {
+      _analyticsManager.trackUserAction(
+        action: 'user_filter_category',
+        parameters: {'category': _selectedCategory},
+      );
       filterByCategory(_selectedCategory);
     }
   }
@@ -150,7 +158,19 @@ class TourismSpotNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
+      _analyticsManager.startTrace('filterTourismSpotsByCategory');
       final result = await _getTourismSpotsByCategory.execute(category);
+      _analyticsManager.setTraceAttribute(
+        'filterTourismSpotsByCategory',
+        'category',
+        category,
+      );
+      _analyticsManager.setTraceMetric(
+        'filterTourismSpotsByCategory',
+        'spotsCount',
+        _tourismSpots.length,
+      );
+      _analyticsManager.stopTrace('filterTourismSpotsByCategory');
       result.fold(
         (failure) {
           _analyticsManager.trackError(
