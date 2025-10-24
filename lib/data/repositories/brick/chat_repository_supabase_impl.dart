@@ -34,7 +34,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Stream<Chat> subscribeChat() async* {
+  Stream<List<Chat>> subscribeChat() async* {
     try {
       final user = _client.auth.currentUser;
       if (user == null) {
@@ -46,10 +46,13 @@ class ChatRepositoryImpl implements ChatRepository {
           .from('chat_messages')
           .stream(primaryKey: ['id'])
           .eq('user_id', user.id)
-          .order('created_at');
+          .order('created_at', ascending: true);
 
       await for (final event in chatStream) {
-        yield event.map((e) => AiChatModel.fromJson(e).toEntity()).first;
+        final chats = event
+            .map((e) => AiChatModel.fromJson(e).toEntity())
+            .toList();
+        yield chats;
       }
     } on ConnectionException catch (e, st) {
       dev.log(e.message, name: 'Chat Repository', stackTrace: st);

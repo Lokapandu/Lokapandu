@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:lokapandu/common/services/analytics_manager.dart';
 import 'package:lokapandu/data/mappers/chat_mapper.dart';
 import 'package:lokapandu/domain/entities/chat_entity.dart';
 import 'package:lokapandu/domain/repositories/chat_repository.dart';
@@ -7,19 +8,20 @@ import 'package:lokapandu/presentation/ai_chat/models/chat_message_model.dart';
 
 class AiChatNotifier extends ChangeNotifier {
   final ChatRepository _repository;
+  final AnalyticsManager _manager;
 
-  AiChatNotifier({required ChatRepository repository})
-    : _repository = repository {
-    _loadChatHistory();
-    _initStream();
-  }
+  AiChatNotifier({
+    required ChatRepository repository,
+    required AnalyticsManager manager,
+  }) : _repository = repository,
+       _manager = manager;
 
   final List<ChatMessage> _chats = [];
-  StreamSubscription<Chat>? _chatsStream;
+  StreamSubscription<List<Chat>>? _chatsStream;
 
   List<ChatMessage> get chats => _chats;
 
-  Future<void> _loadChatHistory() async {
+  Future<void> loadChatHistory() async {
     try {
       final initialChats = await _repository.getChatHistory();
       _chats.clear();
@@ -35,6 +37,7 @@ class AiChatNotifier extends ChangeNotifier {
       _chats.addAll(initialChats.map((e) => e.toChatMessage()));
       notifyListeners();
     } catch (e) {
+      _manager.trackError(error: '${e.runtimeType}', description: e.toString());
       _errorMessage = 'Unexpected error: ${e.toString()}';
     } finally {
       _isLoading = false;
@@ -42,11 +45,26 @@ class AiChatNotifier extends ChangeNotifier {
     }
   }
 
-  void _initStream() {
+  void initStream() {
     _chatsStream = _repository.subscribeChat().listen((newChats) {
+      // Remove typing indicators and clear existing chats
       _chats.removeWhere((chat) => chat.isTyping);
       _chats.clear();
-      _chats.add(newChats.map((chat) => chat.toChatMessage()));
+
+      // Add welcome message if no chats exist
+      if (newChats.isEmpty) {
+        _chats.add(
+          ChatMessage(
+            text:
+                'Hai! Aku adalah asisten wisatamu. Ada yang bisa aku bantu untuk liburanmu di Bali?',
+            isFromUser: false,
+          ),
+        );
+      } else {
+        // Add all chats from the stream
+        _chats.addAll(newChats.map((chat) => chat.toChatMessage()));
+      }
+
       notifyListeners();
     });
   }
@@ -62,11 +80,6 @@ class AiChatNotifier extends ChangeNotifier {
   bool get hasError => _errorMessage != null;
 
   String? get errorMessage => _errorMessage;
-
-  Future<void> loadChatHistory() async {
-    _isLoading = true;
-    notifyListeners();
-  }
 
   Future<void> sendMessage(String userMessageText) async {
     if (userMessageText.isEmpty || _isLoading) return;
@@ -91,7 +104,11 @@ class AiChatNotifier extends ChangeNotifier {
       await _repository.storeChat(userMessageText, true);
       await _repository.storeChat(responseText, false);
     } catch (e) {
+      _chats.removeWhere((msg) => msg.isTyping);
+      _chats.add(ChatMessage(text: 'Error!', isFromUser: false, isError: true));
+      _isLoading = false;
       _errorMessage = 'Unexpected error: ${e.toString()}';
+      _manager.trackError(error: '${e.runtimeType}', description: e.toString());
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -102,10 +119,27 @@ class AiChatNotifier extends ChangeNotifier {
     try {
       _isClearing = true;
       notifyListeners();
+
+      // Clear history in repository
       await _repository.clearHistory();
+
+      // Immediately clear local chats and show welcome message
+      // This provides instant feedback while stream catches up
+      _chats.clear();
+      _chats.add(
+        ChatMessage(
+          text:
+              'Hai! Aku adalah asisten wisatamu. Ada yang bisa aku bantu untuk liburanmu di Bali?',
+          isFromUser: false,
+        ),
+      );
+
       _isClearing = false;
+      _errorMessage = null; // Clear any previous errors
     } catch (e) {
+      _isClearing = false;
       _errorMessage = 'Unexpected error: ${e.toString()}';
+      _manager.trackError(error: '${e.runtimeType}', description: e.toString());
     } finally {
       notifyListeners();
     }

@@ -110,7 +110,11 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => di.locator<TourPlanDetailNotifier>(),
         ),
-        ChangeNotifierProvider(create: (_) => di.locator<AiChatNotifier>()),
+        ChangeNotifierProvider(
+          create: (_) => di.locator<AiChatNotifier>()
+            ..loadChatHistory()
+            ..initStream(),
+        ),
       ],
       child: const App(),
     ),

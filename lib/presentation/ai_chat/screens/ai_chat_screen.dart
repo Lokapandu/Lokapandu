@@ -17,6 +17,17 @@ class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  @override
+  void initState() {
+    super.initState();
+
+    final notifier = context.read<AiChatNotifier>();
+    Future.microtask(() {
+      notifier.loadChatHistory();
+      notifier.initStream();
+    });
+  }
+
   void _showClearConfirmationDialog() {
     showDialog(
       context: context,
@@ -104,11 +115,24 @@ class _AiChatScreenState extends State<AiChatScreen> {
           Consumer<AiChatNotifier>(
             builder: (context, notifier, child) {
               return IconButton(
-                icon: const Icon(Icons.delete_outline),
+                icon: notifier.isClearing
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      )
+                    : const Icon(Icons.delete_outline),
                 onPressed: notifier.isClearing
                     ? null
                     : _showClearConfirmationDialog,
-                tooltip: 'Hapus Riwayat Chat',
+                tooltip: notifier.isClearing
+                    ? 'Menghapus riwayat...'
+                    : 'Hapus Riwayat Chat',
               );
             },
           ),

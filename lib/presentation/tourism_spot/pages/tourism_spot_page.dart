@@ -189,7 +189,9 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
           Expanded(
             child: Consumer<TourismSpotNotifier>(
               builder: (context, notifier, _) {
-                final TextEditingController controller = TextEditingController(text: notifier.searchQuery);
+                final TextEditingController controller = TextEditingController(
+                  text: notifier.searchQuery,
+                );
                 return TextField(
                   controller: controller,
                   onChanged: (query) {

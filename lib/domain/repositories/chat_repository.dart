@@ -3,7 +3,7 @@ import 'package:lokapandu/domain/entities/chat_entity.dart';
 abstract class ChatRepository {
   Future<List<Chat>> getChatHistory();
 
-  Stream<Chat> subscribeChat();
+  Stream<List<Chat>> subscribeChat();
 
   Future<String?> generateResponse(String message);
 

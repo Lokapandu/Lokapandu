@@ -281,6 +281,9 @@ Future<void> initDependencies() async {
     ),
   );
   locator.registerFactory<AiChatNotifier>(
-    () => AiChatNotifier(repository: locator<ChatRepository>()),
+    () => AiChatNotifier(
+      repository: locator<ChatRepository>(),
+      manager: locator<AnalyticsManager>(),
+    ),
   );
 }
