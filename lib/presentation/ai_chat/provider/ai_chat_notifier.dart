@@ -54,7 +54,9 @@ class AiChatNotifier extends ChangeNotifier {
   }
 
   Future<void> loadChatHistory() async {
+    _manager.trackEvent(eventName: 'LoadChatHistory');
     try {
+      _manager.startTrace('LoadChatHistory');
       final initialChats = await _repository.getChatHistory();
       _chats.clear();
       if (initialChats.isEmpty) {
@@ -67,6 +69,8 @@ class AiChatNotifier extends ChangeNotifier {
         );
       }
       _chats.addAll(initialChats.map((e) => e.toChatMessage()));
+      _manager.setTraceMetric('ChatSize', 'AfterLoad', _chats.length);
+      _manager.stopTrace('LoadChatHistory');
       notifyListeners();
     } catch (e) {
       _manager.trackError(error: '${e.runtimeType}', description: e.toString());
@@ -86,6 +90,8 @@ class AiChatNotifier extends ChangeNotifier {
   }
 
   void initStream() {
+    _manager.trackEvent(eventName: 'InitChatStream');
+    _manager.startTrace('InitChatStream');
     _chatsStream = _repository.subscribeChat().listen(
       (newChats) {
         // Remove typing indicators and clear existing chats
@@ -113,7 +119,7 @@ class AiChatNotifier extends ChangeNotifier {
         notifyListeners();
       },
       onError: (error) {
-        if (_isRetrying) return; 
+        if (_isRetrying) return;
         // Handle stream errors gracefully
         _manager.trackError(
           error: '${error.runtimeType}',
@@ -146,6 +152,8 @@ class AiChatNotifier extends ChangeNotifier {
       },
       cancelOnError: false, // Keep the stream alive for retry
     );
+    _manager.setTraceMetric('ChatSize', 'AfterInit', _chats.length);
+    _manager.stopTrace('InitChatStream');
   }
 
   Future<void> sendMessage(String userMessageText) async {
@@ -161,6 +169,7 @@ class AiChatNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
+      _manager.trackUserAction(action: 'SendMessage', category: 'Chat');
       _manager.startTrace('Generate Response');
       // generate response
       final responseText = await _repository.generateResponse(userMessageText);
@@ -196,6 +205,7 @@ class AiChatNotifier extends ChangeNotifier {
       _isClearing = true;
       notifyListeners();
 
+      _manager.trackUserAction(action: 'ClearChatHistory', category: 'Chat');
       _manager.startTrace('ClearChatHistory');
       // Clear history in repository
       _manager.setTraceMetric('ChatSize', 'BeforeClear', _chats.length);
