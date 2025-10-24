@@ -100,9 +100,13 @@ class _HomeContentState extends State<HomeContent> {
                   }
 
                   final upcomingSpots = notifier.planItems
-                      .map((e) => e.tourismSpot)
-                      .whereType<TourismSpot>()
                       .take(3)
+                      .map((e) => MapEntry(e.id, e.tourismSpot))
+                      .where((entry) => entry.value != null)
+                      .map(
+                        (entry) =>
+                            MapEntry(entry.key, entry.value as TourismSpot),
+                      )
                       .toList();
 
                   return Padding(
@@ -113,7 +117,10 @@ class _HomeContentState extends State<HomeContent> {
                       itemCount: upcomingSpots.length,
                       itemBuilder: (context, index) {
                         final spot = upcomingSpots[index];
-                        return UpcomingTourCard(spot: spot);
+                        return UpcomingTourCard(
+                          id: spot.key,
+                          spot: spot.value,
+                        );
                       },
                     ),
                   );

@@ -7,9 +7,10 @@ import 'package:lokapandu/common/utils/string_to_timeofday.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
 class UpcomingTourCard extends StatelessWidget {
+  final String id;
   final TourismSpot spot;
 
-  const UpcomingTourCard({super.key, required this.spot});
+  const UpcomingTourCard({super.key, required this.id, required this.spot});
 
   // Helper untuk membedakan URL network dan path aset lokal
   bool _isNetworkUrl(String url) {
@@ -30,12 +31,7 @@ class UpcomingTourCard extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        context.push(
-          Routing.tourismSpotPreview.fullPath.replaceFirst(
-            ':id',
-            spot.id.toString(),
-          ),
-        );
+        context.push(Routing.planDetail.fullPath.replaceFirst(':id', id));
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 10.0),
