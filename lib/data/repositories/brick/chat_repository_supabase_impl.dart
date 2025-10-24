@@ -14,13 +14,22 @@ class ChatRepositoryImpl implements ChatRepository {
 
   ChatRepositoryImpl() : _client = Supabase.instance.client;
 
+  User get _currentUser {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      dev.log('User not logged in.', name: 'Chat Repository');
+      throw ServerFailure('User not logged in.');
+    }
+    return user;
+  }
+
   @override
   Future<void> clearHistory() async {
     try {
-      final user = _client.auth.currentUser;
-      if (user == null) throw ServerFailure('User not logged in.');
-
-      await _client.from('chat_messages').delete().eq('user_id', user.id);
+      await _client
+          .from('chat_messages')
+          .delete()
+          .eq('user_id', _currentUser.id);
     } on ConnectionException catch (e, st) {
       dev.log(e.message, name: 'Chat Repository', stackTrace: st);
       throw ConnectionFailure(e.message);
@@ -36,16 +45,10 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Stream<List<Chat>> subscribeChat() async* {
     try {
-      final user = _client.auth.currentUser;
-      if (user == null) {
-        dev.log('User not logged in.', name: 'Chat Repository');
-        throw ServerFailure('User not logged in.');
-      }
-
       final chatStream = _client
           .from('chat_messages')
           .stream(primaryKey: ['id'])
-          .eq('user_id', user.id)
+          .eq('user_id', _currentUser.id)
           .order('created_at', ascending: true);
 
       await for (final event in chatStream) {
@@ -55,8 +58,11 @@ class ChatRepositoryImpl implements ChatRepository {
         yield chats;
       }
     } on RealtimeSubscribeException catch (e, st) {
-      dev.log('Realtime subscription error: ${e.toString()}', 
-              name: 'Chat Repository', stackTrace: st);
+      dev.log(
+        'Realtime subscription error: ${e.toString()}',
+        name: 'Chat Repository',
+        stackTrace: st,
+      );
       throw ConnectionFailure('Realtime connection failed: ${e.toString()}');
     } on ConnectionException catch (e, st) {
       dev.log(e.message, name: 'Chat Repository', stackTrace: st);
@@ -70,16 +76,10 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<List<Chat>> getChatHistory() async {
     try {
-      final user = _client.auth.currentUser;
-      if (user == null) {
-        dev.log('User not logged in.', name: 'Chat Repository');
-        throw ServerFailure('User not logged in.');
-      }
-
       final response = await _client
           .from('chat_messages')
           .select()
-          .eq('user_id', user.id)
+          .eq('user_id', _currentUser.id)
           .order('created_at', ascending: true);
 
       return response.map((e) => AiChatModel.fromJson(e).toEntity()).toList();
@@ -121,12 +121,9 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<void> storeChat(String message, bool isUser) async {
     try {
-      final user = _client.auth.currentUser;
-      if (user == null) throw ServerFailure('User not logged in.');
-
       final chatModel = AiChatModel(
         id: Uuid().v4(),
-        userId: user.id,
+        userId: _currentUser.id,
         content: message,
         isFromUser: isUser,
         createdAt: DateTime.now(),
