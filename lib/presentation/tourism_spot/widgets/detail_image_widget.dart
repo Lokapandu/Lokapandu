@@ -11,14 +11,15 @@ class DetailImageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxHeight: 350),
+    return SizedBox(
+      height: 350 + MediaQuery.of(context).padding.top,
       child: Stack(
         alignment: Alignment.bottomLeft,
         children: [
           if (imageUrl.isNotEmpty)
             CachedNetworkImage(
               width: double.infinity,
+              height: double.infinity,
               imageUrl: imageUrl,
               fit: BoxFit.cover,
               placeholder: (context, url) =>
