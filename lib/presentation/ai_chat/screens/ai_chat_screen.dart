@@ -25,7 +25,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
     _notifier = context.read<AiChatNotifier>();
 
-    // Add listener untuk auto-scroll ketika ada perubahan data
     _notifier.addListener(_onChatDataChanged);
 
     Future.microtask(() {
@@ -87,7 +86,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
       if (mounted) {
         scaffoldMessenger.showSnackBar(
-          snackbar('Riwayat chat berhasil dihapus.', backgroundColor: theme.colorScheme.primary),
+          snackbar(
+            'Riwayat chat berhasil dihapus.',
+            backgroundColor: theme.colorScheme.primary,
+          ),
         );
       }
     } catch (e) {
@@ -104,7 +106,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
   @override
   void dispose() {
-    // Remove listener untuk mencegah memory leak
     _notifier.removeListener(_onChatDataChanged);
 
     _controller.dispose();
@@ -116,6 +117,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -150,46 +152,57 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ),
         ],
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Consumer<AiChatNotifier>(
-          builder: (context, notifier, child) {
-            final messages = notifier.chats;
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () => FocusScope.of(context).unfocus(),
+                child: Consumer<AiChatNotifier>(
+                  builder: (context, notifier, child) {
+                    final messages = notifier.chats;
 
-            return ListView.separated(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return ChatBubble(
-                  text: message.text,
-                  isFromUser: message.isFromUser,
+                    return ListView.separated(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+                        return ChatBubble(
+                          text: message.text,
+                          isFromUser: message.isFromUser,
+                        );
+                      },
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Selector<AiChatNotifier, bool>(
+              selector: (context, notifier) => notifier.isLoading,
+              builder: (context, isLoading, child) {
+                return ChatInputBar(
+                  controller: _controller,
+                  isLoading: isLoading,
+                  onSend: () {
+                    if (_controller.text.isNotEmpty) {
+                      final userMessage = _controller.text;
+                      _controller.clear();
+                      FocusScope.of(context).unfocus();
+
+                      context.read<AiChatNotifier>().sendMessage(userMessage);
+                    }
+                  },
                 );
               },
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-            );
-          },
+            ),
+          ],
         ),
-      ),
-      bottomNavigationBar: Selector<AiChatNotifier, bool>(
-        selector: (context, notifier) => notifier.isLoading,
-        builder: (context, isLoading, child) {
-          return ChatInputBar(
-            controller: _controller,
-            isLoading: isLoading,
-            onSend: () {
-              if (_controller.text.isNotEmpty) {
-                final userMessage = _controller.text;
-                _controller.clear();
-                FocusScope.of(context).unfocus();
-
-                // Panggil logic di Provider
-                context.read<AiChatNotifier>().sendMessage(userMessage);
-              }
-            },
-          );
-        },
       ),
     );
   }
