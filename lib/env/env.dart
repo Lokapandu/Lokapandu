@@ -15,7 +15,4 @@ abstract class Env {
 
   @EnviedField(varName: 'WEATHER_BASE_URL')
   static const String weatherBaseUrl = _Env.weatherBaseUrl;
-
-  @EnviedField(varName: 'API_KEY_CHAT_GEMINI')
-  static const String chatGeminiApiKey = _Env.chatGeminiApiKey;
 }

@@ -27,28 +27,22 @@ class TourismSpotDetailPage extends StatelessWidget {
             const SizedBox(height: 24),
             ImageCarouselSection(images: tour.images),
             const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: AboutSection(aboutText: tour.description),
-            ),
+            AboutSection(aboutText: tour.description),
             const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: LocationMapSection(
+            LocationMapSection(
                 tourName: tour.name,
                 latitude: tour.latitude,
                 longitude: tour.longitude,
               ),
-            ),
             const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: FacilitiesSection(facilities: tour.facilities),
-            ),
+            FacilitiesSection(facilities: tour.facilities),
           ],
         ),
       ),
-      bottomNavigationBar: ActionButtonsSection(tour: tour),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+        child: ActionButtonsSection(tour: tour),
+      ),
     );
   }
 }
