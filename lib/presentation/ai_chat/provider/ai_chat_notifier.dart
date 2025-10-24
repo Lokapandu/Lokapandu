@@ -94,15 +94,22 @@ class AiChatNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
+      _manager.startTrace('Generate Response');
       // generate response
       final responseText = await _repository.generateResponse(userMessageText);
       if (responseText == null) {
         _errorMessage = 'Failed to generate response.';
         return;
       }
+      _manager.setTraceMetric('ResponseLength', 'Chars', responseText.length);
+      _manager.stopTrace('Generate Response');
+
       // store response
+      _manager.startTrace('Store Response');
       await _repository.storeChat(userMessageText, true);
       await _repository.storeChat(responseText, false);
+      _manager.setTraceMetric('ChatSize', 'AfterAdd', _chats.length);
+      _manager.stopTrace('Store Response');
     } catch (e) {
       _chats.removeWhere((msg) => msg.isTyping);
       _chats.add(ChatMessage(text: 'Error!', isFromUser: false, isError: true));
@@ -120,12 +127,16 @@ class AiChatNotifier extends ChangeNotifier {
       _isClearing = true;
       notifyListeners();
 
+      _manager.startTrace('ClearChatHistory');
       // Clear history in repository
+      _manager.setTraceMetric('ChatSize', 'BeforeClear', _chats.length);
       await _repository.clearHistory();
 
       // Immediately clear local chats and show welcome message
       // This provides instant feedback while stream catches up
       _chats.clear();
+      _manager.setTraceMetric('ChatSize', 'AfterClear', _chats.length);
+      _manager.stopTrace('ClearChatHistory');
       _chats.add(
         ChatMessage(
           text:

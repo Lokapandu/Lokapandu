@@ -140,31 +140,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
       ),
       body: Consumer<AiChatNotifier>(
         builder: (context, notifier, child) {
-          // if (notifier.isLoading) {
-          //   return Padding(
-          //     padding: const EdgeInsets.all(8.0),
-          //     child: Row(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         SizedBox(
-          //           width: 20,
-          //           height: 20,
-          //           child: CircularProgressIndicator(strokeWidth: 2.5),
-          //         ),
-          //         const SizedBox(width: 10),
-          //         Text(
-          //           'AI sedang berpikir...',
-          //           style: theme.textTheme.bodyMedium,
-          //         ),
-          //       ],
-          //     ),
-          //   );
-          // }
-
-          // if (notifier.hasError) {
-          //   return Center(child: Text('Error: ${notifier.errorMessage}'));
-          // }
-
           final messages = notifier.chats;
 
           if (messages.isNotEmpty) _scrollDown();

@@ -100,6 +100,7 @@ class ChatRepositoryImpl implements ChatRepository {
       if (data == null) {
         throw ServerFailure('Gagal mendapatkan data.');
       }
+      dev.log('AI Said: $data', name: 'Chat Repository');
       return data;
     } on ConnectionException catch (e, st) {
       dev.log(e.message, name: 'Chat Repository', stackTrace: st);
