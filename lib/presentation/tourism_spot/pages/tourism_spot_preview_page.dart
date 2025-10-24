@@ -130,7 +130,10 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          _buildGalleryThumbnails(context, notifier.selectedImage),
+                          _buildGalleryThumbnails(
+                            context,
+                            notifier.selectedImage,
+                          ),
                           const SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: () {
@@ -193,10 +196,7 @@ class _TourismSpotPreviewPageState extends State<TourismSpotPreviewPage> {
             opacity: animation,
             child: ScaleTransition(
               scale: Tween<double>(begin: 1.2, end: 1.0).animate(
-                CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.easeOutCubic,
-                ),
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
               ),
               child: child,
             ),

@@ -4,7 +4,7 @@ import 'package:lokapandu/common/routes/analytic_page_observer.dart';
 import 'package:lokapandu/common/routes/page_transitions.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
-import 'package:lokapandu/features/ai_chat/screens/ai_chat_screen.dart';
+import 'package:lokapandu/presentation/ai_chat/screens/ai_chat_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/auth_screen.dart';
 import 'package:lokapandu/presentation/auth/screens/splash_screen.dart';
 import 'package:lokapandu/presentation/bookmark/screens/bookmark_screen.dart';

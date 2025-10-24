@@ -14,7 +14,7 @@ dependencies:
   
   firebase_core: ^4.1.0
   firebase_crashlytics: ^5.0.0
-  firebase_ai: ^3.2.0
+  firebase_ai: ^3.4.0
   firebase_messaging: ^16.0.2
   freezed_annotation: ^3.1.0
   json_annotation: ^4.9.0
@@ -64,6 +64,7 @@ dependencies:
   flutter_localization: ^0.3.3
   provider: ^6.1.5+1
   firebase_performance: ^0.11.1+1
+  flutter_markdown: ^0.7.7+1
   
 dev_dependencies:
   flutter_test:

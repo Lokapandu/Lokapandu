@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +19,7 @@ import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart'
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source_impl.dart';
 import 'package:lokapandu/data/repositories/brick/itinerary_repository_brick_impl.dart';
 import 'package:lokapandu/data/repositories/supabase/tourism_spot_repository_supabase_impl.dart';
+import 'package:lokapandu/domain/repositories/chat_repository.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
 import 'package:lokapandu/domain/usecases/get_current_weather.dart';
@@ -33,6 +35,7 @@ import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.da
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
 import 'package:lokapandu/domain/validators/itinerary_validators.dart';
+import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
 import 'package:lokapandu/presentation/common/notifier/app_header_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_detail_notifier.dart';
@@ -48,6 +51,8 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calcu
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'data/repositories/brick/chat_repository_supabase_impl.dart';
 
 final locator = GetIt.instance;
 
@@ -71,6 +76,11 @@ Future<void> initDependencies() async {
 
   /// Supabase client - singleton as it manages connection state
   locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
+
+  /// genai
+  locator.registerSingleton<GenerativeModel>(
+    FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash'),
+  );
 
   /// Location service - handles device location permissions
   locator.registerSingleton<Location>(Location());
@@ -125,6 +135,8 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<ItineraryRepository>(
     () => ItineraryRepositoryImpl(),
   );
+
+  locator.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl());
 
   // ========================================
   // VALIDATORS
@@ -266,6 +278,12 @@ Future<void> initDependencies() async {
       locator<GetUserItineraryById>(),
       locator<AnalyticsManager>(),
       locator<DeleteUserItineraries>(),
+    ),
+  );
+  locator.registerFactory<AiChatNotifier>(
+    () => AiChatNotifier(
+      repository: locator<ChatRepository>(),
+      manager: locator<AnalyticsManager>(),
     ),
   );
 }

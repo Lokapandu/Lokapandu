@@ -33,23 +33,21 @@ import '../brick/models/itinerary.model.dart';
 import '../brick/models/tourism_image.model.dart';
 import '../brick/models/tourism_spot.model.dart';
 
+part 'adapters/itinerary_model_adapter.g.dart';
 part 'adapters/tourism_image_model_adapter.g.dart';
 part 'adapters/tourism_spot_model_adapter.g.dart';
 
 /// Supabase mappings should only be used when initializing a [SupabaseProvider]
 final Map<Type, SupabaseAdapter<SupabaseModel>> supabaseMappings = {
-  TourismImageModel: TourismImageModelAdapter(),
-
-  UserItineraryModel: UserItineraryModelAdapter(),
   ItineraryModel: ItineraryModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter()
-
+  TourismImageModel: TourismImageModelAdapter(),
   TourismSpotModel: TourismSpotModelAdapter(),
 };
 final supabaseModelDictionary = SupabaseModelDictionary(supabaseMappings);
 
 /// Sqlite mappings should only be used when initializing a [SqliteProvider]
 final Map<Type, SqliteAdapter<SqliteModel>> sqliteMappings = {
+  ItineraryModel: ItineraryModelAdapter(),
   TourismImageModel: TourismImageModelAdapter(),
   TourismSpotModel: TourismSpotModelAdapter(),
 };

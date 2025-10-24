@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class ChatBubble extends StatelessWidget {
   final String text;
@@ -8,7 +9,6 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final alignment = isFromUser
@@ -21,7 +21,6 @@ class ChatBubble extends StatelessWidget {
         ? colorScheme.onPrimary
         : colorScheme.onSurface;
 
-   
     final borderRadius = isFromUser
         ? const BorderRadius.only(
             topLeft: Radius.circular(16),
@@ -43,12 +42,14 @@ class ChatBubble extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(color: color, borderRadius: borderRadius),
-          child: Text(
-            text,
-          
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: textColor,
-              height: 1.4, 
+          child: MarkdownBody(
+            data: text,
+            shrinkWrap: true,
+            styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+              p: theme.textTheme.bodyLarge?.copyWith(
+                color: textColor,
+                height: 1.4,
+              ),
             ),
           ),
         ),
