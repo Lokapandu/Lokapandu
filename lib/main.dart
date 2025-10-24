@@ -21,7 +21,7 @@ import 'package:lokapandu/presentation/settings/providers/notification_settings_
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';

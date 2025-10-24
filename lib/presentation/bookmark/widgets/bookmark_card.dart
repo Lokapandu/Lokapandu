@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/bookmark_button.dart';
 
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
 
 class BookmarkCard extends StatelessWidget {
   final TourismSpot spot;
@@ -83,13 +82,7 @@ class BookmarkCard extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.bookmark, color: colorScheme.primary),
-                onPressed: () {
-                  // Langsung hapus bookmark saat tombol ditekan
-                  context.read<BookmarkProvider>().toggleBookmark(spot);
-                },
-              ),
+              BookmarkButton(tour: spot, buttonType: BookmarkButtonType.icon),
             ],
           ),
         ),

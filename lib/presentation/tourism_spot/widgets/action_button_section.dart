@@ -3,8 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/plan/route/tour_plan_editor_extra.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/bookmark_button.dart';
 
 class ActionButtonsSection extends StatelessWidget {
   final TourismSpot tour;
@@ -34,64 +33,33 @@ class ActionButtonsSection extends StatelessWidget {
           ),
         ),
       ),
-      child: Consumer<BookmarkProvider>(
-        builder: (context, bookmarkProvider, child) {
-          final isBookmarked = bookmarkProvider.isBookmarked(tour);
-
-          return Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: ElevatedButton.icon(
-                  icon: const Icon(Icons.add_location_alt_outlined),
-                  label: const Text('Tambah Rencana'),
-                  onPressed: () => context.pushNamed(
-                    Routing.planAdd.routeName,
-                    extra: TourPlanEditorExtra(tourismSpot: tour),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                    foregroundColor: colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    textStyle: textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: const Text('Tambah Rencana'),
+              onPressed: () => context.pushNamed(
+                Routing.planAdd.routeName,
+                extra: TourPlanEditorExtra(tourismSpot: tour),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                textStyle: textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                flex: 1,
-                child: OutlinedButton(
-                  onPressed: () {
-                    bookmarkProvider.toggleBookmark(tour);
-                  },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    side: BorderSide(
-                      color: isBookmarked
-                          ? colorScheme.primary
-                          : colorScheme.outline,
-                      width: isBookmarked ? 2 : 1,
-                    ),
-                  ),
-                  child: Icon(
-                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                    color: isBookmarked
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(flex: 1, child: BookmarkButton(tour: tour)),
+        ],
       ),
     );
   }

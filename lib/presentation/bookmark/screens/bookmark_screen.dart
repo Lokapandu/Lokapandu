@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:lokapandu/common/routes/routing_list.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lokapandu/presentation/bookmark/widgets/bookmark_card.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
 
 class BookmarkScreen extends StatelessWidget {
   const BookmarkScreen({super.key});
@@ -31,8 +32,23 @@ class BookmarkScreen extends StatelessWidget {
       ),
       body: Consumer<BookmarkProvider>(
         builder: (context, provider, child) {
-          if (provider.bookmarkedSpots.isEmpty) {
-            return Center(
+          final bookmarkList = provider.bookmarkedSpots ?? [];
+
+          return switch (bookmarkList.isNotEmpty) {
+            true => ListView.separated(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: bookmarkList.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final spot = bookmarkList[index];
+                return BookmarkCard(
+                  spot: spot,
+                  onTap: () =>
+                      context.push(Routing.tourismSpotDetail.fullPath, extra: spot),
+                );
+              },
+            ),
+            _ => Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -53,24 +69,8 @@ class BookmarkScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            );
-          }
-
-          return ListView.separated(
-            padding: const EdgeInsets.all(16.0),
-            itemCount: provider.bookmarkedSpots.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final spot = provider.bookmarkedSpots[index];
-              return BookmarkCard(
-                spot: spot,
-                onTap: () {
-                  // FIX: Navigasi ke halaman detail saat kartu diklik
-                  context.push('/tourism_spot/detail', extra: spot);
-                },
-              );
-            },
-          );
+            ),
+          };
         },
       ),
     );
