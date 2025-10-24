@@ -38,21 +38,6 @@ class AiChatNotifier extends ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  void calculateScreenRendering(int buildMs, int rasterMs) {
-    _manager.startTrace('_ai_chat_frame_rendering');
-    _manager.setTraceMetric(
-      '_ai_chat_frame_rendering',
-      'build_duration_ms',
-      buildMs,
-    );
-    _manager.setTraceMetric(
-      '_ai_chat_frame_rendering',
-      'raster_duration_ms',
-      rasterMs,
-    );
-    _manager.stopTrace('_ai_chat_frame_rendering');
-  }
-
   Future<void> loadChatHistory() async {
     _manager.trackEvent(eventName: 'LoadChatHistory');
     try {

@@ -54,10 +54,12 @@ class TourPlanNotifier extends ChangeNotifier {
     }
 
     try {
+      await _analyticsManager.startTrace('fetchItineraries');
       final result = await _useCase.execute(
         user.id,
         filterByDate: _selectedDate?.toIso8601String(),
       );
+      await _analyticsManager.stopTrace('fetchItineraries');
       result.fold(
         (failure) {
           _analyticsManager.trackError(

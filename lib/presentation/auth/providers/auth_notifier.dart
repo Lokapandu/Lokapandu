@@ -110,7 +110,9 @@ class AuthNotifier extends ChangeNotifier {
         },
       );
 
+      await _analyticsManager.startTrace('google_sign_in');
       final response = await _authService.signInWithGoogle();
+      await _analyticsManager.stopTrace('google_sign_in');
 
       if (response.user != null) {
         // Track successful sign-in
@@ -174,7 +176,9 @@ class AuthNotifier extends ChangeNotifier {
         parameters: {'timestamp': DateTime.now().toIso8601String()},
       );
 
+      await _analyticsManager.startTrace('sign_out');
       await _authService.signOut();
+      await _analyticsManager.stopTrace('sign_out');
 
       developer.log('Sign out successful', name: 'AuthNotifier');
     } catch (e) {

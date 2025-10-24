@@ -314,7 +314,8 @@ class TourPlanEditorNotifier extends ChangeNotifier {
       },
     );
 
-    return await _createItineraryUseCase.execute(
+    await _analyticsManager.startTrace('saveItinerary');
+    final result = await _createItineraryUseCase.execute(
       CreateItinerary(
         name: _name,
         notes: _notes,
@@ -324,6 +325,8 @@ class TourPlanEditorNotifier extends ChangeNotifier {
         userId: userId,
       ),
     );
+    await _analyticsManager.stopTrace('saveItinerary');
+    return result;
   }
 
   /// Creates a DateTime from a date and time of day
