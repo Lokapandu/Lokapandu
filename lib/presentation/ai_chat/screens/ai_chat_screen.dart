@@ -17,25 +17,25 @@ class AiChatScreen extends StatefulWidget {
 class _AiChatScreenState extends State<AiChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late AiChatNotifier _notifier;
 
   @override
   void initState() {
     super.initState();
 
-    final notifier = context.read<AiChatNotifier>();
+    _notifier = context.read<AiChatNotifier>();
 
     // Add listener untuk auto-scroll ketika ada perubahan data
-    notifier.addListener(_onChatDataChanged);
+    _notifier.addListener(_onChatDataChanged);
 
     Future.microtask(() {
-      notifier.loadChatHistory();
-      notifier.initStream();
+      _notifier.loadChatHistory();
+      _notifier.initStream();
     });
   }
 
   void _onChatDataChanged() {
-    final notifier = context.read<AiChatNotifier>();
-    if (notifier.chats.isNotEmpty) {
+    if (_notifier.chats.isNotEmpty) {
       _scrollDown();
     }
   }
@@ -105,8 +105,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   void dispose() {
     // Remove listener untuk mencegah memory leak
-    final notifier = context.read<AiChatNotifier>();
-    notifier.removeListener(_onChatDataChanged);
+    _notifier.removeListener(_onChatDataChanged);
 
     _controller.dispose();
     _scrollController.dispose();
