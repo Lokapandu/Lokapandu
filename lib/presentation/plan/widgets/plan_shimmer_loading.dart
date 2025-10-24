@@ -27,8 +27,8 @@ class PlanTimelineShimmerItem extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Shimmer.fromColors(
-      baseColor: colorScheme.surfaceContainerHigh,
-      highlightColor: colorScheme.surface,
+      baseColor: colorScheme.primary.withValues(alpha: .3),
+      highlightColor: colorScheme.surfaceContainerHigh,
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +84,7 @@ class PlanTimelineShimmerItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       elevation: 3.0,
-      color: colorScheme.surfaceContainer,
+      color: colorScheme.primary.withValues(alpha: .3),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Row(
