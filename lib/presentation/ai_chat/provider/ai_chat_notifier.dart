@@ -40,8 +40,16 @@ class AiChatNotifier extends ChangeNotifier {
 
   void calculateScreenRendering(int buildMs, int rasterMs) {
     _manager.startTrace('_ai_chat_frame_rendering');
-    _manager.setTraceMetric('_ai_chat_frame_rendering', 'build_duration_ms', buildMs);
-    _manager.setTraceMetric('_ai_chat_frame_rendering', 'raster_duration_ms', rasterMs);
+    _manager.setTraceMetric(
+      '_ai_chat_frame_rendering',
+      'build_duration_ms',
+      buildMs,
+    );
+    _manager.setTraceMetric(
+      '_ai_chat_frame_rendering',
+      'raster_duration_ms',
+      rasterMs,
+    );
     _manager.stopTrace('_ai_chat_frame_rendering');
   }
 
@@ -99,40 +107,43 @@ class AiChatNotifier extends ChangeNotifier {
         }
 
         // Clear any previous error messages and reset retry counter
-         _errorMessage = null;
-         _retryCount = 0;
-         _isRetrying = false;
-         notifyListeners();
+        _errorMessage = null;
+        _retryCount = 0;
+        _isRetrying = false;
+        notifyListeners();
       },
       onError: (error) {
-         // Handle stream errors gracefully
-         _manager.trackError(
-           error: '${error.runtimeType}', 
-           description: 'Chat stream error: ${error.toString()}'
-         );
-         
-         if (_retryCount < _maxRetries) {
-           _retryCount++;
-           _isRetrying = true;
-           _errorMessage = 'Koneksi terputus. Mencoba menghubungkan kembali... ($_retryCount/$_maxRetries)';
-           notifyListeners();
-           
-           // Exponential backoff: 2^retryCount seconds
-           final delaySeconds = Duration(seconds: 2 << (_retryCount - 1));
-           Future.delayed(delaySeconds, () {
-             if (_chatsStream != null) {
-               _chatsStream!.cancel();
-               _isRetrying = false;
-               initStream(); // Retry connection
-             }
-           });
-         } else {
-           // Max retries reached
-           _isRetrying = false;
-           _errorMessage = 'Koneksi gagal. Silakan periksa koneksi internet Anda dan coba lagi.';
-           notifyListeners();
-         }
-       },
+        if (_isRetrying) return; 
+        // Handle stream errors gracefully
+        _manager.trackError(
+          error: '${error.runtimeType}',
+          description: 'Chat stream error: ${error.toString()}',
+        );
+
+        if (_retryCount < _maxRetries) {
+          _retryCount++;
+          _isRetrying = true;
+          _errorMessage =
+              'Koneksi terputus. Mencoba menghubungkan kembali... ($_retryCount/$_maxRetries)';
+          notifyListeners();
+
+          // Exponential backoff: 2^retryCount seconds
+          final delaySeconds = Duration(seconds: 2 << (_retryCount - 1));
+          Future.delayed(delaySeconds, () {
+            if (_chatsStream != null) {
+              _chatsStream!.cancel();
+              _isRetrying = false;
+              initStream(); // Retry connection
+            }
+          });
+        } else {
+          // Max retries reached
+          _isRetrying = false;
+          _errorMessage =
+              'Koneksi gagal. Silakan periksa koneksi internet Anda dan coba lagi.';
+          notifyListeners();
+        }
+      },
       cancelOnError: false, // Keep the stream alive for retry
     );
   }
