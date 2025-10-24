@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
 import 'package:lokapandu/presentation/ai_chat/widgets/chat_input_bar.dart';
+import 'package:lokapandu/presentation/plan/utils/snackbar_util.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/chat_buble.dart';
@@ -22,10 +23,10 @@ class _AiChatScreenState extends State<AiChatScreen> {
     super.initState();
 
     final notifier = context.read<AiChatNotifier>();
-    
+
     // Add listener untuk auto-scroll ketika ada perubahan data
     notifier.addListener(_onChatDataChanged);
-    
+
     Future.microtask(() {
       notifier.loadChatHistory();
       notifier.initStream();
@@ -86,17 +87,14 @@ class _AiChatScreenState extends State<AiChatScreen> {
 
       if (mounted) {
         scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: const Text('Riwayat chat berhasil dihapus.'),
-            backgroundColor: theme.colorScheme.primary,
-          ),
+          snackbar('Riwayat chat berhasil dihapus.', backgroundColor: theme.colorScheme.primary),
         );
       }
     } catch (e) {
       if (mounted) {
         scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: const Text('Gagal menghapus riwayat chat. Coba lagi.'),
+          snackbar(
+            'Gagal menghapus riwayat chat. Coba lagi.',
             backgroundColor: theme.colorScheme.error,
           ),
         );
@@ -109,7 +107,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
     // Remove listener untuk mencegah memory leak
     final notifier = context.read<AiChatNotifier>();
     notifier.removeListener(_onChatDataChanged);
-    
+
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -158,7 +156,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
         child: Consumer<AiChatNotifier>(
           builder: (context, notifier, child) {
             final messages = notifier.chats;
-        
+
             return ListView.separated(
               controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
