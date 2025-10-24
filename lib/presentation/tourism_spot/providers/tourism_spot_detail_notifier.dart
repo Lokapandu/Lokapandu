@@ -31,12 +31,23 @@ class TourismSpotDetailNotifier extends ChangeNotifier {
   bool get hasData => _tourismSpot != null;
 
   Future<void> loadTourismSpotDetail(int id) async {
+    _analyticsManager.trackEvent(
+      eventName: 'load_tourism_spot_detail',
+      parameters: {'id': id.toString()},
+    );
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
+      _analyticsManager.startTrace('load_tourism_spot_detail');
       final result = await _getTourismSpotDetail.execute(id);
+      _analyticsManager.setTraceAttribute(
+        'load_tourism_spot_detail',
+        'id',
+        id.toString(),
+      );
+      _analyticsManager.stopTrace('load_tourism_spot_detail');
 
       result.fold(
         (failure) {
@@ -70,14 +81,21 @@ class TourismSpotDetailNotifier extends ChangeNotifier {
   void selectImage(String image) {
     _selectedImage = image;
     notifyListeners();
+    _analyticsManager.trackUserAction(
+      action: 'user_select_image',
+      category: 'tourism_spot_detail',
+      parameters: {'image': image},
+    );
   }
 
   void clearError() {
     _error = null;
     notifyListeners();
+    _analyticsManager.trackEvent(eventName: 'clear_error');
   }
 
   void refresh() {
+    _analyticsManager.trackEvent(eventName: 'user_refresh');
     loadTourismSpotDetail(_tourismSpot?.id ?? 0);
   }
 }
