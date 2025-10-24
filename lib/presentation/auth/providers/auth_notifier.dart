@@ -154,7 +154,11 @@ class AuthNotifier extends ChangeNotifier {
           'provider': 'auth_notifier',
         },
       );
-      developer.log('Google Sign-In failed: $e', name: 'AuthNotifier', stackTrace: st);
+      developer.log(
+        'Google Sign-In failed: $e',
+        name: 'AuthNotifier',
+        stackTrace: st,
+      );
 
       _setError('Failed to sign in with Google: $e');
       return false;
@@ -188,7 +192,11 @@ class AuthNotifier extends ChangeNotifier {
           'provider': 'auth_notifier',
         },
       );
-      developer.log('Sign out failed: $e', name: 'AuthNotifier', stackTrace: st);
+      developer.log(
+        'Sign out failed: $e',
+        name: 'AuthNotifier',
+        stackTrace: st,
+      );
       _setError('Failed to sign out: $e');
     }
   }
@@ -212,9 +220,10 @@ class AuthNotifier extends ChangeNotifier {
 
   /// Clear error
   void clearError() {
-    _analyticsManager.trackEvent(eventName: 'clear_error', parameters: {
-      'provider': 'auth_notifier',
-    });
+    _analyticsManager.trackEvent(
+      eventName: 'clear_error',
+      parameters: {'provider': 'auth_notifier'},
+    );
     if (_status == AuthStatus.error) {
       _status = _user != null
           ? AuthStatus.authenticated
