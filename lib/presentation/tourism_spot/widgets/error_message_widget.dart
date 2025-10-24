@@ -52,7 +52,12 @@ class ErrorMessageViewer extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          FilledButton(onPressed: handlePressed, child: Text('Coba lagi')),
+          FilledButton(
+            onPressed: handlePressed,
+            child: Text(error is ConnectionFailure
+                ? 'Coba lagi'
+                : 'Refresh'),
+          ),
         ],
       ),
     );
