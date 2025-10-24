@@ -35,7 +35,7 @@ class AuthScreen extends StatelessWidget {
 
                   const SizedBox(height: 40),
                   SvgPicture.asset(
-                    'assets/icons/A day off-pana.svg',
+                    'assets/illustrations/A day off-pana.svg',
                     height: 250,
                   ),
 

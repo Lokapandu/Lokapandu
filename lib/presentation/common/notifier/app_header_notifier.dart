@@ -259,7 +259,9 @@ class AppHeaderNotifier extends ChangeNotifier {
       if (isPermissionGranted() && _locationData == null) {
         dev.log('⏳ Menunggu inisialisasi lokasi...', name: 'AppHeaderNotifier');
         try {
+          _analyticsManager.startTrace('get_current_location');
           _locationData = await _locationService.getCurrentLocation();
+          _analyticsManager.stopTrace('get_current_location');
         } catch (e, st) {
           dev.log(
             '⚠️ Gagal mendapatkan lokasi: $e, menggunakan fallback',
@@ -276,7 +278,9 @@ class AppHeaderNotifier extends ChangeNotifier {
           : 'Denpasar'; // Lokasi default untuk Bali
 
       // Tambahkan timeout untuk menghindari permintaan yang terlalu lama
+      _analyticsManager.startTrace('get_weather_information');
       final result = await _currentWeather.execute(latLon: latLonData);
+      _analyticsManager.stopTrace('get_weather_information');
 
       // Tangani hasil
       result.fold(

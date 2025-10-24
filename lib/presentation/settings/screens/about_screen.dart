@@ -281,7 +281,7 @@ class _AboutScreenState extends State<AboutScreen>
                                               ' BC25B020 - Ilham Muchammad Reza \n'
                                               ' BC25B050 - I Gusti Ayu Krisna Kusuma Dewi \n'
                                               ' BC25B061 - Yusuf Saputrah \n'
-                                              ' BC25B080 - Andi Irham Marhamuddin - Flutter \n',
+                                              ' BC25B080 - Andi Irham Marhamuddin \n',
                                               textAlign: TextAlign.start,
                                               style: Theme.of(context)
                                                   .textTheme

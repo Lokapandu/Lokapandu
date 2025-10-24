@@ -31,21 +31,57 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
       }
       final imagesResult = await _remoteDataSource.getAllTourismImages();
       return Right(_mapSpotsWithImages(spotsResult, imagesResult));
-    } on SupabaseException catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ServerFailure('Supabase error: ${e.message}'));
-    } on ConnectionException catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ConnectionFailure('Connection error: ${e.message}'));
-    } on ServerException catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ServerFailure('Server error: ${e.message}'));
-    } on SocketException catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ConnectionFailure('Connection error: ${e.toString()}'));
-    } catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    } on SupabaseException catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ServerFailure(
+          'Ada masalah dari sisi Server, hubungi administrator atau coba lagi',
+        ),
+      );
+    } on ConnectionException catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ConnectionFailure(
+          'Connection error, hubungi administrator atau coba lagi',
+        ),
+      );
+    } on ServerException catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ServerFailure('Server error, hubungi administrator atau coba lagi'),
+      );
+    } on SocketException catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ConnectionFailure(
+          'Connection error, hubungi administrator atau coba lagi',
+        ),
+      );
+    } catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ServerFailure('Unexpected error, hubungi administrator atau coba lagi'),
+      );
     }
   }
 
@@ -99,15 +135,35 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
       final spotEntity = spotResult.toEntity(images: imageEntities);
 
       return Right(spotEntity);
-    } on SupabaseException catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ServerFailure('Supabase error: ${e.message}'));
-    } on ConnectionException catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ConnectionFailure('Connection error: ${e.message}'));
-    } catch (e) {
-      developer.log(e.toString(), name: "Tourism Spot Repository");
-      return Left(ServerFailure('Unexpected error: ${e.toString()}'));
+    } on SupabaseException catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ServerFailure(
+          'Ada masalah dari sisi Server, hubungi administrator atau coba lagi',
+        ),
+      );
+    } on ConnectionException catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(ConnectionFailure('Masalah Koneksi'));
+    } catch (e, st) {
+      developer.log(
+        e.toString(),
+        name: "Tourism Spot Repository",
+        stackTrace: st,
+      );
+      return Left(
+        ServerFailure(
+          'Masalah tak terduga, hubungi adminstrator atau coba lagi',
+        ),
+      );
     }
   }
 

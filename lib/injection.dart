@@ -13,6 +13,7 @@ import 'package:lokapandu/common/services/location_service.dart';
 import 'package:lokapandu/common/services/routes_api_port.dart';
 import 'package:lokapandu/common/services/weather_api_port.dart';
 import 'package:lokapandu/data/datasources/services/auth_service.dart';
+import 'package:lokapandu/data/datasources/services/bookmark_database.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
@@ -46,13 +47,13 @@ import 'package:lokapandu/presentation/settings/providers/analytics_provider.dar
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'data/repositories/brick/chat_repository_supabase_impl.dart';
+import 'data/repositories/supabase/chat_repository_supabase_impl.dart';
 
 final locator = GetIt.instance;
 
@@ -123,6 +124,11 @@ Future<void> initDependencies() async {
   );
   locator.registerLazySingleton<RoutesPort>(
     () => RoutesApiGateway(locator<SupabaseClient>()),
+  );
+
+  /// Bookmark database service - handles bookmark storage
+  locator.registerLazySingleton<BookmarkDatabaseService>(
+    () => BookmarkDatabaseServiceImpl(),
   );
 
   /// Repositories - Implement domain contracts and coordinate data sources
@@ -210,11 +216,15 @@ Future<void> initDependencies() async {
       locator<GetTourismSpotList>(),
       locator<SearchTourismSpots>(),
       locator<GetTourismSpotsByCategory>(),
+      locator<AnalyticsManager>(),
     ),
   );
 
   locator.registerFactory<TourismSpotDetailNotifier>(
-    () => TourismSpotDetailNotifier(locator<GetTourismSpotDetail>()),
+    () => TourismSpotDetailNotifier(
+      locator<GetTourismSpotDetail>(),
+      locator<AnalyticsManager>(),
+    ),
   );
 
   /// Authentication providers - manages auth state
@@ -243,7 +253,9 @@ Future<void> initDependencies() async {
     ),
   );
 
-  locator.registerFactory<BookmarkProvider>(() => BookmarkProvider());
+  locator.registerFactory<BookmarkProvider>(
+    () => BookmarkProvider(locator<BookmarkDatabaseService>()),
+  );
   locator.registerFactory<ThemeProvider>(
     () => ThemeProvider(locator<AnalyticsManager>()),
   );

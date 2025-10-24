@@ -78,23 +78,31 @@ class _AppHeaderState extends State<AppHeader> {
           Positioned(
             right: 0,
             top: 0,
-            width: 130,
-            child: Consumer<AppHeaderNotifier>(
-              builder: (context, notifier, child) {
-                return switch (notifier.state) {
-                  AppHeaderSuccess(
-                    weather: final weather,
-                    isWeatherLoading: final loading,
-                  ) =>
-                    WeatherDisplayWidget(weather: weather, isLoading: loading),
-                  AppHeaderPermissionDenied(
-                    weather: final weather,
-                    isWeatherLoading: final loading,
-                  ) =>
-                    WeatherDisplayWidget(weather: weather, isLoading: loading),
-                  _ => const SizedBox.shrink(),
-                };
-              },
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 130),
+              child: Consumer<AppHeaderNotifier>(
+                builder: (context, notifier, child) {
+                  return switch (notifier.state) {
+                    AppHeaderSuccess(
+                      weather: final weather,
+                      isWeatherLoading: final loading,
+                    ) =>
+                      WeatherDisplayWidget(
+                        weather: weather,
+                        isLoading: loading,
+                      ),
+                    AppHeaderPermissionDenied(
+                      weather: final weather,
+                      isWeatherLoading: final loading,
+                    ) =>
+                      WeatherDisplayWidget(
+                        weather: weather,
+                        isLoading: loading,
+                      ),
+                    _ => const SizedBox.shrink(),
+                  };
+                },
+              ),
             ),
           ),
         ],
@@ -314,7 +322,6 @@ class WeatherDisplayWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 4),
           Text(
             'Cuaca...',
             style: theme.textTheme.bodySmall?.copyWith(
@@ -362,18 +369,23 @@ class WeatherDisplayWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '${weather?.celciusTemperature}°C',
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: TextStyle(
+              fontFamily: 'Open Sans',
+              fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
+              letterSpacing: .1,
             ),
           ),
+          const SizedBox(width: 4),
           Expanded(
             child: TextScroll(
               '${weather?.text}.',
               mode: TextScrollMode.endless,
               velocity: Velocity(pixelsPerSecond: Offset(40, 0)),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              style: TextStyle(
+                fontFamily: 'Open Sans',
+                fontSize: 12,
+                letterSpacing: .1,
               ),
             ),
           ),

@@ -5,6 +5,7 @@ import 'package:lokapandu/presentation/plan/models/tour_plan_model.dart';
 enum PlanItemType { tour, note, activity } // <-- 'activity' ditambahkan
 
 class PlanItem {
+  final String id;
   final String title;
   final DateTime date;
   final String timeRange;
@@ -13,6 +14,7 @@ class PlanItem {
   final TourPlanModel tourPlanModel;
 
   const PlanItem({
+    required this.id,
     required this.title,
     required this.date,
     required this.timeRange,
@@ -34,6 +36,7 @@ extension PlanItemFromItinerary on Itinerary {
         '${startTime.hour}:$startMinute - ${endTime.hour}:$endMinute';
     final tourImageUrl = tourismSpot?.images.first.imageUrl;
     return PlanItem(
+      id: id,
       title: name,
       date: startTime,
       timeRange: timeRange,

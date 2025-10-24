@@ -110,7 +110,9 @@ class AuthNotifier extends ChangeNotifier {
         },
       );
 
+      await _analyticsManager.startTrace('google_sign_in');
       final response = await _authService.signInWithGoogle();
+      await _analyticsManager.stopTrace('google_sign_in');
 
       if (response.user != null) {
         // Track successful sign-in
@@ -143,17 +145,19 @@ class AuthNotifier extends ChangeNotifier {
       } else {
         throw Exception('No user returned from sign-in');
       }
-    } catch (e) {
-      developer.log('Google Sign-In failed: $e', name: 'AuthNotifier');
-
-      // Track failed sign-in
-      await _analyticsManager.trackUserAction(
-        action: 'google_sign_in_failed',
+    } catch (e, st) {
+      await _analyticsManager.trackError(
+        error: e.toString(),
         parameters: {
           'screen': 'auth',
-          'error': e.toString(),
           'method': 'google',
+          'provider': 'auth_notifier',
         },
+      );
+      developer.log(
+        'Google Sign-In failed: $e',
+        name: 'AuthNotifier',
+        stackTrace: st,
       );
 
       _setError('Failed to sign in with Google: $e');
@@ -174,11 +178,25 @@ class AuthNotifier extends ChangeNotifier {
         parameters: {'timestamp': DateTime.now().toIso8601String()},
       );
 
+      await _analyticsManager.startTrace('sign_out');
       await _authService.signOut();
+      await _analyticsManager.stopTrace('sign_out');
 
       developer.log('Sign out successful', name: 'AuthNotifier');
-    } catch (e) {
-      developer.log('Sign out failed: $e', name: 'AuthNotifier');
+    } catch (e, st) {
+      await _analyticsManager.trackError(
+        error: e.toString(),
+        parameters: {
+          'screen': 'auth',
+          'method': 'sign_out',
+          'provider': 'auth_notifier',
+        },
+      );
+      developer.log(
+        'Sign out failed: $e',
+        name: 'AuthNotifier',
+        stackTrace: st,
+      );
       _setError('Failed to sign out: $e');
     }
   }
@@ -202,6 +220,10 @@ class AuthNotifier extends ChangeNotifier {
 
   /// Clear error
   void clearError() {
+    _analyticsManager.trackEvent(
+      eventName: 'clear_error',
+      parameters: {'provider': 'auth_notifier'},
+    );
     if (_status == AuthStatus.error) {
       _status = _user != null
           ? AuthStatus.authenticated

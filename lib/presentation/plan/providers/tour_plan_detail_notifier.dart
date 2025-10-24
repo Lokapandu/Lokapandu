@@ -38,7 +38,9 @@ class TourPlanDetailNotifier extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    await _manager.startTrace('fetchItinerary');
     final result = await _useCase.execute(id);
+    await _manager.stopTrace('fetchItinerary');
     result.fold(
       (failure) {
         _manager.trackError(
@@ -70,7 +72,9 @@ class TourPlanDetailNotifier extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    await _manager.startTrace('removeItinerary');
     final result = await _deleteUseCase.execute(id);
+    await _manager.stopTrace('removeItinerary');
     result.fold(
       (failure) {
         _manager.trackError(
