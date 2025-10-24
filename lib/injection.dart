@@ -53,7 +53,7 @@ import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detai
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'data/repositories/brick/chat_repository_supabase_impl.dart';
+import 'data/repositories/supabase/chat_repository_supabase_impl.dart';
 
 final locator = GetIt.instance;
 

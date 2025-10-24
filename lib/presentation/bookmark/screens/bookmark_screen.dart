@@ -7,8 +7,20 @@ import 'package:provider/provider.dart';
 import 'package:lokapandu/presentation/bookmark/widgets/bookmark_card.dart';
 import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
 
-class BookmarkScreen extends StatelessWidget {
+class BookmarkScreen extends StatefulWidget {
   const BookmarkScreen({super.key});
+
+  @override
+  State<BookmarkScreen> createState() => _BookmarkScreenState();
+}
+
+class _BookmarkScreenState extends State<BookmarkScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final bookmarkProvider = context.read<BookmarkProvider>();
+    Future.microtask(() => bookmarkProvider.loadAllTourismValue());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +55,10 @@ class BookmarkScreen extends StatelessWidget {
                 final spot = bookmarkList[index];
                 return BookmarkCard(
                   spot: spot,
-                  onTap: () =>
-                      context.push(Routing.tourismSpotDetail.fullPath, extra: spot),
+                  onTap: () => context.push(
+                    Routing.tourismSpotDetail.fullPath,
+                    extra: spot,
+                  ),
                 );
               },
             ),

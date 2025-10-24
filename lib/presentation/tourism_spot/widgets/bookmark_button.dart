@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_icon_provider.dart';
 import 'package:provider/provider.dart';
 
 enum BookmarkButtonType { outlined, icon }
 
-class BookmarkButton extends StatefulWidget {
+class BookmarkButton extends StatelessWidget {
   const BookmarkButton({
     super.key,
     required this.tour,
@@ -17,33 +16,15 @@ class BookmarkButton extends StatefulWidget {
   final BookmarkButtonType buttonType;
 
   @override
-  State<BookmarkButton> createState() => _BookmarkButtonState();
-}
-
-class _BookmarkButtonState extends State<BookmarkButton> {
-  @override
-  void initState() {
-    super.initState();
-    final localDb = context.read<BookmarkProvider>();
-    final bookmarkIcon = context.read<BookmarkIconProvider>();
-
-    Future.microtask(() async {
-      await localDb.loadTourismValueById(widget.tour.id);
-      final value = localDb.checkItemBookmark(widget.tour.id);
-      bookmarkIcon.isBookmarked = value;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Consumer<BookmarkIconProvider>(
-      builder: (context, bookmark, child) {
-        final isBookmarked = bookmark.isBookmarked;
+    return Consumer<BookmarkProvider>(
+      builder: (context, bookmarkProvider, child) {
+        final isBookmarked = bookmarkProvider.bookmarkedSpots?.any((spot) => spot.id == tour.id) ?? false;
 
-        if (widget.buttonType == BookmarkButtonType.outlined) {
+        if (buttonType == BookmarkButtonType.outlined) {
           return OutlinedButton(
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -56,14 +37,12 @@ class _BookmarkButtonState extends State<BookmarkButton> {
               ),
             ),
             onPressed: () async {
-              final localDb = context.read<BookmarkProvider>();
               if (isBookmarked) {
-                await localDb.removeTourismValueById(widget.tour.id);
+                await bookmarkProvider.removeTourismValueById(tour.id);
               } else {
-                await localDb.saveTourismValue(widget.tour);
+                await bookmarkProvider.saveTourismValue(tour);
               }
-              bookmark.isBookmarked = !isBookmarked;
-              localDb.loadAllTourismValue();
+              await bookmarkProvider.loadAllTourismValue();
             },
             child: Icon(
               isBookmarked ? Icons.bookmark : Icons.bookmark_border_outlined,
@@ -76,14 +55,12 @@ class _BookmarkButtonState extends State<BookmarkButton> {
             isBookmarked ? Icons.bookmark : Icons.bookmark_border_outlined,
           ),
           onPressed: () async {
-            final localDb = context.read<BookmarkProvider>();
             if (isBookmarked) {
-              await localDb.removeTourismValueById(widget.tour.id);
+              await bookmarkProvider.removeTourismValueById(tour.id);
             } else {
-              await localDb.saveTourismValue(widget.tour);
+              await bookmarkProvider.saveTourismValue(tour);
             }
-            bookmark.isBookmarked = !isBookmarked;
-            localDb.loadAllTourismValue();
+            await bookmarkProvider.loadAllTourismValue();
           },
         );
       },

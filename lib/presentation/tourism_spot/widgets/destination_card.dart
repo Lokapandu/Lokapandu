@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:lokapandu/presentation/tourism_spot/providers/bookmark_icon_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:lokapandu/presentation/tourism_spot/widgets/bookmark_button.dart';
 
 import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart';
 
@@ -40,28 +39,14 @@ class DestinationCard extends StatelessWidget {
                   Positioned(
                     top: 8,
                     right: 8,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.black.withValues(alpha: 0.4),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        iconSize: 22,
-                        icon: Consumer<BookmarkIconProvider>(
-                          builder: (context, bookmarkIcon, child) {
-                            return Icon(
-                              bookmarkIcon.isBookmarked
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color: bookmarkIcon.isBookmarked
-                                  ? colorScheme.primary
-                                  : Colors.white,
-                            );
-                          },
-                        ),
-                        onPressed: () {
-                          final bookmarkIcon = context.read<BookmarkIconProvider>();
-                          bookmarkIcon.isBookmarked = true;
-                        },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorScheme.outline,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: BookmarkButton(
+                        tour: tourismSpot,
+                        buttonType: BookmarkButtonType.icon,
                       ),
                     ),
                   ),
