@@ -9,7 +9,6 @@ part '20251019141339.migration.dart';
 part '20251020040008.migration.dart';
 part '20251020104345.migration.dart';
 part '20251020130113.migration.dart';
-part '20251023043113.migration.dart';
 
 /// All intelligently-generated migrations from all `@Migratable` classes on disk
 final migrations = <Migration>{
@@ -21,12 +20,11 @@ final migrations = <Migration>{
   const Migration20251020040008(),
   const Migration20251020104345(),
   const Migration20251020130113(),
-  const Migration20251023043113(),
 };
 
 /// A consumable database structure including the latest generated migration.
 final schema = Schema(
-  20251023043113,
+  20251020130113,
   generatorVersion: 1,
   tables: <SchemaTable>{
     SchemaTable(
@@ -95,26 +93,6 @@ final schema = Schema(
         SchemaColumn('close_time', Column.varchar),
         SchemaColumn('maps_link', Column.varchar),
         SchemaColumn('facilities', Column.varchar),
-        SchemaColumn('created_at', Column.datetime),
-      },
-      indices: <SchemaIndex>{
-        SchemaIndex(columns: ['id'], unique: true),
-      },
-    ),
-    SchemaTable(
-      'ChatModel',
-      columns: <SchemaColumn>{
-        SchemaColumn(
-          '_brick_id',
-          Column.integer,
-          autoincrement: true,
-          nullable: false,
-          isPrimaryKey: true,
-        ),
-        SchemaColumn('id', Column.varchar, unique: true),
-        SchemaColumn('user_id', Column.varchar),
-        SchemaColumn('content', Column.varchar),
-        SchemaColumn('is_from_user', Column.boolean),
         SchemaColumn('created_at', Column.datetime),
       },
       indices: <SchemaIndex>{

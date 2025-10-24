@@ -20,19 +20,16 @@ import 'package:sqflite_common/sqlite_api.dart' show DatabaseExecutor;
 import '../brick/models/itinerary.model.dart';
 import '../brick/models/tourism_image.model.dart';
 import '../brick/models/tourism_spot.model.dart';
-import '../brick/models/chat.model.dart';
 
 part 'adapters/itinerary_model_adapter.g.dart';
 part 'adapters/tourism_image_model_adapter.g.dart';
 part 'adapters/tourism_spot_model_adapter.g.dart';
-part 'adapters/chat_model_adapter.g.dart';
 
 /// Supabase mappings should only be used when initializing a [SupabaseProvider]
 final Map<Type, SupabaseAdapter<SupabaseModel>> supabaseMappings = {
   ItineraryModel: ItineraryModelAdapter(),
   TourismImageModel: TourismImageModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter(),
-  ChatModel: ChatModelAdapter()
+  TourismSpotModel: TourismSpotModelAdapter()
 };
 final supabaseModelDictionary = SupabaseModelDictionary(supabaseMappings);
 
@@ -40,7 +37,6 @@ final supabaseModelDictionary = SupabaseModelDictionary(supabaseMappings);
 final Map<Type, SqliteAdapter<SqliteModel>> sqliteMappings = {
   ItineraryModel: ItineraryModelAdapter(),
   TourismImageModel: TourismImageModelAdapter(),
-  TourismSpotModel: TourismSpotModelAdapter(),
-  ChatModel: ChatModelAdapter()
+  TourismSpotModel: TourismSpotModelAdapter()
 };
 final sqliteModelDictionary = SqliteModelDictionary(sqliteMappings);

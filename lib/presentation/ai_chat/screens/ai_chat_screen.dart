@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
+import 'package:lokapandu/presentation/ai_chat/widgets/chat_input_bar.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../models/chat_message_model.dart';
 import '../widgets/chat_buble.dart';
 
 class AiChatScreen extends StatefulWidget {
@@ -46,6 +45,16 @@ class _AiChatScreenState extends State<AiChatScreen> {
     );
   }
 
+  void _scrollDown() {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      ),
+    );
+  }
+
   Future<void> _clearChatHistory() async {
     final theme = Theme.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -61,7 +70,7 @@ class _AiChatScreenState extends State<AiChatScreen> {
           ),
         );
       }
-    } catch (e, s) {
+    } catch (e) {
       if (mounted) {
         scaffoldMessenger.showSnackBar(
           SnackBar(
@@ -71,18 +80,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
         );
       }
     }
-  }
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
   }
 
   @override
@@ -95,17 +92,6 @@ class _AiChatScreenState extends State<AiChatScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    // if (_isFetchingHistory) {
-    //   return Scaffold(
-    //     appBar: AppBar(
-    //       title: Text('AI Chat', style: theme.textTheme.titleLarge),
-    //     ),
-    //     body: const Center(child: CircularProgressIndicator()),
-    //   );
-    // }
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -115,103 +101,83 @@ class _AiChatScreenState extends State<AiChatScreen> {
         title: Text('AI Chat', style: theme.textTheme.titleLarge),
         centerTitle: true,
         actions: [
-          // IconButton(
-          //   icon: const Icon(Icons.delete_outline),
-          //   onPressed: _isClearing ? null : _showClearConfirmationDialog,
-          //   tooltip: 'Hapus Riwayat Chat',
-          // ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: StreamBuilder(
-          stream: context.read<AiChatNotifier>().chatsStream,
-          initialData: const [],
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2.5),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'AI sedang berpikir...',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              );
-            }
-
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
-
-            final messages = snapshot.data ?? [];
-            return ListView.separated(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return ChatBubble(
-                  text: message.text,
-                  isFromUser: message.isFromUser,
-                );
-              },
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: _buildMessageInput(theme, colorScheme),
-    );
-  }
-
-  Widget _buildMessageInput(ThemeData theme, ColorScheme colorScheme) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      color: colorScheme.surface,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: 'Tulis pesanmu di sini...',
-                filled: true,
-                fillColor: colorScheme.surfaceContainerHigh,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 14,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onSubmitted: (_) => context.read<AiChatNotifier>().sendMessage,
-            ),
-          ),
-          const SizedBox(width: 12),
           Consumer<AiChatNotifier>(
-            builder: (context, notifier, child) => FloatingActionButton(
-              onPressed: notifier.isLoading || notifier.hasError
-                  ? null
-                  : () => notifier.sendMessage(_controller.text),
-              backgroundColor: notifier.isLoading || notifier.hasError
-                  ? theme.colorScheme.onSurface.withValues(alpha: 0.12)
-                  : colorScheme.primary,
-              elevation: 2,
-              child: Icon(Icons.send, color: colorScheme.onPrimary),
-            ),
+            builder: (context, notifier, child) {
+              return IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: notifier.isClearing
+                    ? null
+                    : _showClearConfirmationDialog,
+                tooltip: 'Hapus Riwayat Chat',
+              );
+            },
           ),
         ],
+      ),
+      body: Consumer<AiChatNotifier>(
+        builder: (context, notifier, child) {
+          // if (notifier.isLoading) {
+          //   return Padding(
+          //     padding: const EdgeInsets.all(8.0),
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         SizedBox(
+          //           width: 20,
+          //           height: 20,
+          //           child: CircularProgressIndicator(strokeWidth: 2.5),
+          //         ),
+          //         const SizedBox(width: 10),
+          //         Text(
+          //           'AI sedang berpikir...',
+          //           style: theme.textTheme.bodyMedium,
+          //         ),
+          //       ],
+          //     ),
+          //   );
+          // }
+
+          // if (notifier.hasError) {
+          //   return Center(child: Text('Error: ${notifier.errorMessage}'));
+          // }
+
+          final messages = notifier.chats;
+
+          if (messages.isNotEmpty) _scrollDown();
+
+          return ListView.separated(
+            controller: _scrollController,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              final message = messages[index];
+              return ChatBubble(
+                text: message.text,
+                isFromUser: message.isFromUser,
+              );
+            },
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+          );
+        },
+      ),
+      bottomNavigationBar: Selector<AiChatNotifier, bool>(
+        selector: (context, notifier) => notifier.isLoading,
+        builder: (context, isLoading, child) {
+          return ChatInputBar(
+            controller: _controller,
+            isLoading: isLoading,
+            onSend: () {
+              if (_controller.text.isNotEmpty) {
+                final userMessage = _controller.text;
+                _controller.clear();
+                FocusScope.of(context).unfocus();
+
+                // Panggil logic di Provider
+                context.read<AiChatNotifier>().sendMessage(userMessage);
+              }
+            },
+          );
+        },
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -21,10 +22,6 @@ import 'package:lokapandu/data/repositories/supabase/tourism_spot_repository_sup
 import 'package:lokapandu/domain/repositories/chat_repository.dart';
 import 'package:lokapandu/domain/repositories/itinerary_repository.dart';
 import 'package:lokapandu/domain/repositories/tourism_spot_repository.dart';
-import 'package:lokapandu/domain/usecases/chats/ask_ai.dart';
-import 'package:lokapandu/domain/usecases/chats/delete_chats.dart';
-import 'package:lokapandu/domain/usecases/chats/store_chat.dart';
-import 'package:lokapandu/domain/usecases/chats/stream_chats.dart';
 import 'package:lokapandu/domain/usecases/get_current_weather.dart';
 import 'package:lokapandu/domain/usecases/get_distance.dart';
 import 'package:lokapandu/domain/usecases/itineraries/create_user_itineraries.dart';
@@ -79,6 +76,11 @@ Future<void> initDependencies() async {
 
   /// Supabase client - singleton as it manages connection state
   locator.registerSingleton<SupabaseClient>(Supabase.instance.client);
+
+  /// genai
+  locator.registerSingleton<GenerativeModel>(
+    FirebaseAI.googleAI().generativeModel(model: 'gemini-2.5-flash'),
+  );
 
   /// Location service - handles device location permissions
   locator.registerSingleton<Location>(Location());
@@ -197,16 +199,6 @@ Future<void> initDependencies() async {
   locator.registerLazySingleton<GetUserItineraryById>(
     () => GetUserItineraryById(locator<ItineraryRepository>()),
   );
-  locator.registerLazySingleton<StreamChats>(
-    () => StreamChats(locator<ChatRepository>()),
-  );
-  locator.registerLazySingleton<StoreChat>(
-    () => StoreChat(locator<ChatRepository>()),
-  );
-  locator.registerLazySingleton<ClearChatHistory>(
-    () => ClearChatHistory(locator<ChatRepository>()),
-  );
-  locator.registerLazySingleton<AskAi>(() => AskAi(locator<ChatRepository>()));
   // ========================================
   // PRESENTATION LAYER
   // ========================================
@@ -289,11 +281,6 @@ Future<void> initDependencies() async {
     ),
   );
   locator.registerFactory<AiChatNotifier>(
-    () => AiChatNotifier(
-      streamChats: locator<StreamChats>(),
-      storeChat: locator<StoreChat>(),
-      clearChatHistory: locator<ClearChatHistory>(),
-      askAi: locator<AskAi>(),
-    ),
+    () => AiChatNotifier(repository: locator<ChatRepository>()),
   );
 }

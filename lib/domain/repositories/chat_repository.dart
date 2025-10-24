@@ -1,13 +1,13 @@
-import 'package:dartz/dartz.dart';
-import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/domain/entities/chat_entity.dart';
 
 abstract class ChatRepository {
-  Future<Either<Failure, Chat>> ask(String message);
+  Future<List<Chat>> getChatHistory();
 
-  Stream<List<Chat>> getChats();
+  Stream<Chat> subscribeChat();
 
-  Future<Either<Failure, Unit>> storeChat(String message, bool isFromUser);
+  Future<String?> generateResponse(String message);
 
-  Future<Either<Failure, Unit>> clearHistory();
+  Future<void> storeChat(String message, bool isUser);
+
+  Future<void> clearHistory();
 }

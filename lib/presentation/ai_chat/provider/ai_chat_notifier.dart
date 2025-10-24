@@ -1,44 +1,63 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lokapandu/common/errors/failure.dart';
-import 'package:lokapandu/domain/usecases/chats/ask_ai.dart';
-import 'package:lokapandu/domain/usecases/chats/delete_chats.dart';
-import 'package:lokapandu/domain/usecases/chats/store_chat.dart';
-import 'package:lokapandu/domain/usecases/chats/stream_chats.dart';
+import 'package:lokapandu/data/mappers/chat_mapper.dart';
+import 'package:lokapandu/domain/entities/chat_entity.dart';
+import 'package:lokapandu/domain/repositories/chat_repository.dart';
 import 'package:lokapandu/presentation/ai_chat/models/chat_message_model.dart';
 
 class AiChatNotifier extends ChangeNotifier {
-  final StreamChats _streamChats;
-  final ClearChatHistory _clearChatHistory;
-  final AskAi _askAi;
-  final StoreChat _storeChat;
+  final ChatRepository _repository;
 
-  AiChatNotifier({
-    required StreamChats streamChats,
-    required ClearChatHistory clearChatHistory,
-    required AskAi askAi,
-    required StoreChat storeChat,
-  }) : _streamChats = streamChats,
-       _clearChatHistory = clearChatHistory,
-       _askAi = askAi,
-       _storeChat = storeChat;
+  AiChatNotifier({required ChatRepository repository})
+    : _repository = repository {
+    _loadChatHistory();
+    _initStream();
+  }
 
-  Stream<List<ChatMessage>> get chatsStream => _streamChats.execute().map((
-    data,
-  ) {
-    if (data.isEmpty) {
-      String message =
-          'Hai! Aku adalah asisten wisatamu. Ada yang bisa aku bantu untuk liburanmu di Bali?';
-      return [ChatMessage(text: message, isFromUser: false)];
+  final List<ChatMessage> _chats = [];
+  StreamSubscription<Chat>? _chatsStream;
+
+  List<ChatMessage> get chats => _chats;
+
+  Future<void> _loadChatHistory() async {
+    try {
+      final initialChats = await _repository.getChatHistory();
+      _chats.clear();
+      if (initialChats.isEmpty) {
+        _chats.add(
+          ChatMessage(
+            text:
+                'Hai! Aku adalah asisten wisatamu. Ada yang bisa aku bantu untuk liburanmu di Bali?',
+            isFromUser: false,
+          ),
+        );
+      }
+      _chats.addAll(initialChats.map((e) => e.toChatMessage()));
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Unexpected error: ${e.toString()}';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-    return data
-        .map((e) => ChatMessage(isFromUser: e.isFromUser, text: e.content))
-        .toList();
-  });
+  }
+
+  void _initStream() {
+    _chatsStream = _repository.subscribeChat().listen((newChats) {
+      _chats.removeWhere((chat) => chat.isTyping);
+      _chats.clear();
+      _chats.add(newChats.map((chat) => chat.toChatMessage()));
+      notifyListeners();
+    });
+  }
 
   bool _isLoading = false;
+  bool _isClearing = false;
   String? _errorMessage;
 
   bool get isLoading => _isLoading;
+
+  bool get isClearing => _isClearing;
 
   bool get hasError => _errorMessage != null;
 
@@ -50,13 +69,27 @@ class AiChatNotifier extends ChangeNotifier {
   }
 
   Future<void> sendMessage(String userMessageText) async {
+    if (userMessageText.isEmpty || _isLoading) return;
+    final userMessage = ChatMessage(text: userMessageText, isFromUser: true);
+    final typingIndicator = ChatMessage(
+      text: '...',
+      isFromUser: false,
+      isTyping: true,
+    );
+
+    _chats.addAll([userMessage, typingIndicator]);
+    notifyListeners();
+
     try {
-      _isLoading = true;
-      notifyListeners();
-      // store message
-      await _storeChat.execute(userMessageText, true);
-      // retrieve from AI
-      final aiMessage = await _askAi.execute(userMessageText);
+      // generate response
+      final responseText = await _repository.generateResponse(userMessageText);
+      if (responseText == null) {
+        _errorMessage = 'Failed to generate response.';
+        return;
+      }
+      // store response
+      await _repository.storeChat(userMessageText, true);
+      await _repository.storeChat(responseText, false);
     } catch (e) {
       _errorMessage = 'Unexpected error: ${e.toString()}';
     } finally {
@@ -66,16 +99,21 @@ class AiChatNotifier extends ChangeNotifier {
   }
 
   Future<void> clearChatHistory() async {
-    _isLoading = true;
-    notifyListeners();
+    try {
+      _isClearing = true;
+      notifyListeners();
+      await _repository.clearHistory();
+      _isClearing = false;
+    } catch (e) {
+      _errorMessage = 'Unexpected error: ${e.toString()}';
+    } finally {
+      notifyListeners();
+    }
   }
 
-  void _handleFailure(Failure failure) {
-    failure.maybeWhen(
-      server: (message) => _errorMessage = 'Server Error: $message',
-      connection: (message) => _errorMessage = 'Connection Error: $message',
-      database: (message) => _errorMessage = 'Database Error: $message',
-      orElse: () => _errorMessage = 'Unknown Error',
-    );
+  @override
+  void dispose() {
+    _chatsStream?.cancel();
+    super.dispose();
   }
 }
