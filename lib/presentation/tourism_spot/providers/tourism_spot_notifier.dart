@@ -81,15 +81,33 @@ class TourismSpotNotifier extends ChangeNotifier {
           _error = failure;
         },
         (spots) {
+          final prevCount = _tourismSpots.length;
           if (spots.isEmpty) {
             _hasMoreData = false;
+            _analyticsManager.trackEvent(
+              eventName: 'data_pagination',
+              parameters: {
+                'action': 'no_more_data',
+                'page': _page,
+                'total_items': _tourismSpots.length,
+              },
+            );
           } else {
             _tourismSpots.addAll(spots);
             _page++;
-            // Jika jumlah data yang diterima kurang dari pageSize, berarti tidak ada data lagi
-            if (spots.length < _pageSize) {
-              _hasMoreData = false;
-            }
+            // Selalu anggap masih ada data lagi kecuali server mengembalikan data kosong
+            _hasMoreData = true;
+            _analyticsManager.trackEvent(
+              eventName: 'data_pagination',
+              parameters: {
+                'action': 'load_data',
+                'page': _page - 1,
+                'items_loaded': spots.length,
+                'prev_count': prevCount,
+                'new_count': _tourismSpots.length,
+                'has_more_data': _hasMoreData,
+              },
+            );
           }
           _error = null;
         },
@@ -153,6 +171,14 @@ class TourismSpotNotifier extends ChangeNotifier {
         (spots) {
           if (spots.isEmpty) {
             _hasMoreData = false;
+            _analyticsManager.trackEvent(
+              eventName: 'search_results',
+              parameters: {
+                'query': query,
+                'results_count': 0,
+                'has_results': false,
+              },
+            );
           } else {
             _tourismSpots = spots;
             _page = 2; // Set page ke 2 untuk next load
@@ -160,6 +186,15 @@ class TourismSpotNotifier extends ChangeNotifier {
             if (spots.length < _pageSize) {
               _hasMoreData = false;
             }
+            _analyticsManager.trackEvent(
+              eventName: 'search_results',
+              parameters: {
+                'query': query,
+                'results_count': spots.length,
+                'has_results': true,
+                'has_more_data': _hasMoreData,
+              },
+            );
           }
           _error = null;
         },
@@ -207,10 +242,24 @@ class TourismSpotNotifier extends ChangeNotifier {
       result.fold(
         (failure) {
           _error = failure;
+          _analyticsManager.trackError(
+            error: '${failure.runtimeType}',
+            description: failure.message,
+          );
         },
         (spots) {
+          final prevCount = _tourismSpots.length;
           if (spots.isEmpty) {
             _hasMoreData = false;
+            _analyticsManager.trackEvent(
+              eventName: 'load_more_by_category',
+              parameters: {
+                'category': category,
+                'page': _page,
+                'action': 'no_more_data',
+                'total_items': _tourismSpots.length,
+              },
+            );
           } else {
             _tourismSpots.addAll(spots);
             _page++;
@@ -218,6 +267,17 @@ class TourismSpotNotifier extends ChangeNotifier {
             if (spots.length < _pageSize) {
               _hasMoreData = false;
             }
+            _analyticsManager.trackEvent(
+              eventName: 'load_more_by_category',
+              parameters: {
+                'category': category,
+                'page': _page - 1,
+                'items_loaded': spots.length,
+                'prev_count': prevCount,
+                'new_count': _tourismSpots.length,
+                'has_more_data': _hasMoreData,
+              },
+            );
           }
         },
       );
@@ -274,6 +334,14 @@ class TourismSpotNotifier extends ChangeNotifier {
         (spots) {
           if (spots.isEmpty) {
             _hasMoreData = false;
+            _analyticsManager.trackEvent(
+              eventName: 'filter_by_category_results',
+              parameters: {
+                'category': category,
+                'results_count': 0,
+                'has_results': false,
+              },
+            );
           } else {
             _tourismSpots = spots;
             _page = 2; // Set page ke 2 untuk next load
@@ -281,6 +349,16 @@ class TourismSpotNotifier extends ChangeNotifier {
             if (spots.length < _pageSize) {
               _hasMoreData = false;
             }
+            _analyticsManager.trackEvent(
+              eventName: 'filter_by_category_results',
+              parameters: {
+                'category': category,
+                'results_count': spots.length,
+                'has_results': true,
+                'has_more_data': _hasMoreData,
+                'page': 1,
+              },
+            );
           }
           _error = null;
         },

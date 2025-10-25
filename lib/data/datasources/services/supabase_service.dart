@@ -190,4 +190,39 @@ class SupabaseService implements SupabaseServiceInterface {
       );
     }
   }
+
+  @override
+  Future<int> countTourismSpot() async {
+    try {
+      final response = await _client
+          .from('tourism_spots')
+          .select('name')
+          .count(CountOption.exact);
+
+      return response.count;
+    } on PostgrestException catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
+      throw SupabaseException(
+        'Failed to fetch tourism images count!',
+        code: e.code,
+      );
+    } catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
+      throw ServerException(
+        'Unexpected error while fetching tourism images: $e',
+      );
+    }
+  }
 }

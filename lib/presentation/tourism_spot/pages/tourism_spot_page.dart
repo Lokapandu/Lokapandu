@@ -53,12 +53,12 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   }
 
   void _scrollListener() {
+    // Kurangi threshold untuk memuat lebih awal
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
+        _scrollController.position.maxScrollExtent - 100) {
       final notifier = context.read<TourismSpotNotifier>();
-      if (!notifier.isLoading &&
-          !notifier.isLoadingMore &&
-          notifier.hasMoreData) {
+      // Hanya cek apakah sedang loading atau tidak, hapus kondisi hasMoreData
+      if (!notifier.isLoading && !notifier.isLoadingMore) {
         notifier.loadTourismSpots();
       }
     }
@@ -71,135 +71,134 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
       behavior: HitTestBehavior.translucent,
       child: Scaffold(
         body: SafeArea(
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(child: AppHeader(title: 'Temukan wisata')),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await context.read<TourismSpotNotifier>().loadTourismSpots(
+                refresh: true,
+              );
+            },
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverToBoxAdapter(child: AppHeader(title: 'Temukan wisata')),
 
-              // SliverToBoxAdapter untuk search bar
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: _buildSearchAndFilter(),
-                ),
-              ),
-
-              // SliverToBoxAdapter untuk kategori
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 13.0),
-                  child: TourCategoryChips(
-                    categories: _categories,
-                    selectedCategory: _selectedCategory,
-                    onCategorySelected: (category) {
-                      setState(() {
-                        _selectedCategory = category;
-                      });
-                      // Panggil filter kategori di notifier saat kategori berubah
-                      context.read<TourismSpotNotifier>().filterByCategory(
-                        category,
-                      );
-                    },
+                // SliverToBoxAdapter untuk search bar
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: _buildSearchAndFilter(),
                   ),
                 ),
-              ),
 
-              // SliverPadding untuk memberikan jarak
-              const SliverPadding(padding: EdgeInsets.only(top: 20.0)),
+                // SliverToBoxAdapter untuk kategori
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 13.0),
+                    child: TourCategoryChips(
+                      categories: _categories,
+                      selectedCategory: _selectedCategory,
+                      onCategorySelected: (category) {
+                        setState(() {
+                          _selectedCategory = category;
+                        });
+                        // Panggil filter kategori di notifier saat kategori berubah
+                        context.read<TourismSpotNotifier>().filterByCategory(
+                          category,
+                        );
+                      },
+                    ),
+                  ),
+                ),
 
-              // Konten utama menggunakan Consumer
-              Consumer<TourismSpotNotifier>(
-                builder: (context, notifier, child) {
-                  // notifier.isLoading
-                  if (notifier.isLoading) {
-                    return const SliverFillRemaining(
-                      child: TourismSpotShimmerLoading(),
-                    );
-                  }
-                  // Handle error state
-                  if (notifier.hasError) {
-                    final error = notifier.error as Failure;
-                    return SliverFillRemaining(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ErrorMessageViewer(
-                          error: error,
-                          reload: () => context
-                              .read<TourismSpotNotifier>()
-                              .loadTourismSpots(),
-                        ),
-                      ),
-                    );
-                  }
+                // SliverPadding untuk memberikan jarak
+                const SliverPadding(padding: EdgeInsets.only(top: 20.0)),
 
-                  if (!notifier.hasData) {
-                    return SliverFillRemaining(
-                      child: _buildEmptyState(
-                        context,
-                        'Pencarian tidak ditemukan!',
-                        'Coba cari wisata lain, yuk?',
-                        'assets/illustrations/curiosity-search-cuate.svg',
-                      ),
-                    );
-                  }
-
-                  // Gunakan data langsung dari notifier tanpa filter lokal
-                  // Karena filter kategori sudah dihandle di notifier
-                  final spots = notifier.tourismSpots;
-
-                  return SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 18),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 16,
-                                  childAspectRatio: 0.9,
-                                ),
-                            itemCount:
-                                spots.length +
-                                (notifier.hasMoreData && !notifier.isLoadingMore
-                                    ? 1
-                                    : 0),
-                            itemBuilder: (context, index) {
-                              if (index < spots.length) {
-                                final spot = spots[index];
-                                return DestinationCard(
-                                  tourismSpot: spot,
-                                  onTap: () {
-                                    context.push(
-                                      Routing.tourismSpotPreview.fullPath
-                                          .replaceFirst(
-                                            ':id',
-                                            spot.id.toString(),
-                                          ),
-                                    );
-                                  },
-                                );
-                              }
-                              return Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16.0,
-                                  ),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            },
+                // Konten utama menggunakan Consumer
+                Consumer<TourismSpotNotifier>(
+                  builder: (context, notifier, child) {
+                    // notifier.isLoading
+                    if (notifier.isLoading) {
+                      return const SliverFillRemaining(
+                        child: TourismSpotShimmerLoading(),
+                      );
+                    }
+                    // Handle error state
+                    if (notifier.hasError) {
+                      final error = notifier.error as Failure;
+                      return SliverFillRemaining(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ErrorMessageViewer(
+                            error: error,
+                            reload: () => context
+                                .read<TourismSpotNotifier>()
+                                .loadTourismSpots(),
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
+                      );
+                    }
+
+                    if (!notifier.hasData) {
+                      return SliverFillRemaining(
+                        child: _buildEmptyState(
+                          context,
+                          'Pencarian tidak ditemukan!',
+                          'Coba cari wisata lain, yuk?',
+                          'assets/illustrations/curiosity-search-cuate.svg',
+                        ),
+                      );
+                    }
+
+                    // Gunakan data langsung dari notifier tanpa filter lokal
+                    // Karena filter kategori sudah dihandle di notifier
+                    final spots = notifier.tourismSpots;
+
+                    return SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 18),
+                            child: GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 16,
+                                    childAspectRatio: 0.9,
+                                  ),
+                              itemCount:
+                                  spots.length +
+                                  (notifier.isLoadingMore ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index < spots.length) {
+                                  final spot = spots[index];
+                                  return DestinationCard(
+                                    tourismSpot: spot,
+                                    onTap: () {
+                                      context.push(
+                                        Routing.tourismSpotPreview.fullPath
+                                            .replaceFirst(
+                                              ':id',
+                                              spot.id.toString(),
+                                            ),
+                                      );
+                                    },
+                                  );
+                                }
+                                // Tampilkan shimmer loading di akhir list
+                                return const ShimmerCard();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

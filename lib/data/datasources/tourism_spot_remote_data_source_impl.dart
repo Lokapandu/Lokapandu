@@ -23,6 +23,9 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
     int perPage = 10,
   }) async {
     try {
+      final count = await _supabaseService.countTourismSpot();
+      print('Total tourism spots: $count');
+
       return await _supabaseService.getAllTourismSpots(
         query: query,
         category: category,

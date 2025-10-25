@@ -14,6 +14,8 @@ abstract class SupabaseServiceInterface {
     int perPage = 10,
   });
 
+  Future<int> countTourismSpot();
+
   /// Retrieves a specific tourism spot by its ID.
   ///
   /// [id] The unique identifier of the tourism spot.
