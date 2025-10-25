@@ -29,16 +29,39 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
   ];
   String _selectedCategory = 'Semua';
 
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       try {
-        context.read<TourismSpotNotifier>().loadTourismSpots();
+        context.read<TourismSpotNotifier>().loadTourismSpots(refresh: true);
       } catch (e) {
         debugPrint("Error loading tourism spots on init: $e");
       }
     });
+
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      final notifier = context.read<TourismSpotNotifier>();
+      if (!notifier.isLoading &&
+          !notifier.isLoadingMore &&
+          notifier.hasMoreData) {
+        notifier.loadTourismSpots();
+      }
+    }
   }
 
   @override
@@ -49,6 +72,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
       child: Scaffold(
         body: SafeArea(
           child: CustomScrollView(
+            controller: _scrollController,
             slivers: [
               SliverToBoxAdapter(child: AppHeader(title: 'Temukan wisata')),
 
@@ -71,6 +95,10 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                       setState(() {
                         _selectedCategory = category;
                       });
+                      // Panggil filter kategori di notifier saat kategori berubah
+                      context.read<TourismSpotNotifier>().filterByCategory(
+                        category,
+                      );
                     },
                   ),
                 ),
@@ -84,7 +112,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                 builder: (context, notifier, child) {
                   // notifier.isLoading
                   if (notifier.isLoading) {
-                    return const SliverToBoxAdapter(
+                    return const SliverFillRemaining(
                       child: TourismSpotShimmerLoading(),
                     );
                   }
@@ -115,37 +143,58 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                     );
                   }
 
-                  final filteredSpots = _selectedCategory == 'Semua'
-                      ? notifier.tourismSpots
-                      : notifier.tourismSpots
-                            .where((spot) => spot.category == _selectedCategory)
-                            .toList();
+                  // Gunakan data langsung dari notifier tanpa filter lokal
+                  // Karena filter kategori sudah dihandle di notifier
+                  final spots = notifier.tourismSpots;
 
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    sliver: SliverGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 12,
-                            mainAxisSpacing: 16,
-                            childAspectRatio: 0.9,
+                  return SliverToBoxAdapter(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 16,
+                                  childAspectRatio: 0.9,
+                                ),
+                            itemCount:
+                                spots.length +
+                                (notifier.hasMoreData && !notifier.isLoadingMore
+                                    ? 1
+                                    : 0),
+                            itemBuilder: (context, index) {
+                              if (index < spots.length) {
+                                final spot = spots[index];
+                                return DestinationCard(
+                                  tourismSpot: spot,
+                                  onTap: () {
+                                    context.push(
+                                      Routing.tourismSpotPreview.fullPath
+                                          .replaceFirst(
+                                            ':id',
+                                            spot.id.toString(),
+                                          ),
+                                    );
+                                  },
+                                );
+                              }
+                              return Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16.0,
+                                  ),
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            },
                           ),
-                      delegate: SliverChildBuilderDelegate((context, index) {
-                        final spot = filteredSpots[index];
-
-                        return DestinationCard(
-                          tourismSpot: spot,
-                          onTap: () {
-                            context.push(
-                              Routing.tourismSpotPreview.fullPath.replaceFirst(
-                                ':id',
-                                spot.id.toString(),
-                              ),
-                            );
-                          },
-                        );
-                      }, childCount: filteredSpots.length),
+                        ),
+                      ],
                     ),
                   );
                 },

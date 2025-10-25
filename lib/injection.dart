@@ -44,10 +44,10 @@ import 'package:lokapandu/presentation/plan/providers/tour_plan_editor_notifier.
 import 'package:lokapandu/presentation/plan/providers/tour_plan_finding_notifier.dart';
 import 'package:lokapandu/presentation/plan/providers/tour_plan_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/analytics_provider.dart';
+import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/package_info_notifier.dart';
 import 'package:lokapandu/presentation/settings/providers/theme_provider.dart';
 import 'package:lokapandu/presentation/settings/providers/user_settings_notifier.dart';
-import 'package:lokapandu/presentation/settings/providers/bookmark_provider.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_calculation_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_detail_notifier.dart';
 import 'package:lokapandu/presentation/tourism_spot/providers/tourism_spot_notifier.dart';
@@ -214,8 +214,6 @@ Future<void> initDependencies() async {
   locator.registerFactory<TourismSpotNotifier>(
     () => TourismSpotNotifier(
       locator<GetTourismSpotList>(),
-      locator<SearchTourismSpots>(),
-      locator<GetTourismSpotsByCategory>(),
       locator<AnalyticsManager>(),
     ),
   );

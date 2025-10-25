@@ -16,9 +16,19 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
 
   // Method to fetch all tourism spots with comprehensive error handling
   @override
-  Future<List<TourismSpotModel>> getTourismSpots({String? query}) async {
+  Future<List<TourismSpotModel>> getTourismSpots({
+    String? query,
+    String? category,
+    int page = 1,
+    int perPage = 10,
+  }) async {
     try {
-      return await _supabaseService.getAllTourismSpots(query: query);
+      return await _supabaseService.getAllTourismSpots(
+        query: query,
+        category: category,
+        page: page,
+        perPage: perPage,
+      );
     } on SupabaseException {
       rethrow;
     } on ServerException {
@@ -75,38 +85,6 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
       throw ConnectionException('No internet connection');
     } catch (e) {
       throw ServerException('Failed to fetch tourism images: $e');
-    }
-  }
-
-  @override
-  Future<List<TourismSpotModel>> searchTourismSpots(String query) async {
-    try {
-      return await _supabaseService.searchTourismSpots(query);
-    } on SupabaseException {
-      rethrow;
-    } on ServerException {
-      rethrow;
-    } on SocketException {
-      throw ConnectionException('No internet connection');
-    } catch (e) {
-      throw ServerException('Failed to search tourism spots: $e');
-    }
-  }
-
-  @override
-  Future<List<TourismSpotModel>> getTourismSpotsByCategory(
-    String category,
-  ) async {
-    try {
-      return await _supabaseService.getTourismSpotsByCategory(category);
-    } on SupabaseException {
-      rethrow;
-    } on ServerException {
-      rethrow;
-    } on SocketException {
-      throw ConnectionException('No internet connection');
-    } catch (e) {
-      throw ServerException('Failed to fetch tourism spots by category: $e');
     }
   }
 }

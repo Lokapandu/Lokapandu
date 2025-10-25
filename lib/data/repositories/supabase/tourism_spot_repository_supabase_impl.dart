@@ -2,7 +2,6 @@ import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/common/errors/failure.dart';
 import 'package:lokapandu/data/datasources/tourism_spot_remote_data_source.dart';
@@ -22,6 +21,8 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   }) : _remoteDataSource = remoteDataSource;
 
   Future<Either<Failure, List<TourismSpot>>> _executeSpotListCall(
+    int? page,
+    int? perPage,
     Future<List<TourismSpotModel>> Function() call,
   ) async {
     try {
@@ -31,43 +32,23 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
       }
       final imagesResult = await _remoteDataSource.getAllTourismImages();
       return Right(_mapSpotsWithImages(spotsResult, imagesResult));
-    } on SupabaseException catch (e, st) {
-      developer.log(
-        e.toString(),
-        name: "Tourism Spot Repository",
-        stackTrace: st,
-      );
+    } on SupabaseException {
       return Left(
         ServerFailure(
           'Ada masalah dari sisi Server, hubungi administrator atau coba lagi',
         ),
       );
-    } on ConnectionException catch (e, st) {
-      developer.log(
-        e.toString(),
-        name: "Tourism Spot Repository",
-        stackTrace: st,
-      );
+    } on ConnectionException {
       return Left(
         ConnectionFailure(
           'Connection error, hubungi administrator atau coba lagi',
         ),
       );
-    } on ServerException catch (e, st) {
-      developer.log(
-        e.toString(),
-        name: "Tourism Spot Repository",
-        stackTrace: st,
-      );
+    } on ServerException {
       return Left(
         ServerFailure('Server error, hubungi administrator atau coba lagi'),
       );
-    } on SocketException catch (e, st) {
-      developer.log(
-        e.toString(),
-        name: "Tourism Spot Repository",
-        stackTrace: st,
-      );
+    } on SocketException {
       return Left(
         ConnectionFailure(
           'Connection error, hubungi administrator atau coba lagi',
@@ -79,36 +60,26 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
         name: "Tourism Spot Repository",
         stackTrace: st,
       );
-      return Left(
-        ServerFailure('Unexpected error, hubungi administrator atau coba lagi'),
-      );
+      return Left(ServerFailure('$e, hubungi administrator atau coba lagi'));
     }
   }
 
   @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpots(
+  Future<Either<Failure, List<TourismSpot>>> getTourismSpots({
     String? query,
-  ) async {
+    String? category,
+    int page = 1,
+    int perPage = 10,
+  }) async {
     return _executeSpotListCall(
-      () => _remoteDataSource.getTourismSpots(query: query),
-    );
-  }
-
-  @override
-  Future<Either<Failure, List<TourismSpot>>> searchTourismSpots(
-    String query,
-  ) async {
-    return _executeSpotListCall(
-      () => _remoteDataSource.searchTourismSpots(query),
-    );
-  }
-
-  @override
-  Future<Either<Failure, List<TourismSpot>>> getTourismSpotsByCategory(
-    String category,
-  ) async {
-    return _executeSpotListCall(
-      () => _remoteDataSource.getTourismSpotsByCategory(category),
+      page,
+      perPage,
+      () => _remoteDataSource.getTourismSpots(
+        query: query,
+        category: category,
+        page: page,
+        perPage: perPage,
+      ),
     );
   }
 
@@ -135,23 +106,13 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
       final spotEntity = spotResult.toEntity(images: imageEntities);
 
       return Right(spotEntity);
-    } on SupabaseException catch (e, st) {
-      developer.log(
-        e.toString(),
-        name: "Tourism Spot Repository",
-        stackTrace: st,
-      );
+    } on SupabaseException {
       return Left(
         ServerFailure(
           'Ada masalah dari sisi Server, hubungi administrator atau coba lagi',
         ),
       );
-    } on ConnectionException catch (e, st) {
-      developer.log(
-        e.toString(),
-        name: "Tourism Spot Repository",
-        stackTrace: st,
-      );
+    } on ConnectionException {
       return Left(ConnectionFailure('Masalah Koneksi'));
     } catch (e, st) {
       developer.log(
@@ -159,11 +120,7 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
         name: "Tourism Spot Repository",
         stackTrace: st,
       );
-      return Left(
-        ServerFailure(
-          'Masalah tak terduga, hubungi adminstrator atau coba lagi',
-        ),
-      );
+      return Left(ServerFailure('$e, hubungi adminstrator atau coba lagi'));
     }
   }
 

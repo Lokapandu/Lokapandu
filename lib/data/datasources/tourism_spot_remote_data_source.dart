@@ -4,7 +4,12 @@ import 'package:lokapandu/data/models/tourism_spot_model.dart';
 // Abstract interface that defines contract for remote data source operations
 abstract class TourismSpotRemoteDataSource {
   // Method to fetch all tourism spots from remote data source
-  Future<List<TourismSpotModel>> getTourismSpots({String? query});
+  Future<List<TourismSpotModel>> getTourismSpots({
+    String? query,
+    String? category,
+    int page = 1,
+    int perPage = 10,
+  });
 
   // Method to fetch a specific tourism spot by its ID, returns null if not found
   Future<TourismSpotModel?> getTourismSpotById(int id);
@@ -14,8 +19,4 @@ abstract class TourismSpotRemoteDataSource {
 
   // Method to fetch all tourism images from remote data source
   Future<List<TourismImageModel>> getAllTourismImages();
-  Future<List<TourismSpotModel>> searchTourismSpots(String query);
-
-  // Method to fetch tourism spots filtered by category
-  Future<List<TourismSpotModel>> getTourismSpotsByCategory(String category);
 }

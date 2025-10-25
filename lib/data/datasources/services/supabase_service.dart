@@ -1,9 +1,10 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:developer' as dev;
 
 import 'package:lokapandu/common/errors/exceptions.dart';
 import 'package:lokapandu/data/datasources/services/supabase_service_interface.dart';
 import 'package:lokapandu/data/models/tourism_image_model.dart';
 import 'package:lokapandu/data/models/tourism_spot_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Service class that handles all Supabase database operations
 class SupabaseService implements SupabaseServiceInterface {
@@ -24,7 +25,12 @@ class SupabaseService implements SupabaseServiceInterface {
   // Method to fetch all tourism spots from database
 
   @override
-  Future<List<TourismSpotModel>> getAllTourismSpots({String? query}) async {
+  Future<List<TourismSpotModel>> getAllTourismSpots({
+    String? query,
+    String? category,
+    int page = 1,
+    int perPage = 10,
+  }) async {
     try {
       var builder = _client.from('tourism_spots').select('*');
 
@@ -32,17 +38,42 @@ class SupabaseService implements SupabaseServiceInterface {
         builder = builder.ilike('name', '%$query%');
       }
 
-      final response = await builder.order('created_at', ascending: false);
+      if (category != null) {
+        if (category != 'Semua') {
+          builder = builder.eq('category', category);
+        }
+      }
+
+      final from = page * perPage;
+      final to = from + perPage - 1;
+
+      final response = await builder
+          .range(from, to)
+          .order('created_at', ascending: false);
 
       return (response as List)
           .map((json) => TourismSpotModel.fromJson(json))
           .toList();
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw SupabaseException(
         'Failed to fetch tourism spots: ${e.message}',
         code: e.code,
       );
-    } catch (e) {
+    } catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw ServerException(
         'Unexpected error while fetching tourism spots: $e',
       );
@@ -61,12 +92,26 @@ class SupabaseService implements SupabaseServiceInterface {
       if (response == null) return null;
 
       return TourismSpotModel.fromJson(response);
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw SupabaseException(
         'Failed to fetch tourism spot with id $id: ${e.message}',
         code: e.code,
       );
-    } catch (e) {
+    } catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw ServerException('Unexpected error while fetching tourism spot: $e');
     }
   }
@@ -82,12 +127,26 @@ class SupabaseService implements SupabaseServiceInterface {
       return (response as List)
           .map((json) => TourismImageModel.fromJson(json))
           .toList();
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw SupabaseException(
         'Failed to fetch tourism images: ${e.message}',
         code: e.code,
       );
-    } catch (e) {
+    } catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw ServerException(
         'Unexpected error while fetching tourism images: $e',
       );
@@ -106,69 +165,28 @@ class SupabaseService implements SupabaseServiceInterface {
       return (response as List)
           .map((json) => TourismImageModel.fromJson(json))
           .toList();
-    } on PostgrestException catch (e) {
+    } on PostgrestException catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw SupabaseException(
         'Failed to fetch tourism images for spot $spotId: ${e.message}',
         code: e.code,
       );
-    } catch (e) {
+    } catch (e, st) {
+      dev.log(
+        e.toString(),
+        time: DateTime.now(),
+        name: 'SupabaseService',
+        error: e,
+        stackTrace: st,
+      );
       throw ServerException(
         'Unexpected error while fetching tourism images: $e',
-      );
-    }
-  }
-
-  @override
-  Future<List<TourismSpotModel>> searchTourismSpots(String query) async {
-    try {
-      final response = await _client
-          .from('tourism_spots')
-          .select('*')
-          .ilike('name', '%$query%')
-          .order('created_at', ascending: false);
-
-      return (response as List)
-          .map((json) => TourismSpotModel.fromJson(json))
-          .toList();
-    } on PostgrestException catch (e) {
-      throw SupabaseException(
-        'Failed to search tourism spots: ${e.message}',
-        code: e.code,
-      );
-    } catch (e) {
-      throw ServerException(
-        'Unexpected error while searching tourism spots: $e',
-      );
-    }
-  }
-
-  @override
-  Future<List<TourismSpotModel>> getTourismSpotsByCategory(
-    String category,
-  ) async {
-    try {
-      // If category is 'Semua', return all tourism spots
-      if (category == 'Semua') {
-        return await getAllTourismSpots();
-      }
-
-      final response = await _client
-          .from('tourism_spots')
-          .select('*')
-          .eq('category', category)
-          .order('created_at', ascending: false);
-
-      return (response as List)
-          .map((json) => TourismSpotModel.fromJson(json))
-          .toList();
-    } on PostgrestException catch (e) {
-      throw SupabaseException(
-        'Failed to fetch tourism spots by category: ${e.message}',
-        code: e.code,
-      );
-    } catch (e) {
-      throw ServerException(
-        'Unexpected error while fetching tourism spots by category: $e',
       );
     }
   }
