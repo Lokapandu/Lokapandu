@@ -33,8 +33,6 @@ import 'package:lokapandu/domain/usecases/itineraries/get_user_itineraries.dart'
 import 'package:lokapandu/domain/usecases/itineraries/get_user_itinerary_by_id.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_detail.dart';
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
-import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spots_by_category.dart';
-import 'package:lokapandu/domain/usecases/tourism_spots/search_tourism_spots.dart';
 import 'package:lokapandu/domain/validators/itinerary_validators.dart';
 import 'package:lokapandu/presentation/ai_chat/provider/ai_chat_notifier.dart';
 import 'package:lokapandu/presentation/auth/providers/auth_notifier.dart';
@@ -163,12 +161,6 @@ Future<void> initDependencies() async {
   );
   locator.registerLazySingleton<GetTourismSpotDetail>(
     () => GetTourismSpotDetail(locator<TourismSpotRepository>()),
-  );
-  locator.registerLazySingleton<SearchTourismSpots>(
-    () => SearchTourismSpots(locator<TourismSpotRepository>()),
-  );
-  locator.registerLazySingleton<GetTourismSpotsByCategory>(
-    () => GetTourismSpotsByCategory(locator<TourismSpotRepository>()),
   );
 
   locator.registerLazySingleton<GetCurrentWeather>(
