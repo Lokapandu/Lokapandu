@@ -56,7 +56,7 @@ class _HomeContentState extends State<HomeContent> {
                 child: CustomSearchBar(
                   onSubmitted: (query) {
                     context.push(Routing.tourismSpot.fullPath);
-                    context.read<TourismSpotNotifier>().search(query);
+                    context.read<TourismSpotNotifier>().searchQuery = query;
                   },
                 ),
               ),
@@ -117,10 +117,7 @@ class _HomeContentState extends State<HomeContent> {
                       itemCount: upcomingSpots.length,
                       itemBuilder: (context, index) {
                         final spot = upcomingSpots[index];
-                        return UpcomingTourCard(
-                          id: spot.key,
-                          spot: spot.value,
-                        );
+                        return UpcomingTourCard(id: spot.key, spot: spot.value);
                       },
                     ),
                   );

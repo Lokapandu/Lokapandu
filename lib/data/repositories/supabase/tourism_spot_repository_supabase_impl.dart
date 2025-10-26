@@ -20,6 +20,46 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
     required TourismSpotRemoteDataSource remoteDataSource,
   }) : _remoteDataSource = remoteDataSource;
 
+  @override
+  Future<Either<Failure, int>> countTourismSpot({
+    String? query,
+    String? category,
+  }) async {
+    try {
+      final count = await _remoteDataSource.countTourismSpot();
+      return Right(count);
+    } on SupabaseException {
+      return Left(
+        ServerFailure(
+          'Ada masalah dari sisi Server, hubungi administrator atau coba lagi',
+        ),
+      );
+    } on ConnectionException {
+      return Left(
+        ConnectionFailure(
+          'Connection error, hubungi administrator atau coba lagi',
+        ),
+      );
+    } on ServerException {
+      return Left(
+        ServerFailure('Server error, hubungi administrator atau coba lagi'),
+      );
+    } on SocketException {
+      return Left(
+        ConnectionFailure(
+          'Tidak dapat terhubung ke internet, periksa koneksi anda',
+        ),
+      );
+    } catch (e) {
+      developer.log(
+        e.toString(),
+        name: 'TourismSpotRepositorySupabaseImpl',
+        error: e,
+      );
+      return Left(ServerFailure('Terjadi kesalahan, hubungi administrator'));
+    }
+  }
+
   Future<Either<Failure, List<TourismSpot>>> _executeSpotListCall(
     int? page,
     int? perPage,
@@ -68,8 +108,8 @@ class TourismSpotRepositorySupabaseImpl implements TourismSpotRepository {
   Future<Either<Failure, List<TourismSpot>>> getTourismSpots({
     String? query,
     String? category,
-    int page = 1,
-    int perPage = 10,
+    required int page,
+    required int perPage,
   }) async {
     return _executeSpotListCall(
       page,

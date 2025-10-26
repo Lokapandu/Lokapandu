@@ -16,4 +16,11 @@ class GetTourismSpotList {
   }) async {
     return await repository.getTourismSpots(page: page, perPage: perPage);
   }
+
+  Future<Either<Failure, int>> countTourismSpot({
+    String? query,
+    String? category,
+  }) async {
+    return await repository.countTourismSpot(query: query, category: category);
+  }
 }

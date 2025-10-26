@@ -7,367 +7,179 @@ import 'package:lokapandu/domain/entities/tourism_spot/tourism_spot_entity.dart'
 import 'package:lokapandu/domain/usecases/tourism_spots/get_tourism_spot_list.dart';
 
 class TourismSpotNotifier extends ChangeNotifier {
-  final GetTourismSpotList _getTourismSpotList;
-  final AnalyticsManager _analyticsManager;
+  final GetTourismSpotList _useCase;
+  final AnalyticsManager _analytics;
 
-  TourismSpotNotifier(this._getTourismSpotList, this._analyticsManager);
+  TourismSpotNotifier(this._useCase, this._analytics);
 
-  List<TourismSpot> _tourismSpots = [];
+  // === STATE VARIABLES ===
+  final List<TourismSpot> _tourismSpots = [];
   bool _isLoading = false;
-  bool _isLoadingMore = false;
   bool _hasMoreData = true;
   Failure? _error;
-  String _selectedCategory = 'Semua';
-  String _searchQuery = '';
   int _page = 1;
-  final int _pageSize = 6;
+  final int _pageSize = 10;
+  int _totalCount = 0;
 
+  String _searchQuery = '';
+  String _selectedCategory = 'Semua';
+  final List<String> _categories = [
+    'Semua',
+    'Taman Budaya & Bersejarah',
+    'Pantai & Pesisir',
+    'Pusat Seni & Belanja',
+    'Wisata Alam',
+    'Kafe & Resto',
+  ];
+  Timer? _debounce;
+
+  // === GETTERS ===
   List<TourismSpot> get tourismSpots => _tourismSpots;
 
-  String get selectedCategory => _selectedCategory;
-
-  String get searchQuery => _searchQuery;
-
   bool get isLoading => _isLoading;
-
-  bool get isLoadingMore => _isLoadingMore;
 
   bool get hasMoreData => _hasMoreData;
 
   Failure? get error => _error;
 
-  bool get hasError => _error != null;
+  bool get isEmpty => _tourismSpots.isEmpty && !_isLoading;
 
-  bool get hasData => _tourismSpots.isNotEmpty;
+  String get searchQuery => _searchQuery;
 
-  Timer? _debounce;
+  String get selectedCategory => _selectedCategory;
 
-  Future<void> loadTourismSpots({bool refresh = false}) async {
-    if (refresh) {
-      _page = 1;
-      _hasMoreData = true;
-      _tourismSpots = [];
+  List<String> get categories => _categories;
+
+  int get totalCount => _totalCount;
+
+  set searchQuery(String query) {
+    if (_searchQuery != query) {
+      _searchQuery = query;
+
+      if (_debounce?.isActive ?? false) _debounce?.cancel();
+      _debounce = Timer(const Duration(milliseconds: 500), () {
+        _resetAndReload();
+      });
     }
-
-    if (_isLoading || (!_hasMoreData && !refresh)) return;
-
-    _isLoading = _page == 1;
-    _isLoadingMore = _page > 1;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _analyticsManager.startTrace('loadTourismSpots');
-      // Menggunakan parameter paginasi yang tersedia di usecase
-      final result = await _getTourismSpotList.execute(
-        query: _searchQuery,
-        category: _selectedCategory != 'Semua' ? _selectedCategory : null,
-        page: _page,
-        perPage: _pageSize,
-      );
-      _analyticsManager.setTraceMetric(
-        'loadTourismSpots',
-        'spotsCount',
-        _tourismSpots.length,
-      );
-      _analyticsManager.stopTrace('loadTourismSpots');
-
-      result.fold(
-        (failure) {
-          _analyticsManager.trackError(
-            error: '${failure.runtimeType}',
-            description: failure.message,
-          );
-          _error = failure;
-        },
-        (spots) {
-          final prevCount = _tourismSpots.length;
-          if (spots.isEmpty) {
-            _hasMoreData = false;
-            _analyticsManager.trackEvent(
-              eventName: 'data_pagination',
-              parameters: {
-                'action': 'no_more_data',
-                'page': _page,
-                'total_items': _tourismSpots.length,
-              },
-            );
-          } else {
-            _tourismSpots.addAll(spots);
-            _page++;
-            // Selalu anggap masih ada data lagi kecuali server mengembalikan data kosong
-            _hasMoreData = true;
-            _analyticsManager.trackEvent(
-              eventName: 'data_pagination',
-              parameters: {
-                'action': 'load_data',
-                'page': _page - 1,
-                'items_loaded': spots.length,
-                'prev_count': prevCount,
-                'new_count': _tourismSpots.length,
-                'has_more_data': _hasMoreData,
-              },
-            );
-          }
-          _error = null;
-        },
-      );
-    } catch (e) {
-      _error = ServerFailure('Kesalahan tak terduga');
-    }
-
-    _isLoading = false;
-    _isLoadingMore = false;
-    notifyListeners();
   }
 
-  void search(String query) {
-    _searchQuery = query;
-    if (_debounce?.isActive ?? false) _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      _performSearch(query);
-    });
+  set category(String category) {
+    if (_selectedCategory != category) {
+      _selectedCategory = category;
+      _resetAndReload();
+    }
   }
 
-  Future<void> _performSearch(String query) async {
-    _page = 1;
+  void _resetAndReload() {
+    _tourismSpots.clear();
+    _page = 0;
     _hasMoreData = true;
-    _tourismSpots = [];
-    _isLoading = true;
     _error = null;
+    _totalCount = 0;
     notifyListeners();
+    loadMoreItems();
+  }
 
-    if (query.isEmpty) {
-      await loadTourismSpots(refresh: true);
+  Future<void> loadMoreItems() async {
+    print("=== LOAD MORE ITEMS DIPANGGIL ===");
+    print("Status sebelum: isLoading=$_isLoading, hasMoreData=$_hasMoreData, page=$_page");
+    
+    if (_isLoading || !_hasMoreData) {
+      print("Batal memuat: isLoading=$_isLoading, hasMoreData=$_hasMoreData");
       return;
     }
 
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    print("Memulai pemuatan data: page=$_page, perPage=$_pageSize");
+
     try {
-      _analyticsManager.trackUserAction(
-        action: 'user_typing_query',
-        parameters: {'query': query},
-      );
-      _analyticsManager.startTrace('searchTourismSpots');
-      // Menggunakan parameter paginasi yang tersedia di usecase
-      final result = await _getTourismSpotList.execute(
-        query: query,
+      print("Memanggil API dengan: page=$_page, perPage=$_pageSize, query=$_searchQuery, category=$_selectedCategory");
+      final response = await _useCase.execute(
         page: _page,
         perPage: _pageSize,
+        query: _searchQuery.isNotEmpty ? _searchQuery : null,
+        category: _selectedCategory,
       );
-      _analyticsManager.setTraceMetric(
-        'searchTourismSpots',
-        'spotsCount',
-        _tourismSpots.length,
-      );
-      _analyticsManager.stopTrace('searchTourismSpots');
-      result.fold(
-        (failure) {
-          _analyticsManager.trackError(
-            error: '${failure.runtimeType}',
-            description: failure.message,
-          );
-          _error = failure;
-        },
-        (spots) {
-          if (spots.isEmpty) {
-            _hasMoreData = false;
-            _analyticsManager.trackEvent(
-              eventName: 'search_results',
-              parameters: {
-                'query': query,
-                'results_count': 0,
-                'has_results': false,
-              },
-            );
-          } else {
-            _tourismSpots = spots;
-            _page = 2; // Set page ke 2 untuk next load
-            // Jika jumlah data yang diterima kurang dari pageSize, berarti tidak ada data lagi
-            if (spots.length < _pageSize) {
-              _hasMoreData = false;
-            }
-            _analyticsManager.trackEvent(
-              eventName: 'search_results',
-              parameters: {
-                'query': query,
-                'results_count': spots.length,
-                'has_results': true,
-                'has_more_data': _hasMoreData,
-              },
-            );
-          }
-          _error = null;
-        },
-      );
-    } catch (e) {
-      _error = ServerFailure('Kesalahan tak terduga');
-    }
 
-    _isLoading = false;
-    notifyListeners();
+      if (_page == 0) {
+        print("Halaman 0, menghitung total data");
+        final response = await _useCase.countTourismSpot(
+          query: _searchQuery.isNotEmpty ? _searchQuery : null,
+          category: _selectedCategory,
+        );
+        response.fold(
+          (failure) {
+            print("Error saat menghitung total: ${failure.message}");
+            throw failure;
+          }, 
+          (data) {
+            _totalCount = data;
+            print("Total count dari API: $_totalCount");
+          }
+        );
+      }
+
+      var length = 0;
+      var oldLength = _tourismSpots.length;
+      
+      response.fold(
+        (failure) {
+          print("Error saat memuat data: ${failure.message}");
+          throw failure;
+        }, 
+        (data) {
+          print("Data diterima dari API: ${data.length} item");
+          if (data.isEmpty) {
+            print("PERINGATAN: Data kosong diterima dari API!");
+          } else {
+            print("Item pertama: ${data.first.name}");
+          }
+          
+          _tourismSpots.addAll(data);
+          length = data.length;
+        }
+      );
+      
+      print("Jumlah data sebelum: $oldLength, sesudah: ${_tourismSpots.length}, baru ditambahkan: $length");
+      
+      _page++;
+      if (length < _pageSize) {
+        _hasMoreData = false;
+        print("hasMoreData diatur ke false karena data kurang dari pageSize");
+      }
+      // Atau cek berdasarkan total count
+      if (_tourismSpots.length >= _totalCount) {
+        _hasMoreData = false;
+        print("hasMoreData diatur ke false karena total data >= totalCount");
+      }
+      
+      print("Data loaded: total=${_tourismSpots.length}, hasMore=${_hasMoreData}, page=${_page}");
+    } catch (e) {
+      print("ERROR TERJADI: $e");
+      _error = ServerFailure('Kesalahan tak terduga: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+      print("=== LOAD MORE ITEMS SELESAI ===");
+    }
   }
 
+  Future<void> refreshData() async {
+    _tourismSpots.clear();
+    _page = 0;
+    _hasMoreData = true;
+    _error = null;
+    _totalCount = 0;
+    notifyListeners();
+    _analytics.trackEvent(eventName: 'tourism_spot_notifier_refreshing_data');
+    await loadMoreItems();
+  }
+
+  // Clear error state
   void clearError() {
     _error = null;
-    notifyListeners();
-  }
-
-  void refresh() {
-    _analyticsManager.trackUserAction(action: 'user_refresh');
-    if (_selectedCategory == 'Semua') {
-      loadTourismSpots(refresh: true);
-    } else {
-      _analyticsManager.trackUserAction(
-        action: 'user_filter_category',
-        parameters: {'category': _selectedCategory},
-      );
-      filterByCategory(_selectedCategory);
-    }
-  }
-
-  Future<void> loadMoreByCategory(String category) async {
-    if (!_hasMoreData || _isLoadingMore) return;
-
-    _isLoadingMore = true;
-    notifyListeners();
-
-    try {
-      // Menggunakan parameter paginasi yang tersedia di usecase
-      final result = await _getTourismSpotList.execute(
-        category: category,
-        page: _page,
-        perPage: _pageSize,
-      );
-
-      result.fold(
-        (failure) {
-          _error = failure;
-          _analyticsManager.trackError(
-            error: '${failure.runtimeType}',
-            description: failure.message,
-          );
-        },
-        (spots) {
-          final prevCount = _tourismSpots.length;
-          if (spots.isEmpty) {
-            _hasMoreData = false;
-            _analyticsManager.trackEvent(
-              eventName: 'load_more_by_category',
-              parameters: {
-                'category': category,
-                'page': _page,
-                'action': 'no_more_data',
-                'total_items': _tourismSpots.length,
-              },
-            );
-          } else {
-            _tourismSpots.addAll(spots);
-            _page++;
-            // Jika jumlah data yang diterima kurang dari pageSize, berarti tidak ada data lagi
-            if (spots.length < _pageSize) {
-              _hasMoreData = false;
-            }
-            _analyticsManager.trackEvent(
-              eventName: 'load_more_by_category',
-              parameters: {
-                'category': category,
-                'page': _page - 1,
-                'items_loaded': spots.length,
-                'prev_count': prevCount,
-                'new_count': _tourismSpots.length,
-                'has_more_data': _hasMoreData,
-              },
-            );
-          }
-        },
-      );
-    } catch (e) {
-      _error = ServerFailure('Kesalahan tak terduga');
-    }
-
-    _isLoadingMore = false;
-    notifyListeners();
-  }
-
-  Future<void> filterByCategory(String category) async {
-    _selectedCategory = category;
-    _page = 1;
-    _hasMoreData = true;
-    _tourismSpots = [];
-
-    if (category == 'Semua') {
-      await loadTourismSpots(refresh: true);
-      return;
-    }
-
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      _analyticsManager.startTrace('filterTourismSpotsByCategory');
-      // Menggunakan parameter paginasi yang tersedia di usecase
-      final result = await _getTourismSpotList.execute(
-        category: category,
-        page: _page,
-        perPage: _pageSize,
-      );
-      _analyticsManager.setTraceAttribute(
-        'filterTourismSpotsByCategory',
-        'category',
-        category,
-      );
-      _analyticsManager.setTraceMetric(
-        'filterTourismSpotsByCategory',
-        'spotsCount',
-        _tourismSpots.length,
-      );
-      _analyticsManager.stopTrace('filterTourismSpotsByCategory');
-      result.fold(
-        (failure) {
-          _analyticsManager.trackError(
-            error: '${failure.runtimeType}',
-            description: failure.message,
-          );
-          _error = failure;
-        },
-        (spots) {
-          if (spots.isEmpty) {
-            _hasMoreData = false;
-            _analyticsManager.trackEvent(
-              eventName: 'filter_by_category_results',
-              parameters: {
-                'category': category,
-                'results_count': 0,
-                'has_results': false,
-              },
-            );
-          } else {
-            _tourismSpots = spots;
-            _page = 2; // Set page ke 2 untuk next load
-            // Jika jumlah data yang diterima kurang dari pageSize, berarti tidak ada data lagi
-            if (spots.length < _pageSize) {
-              _hasMoreData = false;
-            }
-            _analyticsManager.trackEvent(
-              eventName: 'filter_by_category_results',
-              parameters: {
-                'category': category,
-                'results_count': spots.length,
-                'has_results': true,
-                'has_more_data': _hasMoreData,
-                'page': 1,
-              },
-            );
-          }
-          _error = null;
-        },
-      );
-    } catch (e) {
-      _error = ServerFailure('Kesalahan tak terduga');
-    }
-
-    _isLoading = false;
     notifyListeners();
   }
 

@@ -6,9 +6,14 @@ abstract class TourismSpotRepository {
   Future<Either<Failure, List<TourismSpot>>> getTourismSpots({
     String? query,
     String? category,
-    int page = 1,
-    int perPage = 10,
+    required int page,
+    required int perPage,
   });
 
   Future<Either<Failure, TourismSpot>> getTourismSpotById(int id);
+
+  Future<Either<Failure, int>> countTourismSpot({
+    String? query,
+    String? category,
+  });
 }

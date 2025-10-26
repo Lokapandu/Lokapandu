@@ -7,8 +7,8 @@ abstract class TourismSpotRemoteDataSource {
   Future<List<TourismSpotModel>> getTourismSpots({
     String? query,
     String? category,
-    int page = 1,
-    int perPage = 10,
+    required int page,
+    required int perPage,
   });
 
   // Method to fetch a specific tourism spot by its ID, returns null if not found
@@ -19,4 +19,7 @@ abstract class TourismSpotRemoteDataSource {
 
   // Method to fetch all tourism images from remote data source
   Future<List<TourismImageModel>> getAllTourismImages();
+
+  // Method to get total count of tourism spots
+  Future<int> countTourismSpot({String? query, String? category});
 }

@@ -19,13 +19,10 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
   Future<List<TourismSpotModel>> getTourismSpots({
     String? query,
     String? category,
-    int page = 1,
-    int perPage = 10,
+    required int page,
+    required int perPage,
   }) async {
     try {
-      final count = await _supabaseService.countTourismSpot();
-      print('Total tourism spots: $count');
-
       return await _supabaseService.getAllTourismSpots(
         query: query,
         category: category,
@@ -88,6 +85,25 @@ class TourismSpotRemoteDataSourceImpl implements TourismSpotRemoteDataSource {
       throw ConnectionException('No internet connection');
     } catch (e) {
       throw ServerException('Failed to fetch tourism images: $e');
+    }
+  }
+
+  @override
+  Future<int> countTourismSpot({String? query, String? category}) async {
+    try {
+      final count = await _supabaseService.countTourismSpot(
+        search: query,
+        category: category,
+      );
+      return count;
+    } on SupabaseException {
+      rethrow;
+    } on ServerException {
+      rethrow;
+    } on SocketException {
+      throw ConnectionException('No internet connection');
+    } catch (e) {
+      throw ServerException('Failed to count tourism spots: $e');
     }
   }
 }

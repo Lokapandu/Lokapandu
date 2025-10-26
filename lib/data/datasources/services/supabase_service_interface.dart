@@ -10,11 +10,11 @@ abstract class SupabaseServiceInterface {
   Future<List<TourismSpotModel>> getAllTourismSpots({
     String? query,
     String? category,
-    int page = 1,
-    int perPage = 10,
+    required int page,
+    required int perPage,
   });
 
-  Future<int> countTourismSpot();
+  Future<int> countTourismSpot({String? search, String? category});
 
   /// Retrieves a specific tourism spot by its ID.
   ///

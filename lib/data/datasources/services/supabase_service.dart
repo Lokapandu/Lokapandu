@@ -28,8 +28,8 @@ class SupabaseService implements SupabaseServiceInterface {
   Future<List<TourismSpotModel>> getAllTourismSpots({
     String? query,
     String? category,
-    int page = 1,
-    int perPage = 10,
+    required int page,
+    required int perPage,
   }) async {
     try {
       var builder = _client.from('tourism_spots').select('*');
@@ -44,11 +44,15 @@ class SupabaseService implements SupabaseServiceInterface {
         }
       }
 
-      final from = page * perPage;
-      final to = from + perPage - 1;
+      // Perbaikan perhitungan range untuk pagination
+      // Page dimulai dari 1, jadi kita perlu mengurangi 1 untuk perhitungan offset
+      final offset = (page - 1) * perPage;
+      final limit = perPage;
+
+      print("PAGINATION DEBUG: page=$page, perPage=$perPage, offset=$offset, limit=$limit");
 
       final response = await builder
-          .range(from, to)
+          .range(offset, offset + limit - 1)
           .order('created_at', ascending: false);
 
       return (response as List)
@@ -192,12 +196,19 @@ class SupabaseService implements SupabaseServiceInterface {
   }
 
   @override
-  Future<int> countTourismSpot() async {
+  Future<int> countTourismSpot({String? search, String? category}) async {
     try {
-      final response = await _client
-          .from('tourism_spots')
-          .select('name')
-          .count(CountOption.exact);
+      var query = _client.from('tourism_spots').select('id');
+
+      if (search != null && search.isNotEmpty) {
+        query = query.ilike('name', '%$search%');
+      }
+
+      if (category != null && category != 'Semua') {
+        query = query.eq('category', category);
+      }
+
+      final response = await query.count(CountOption.exact);
 
       return response.count;
     } on PostgrestException catch (e, st) {

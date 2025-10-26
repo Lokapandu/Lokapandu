@@ -19,30 +19,44 @@ class TourismSpotPage extends StatefulWidget {
 }
 
 class _TourismSpotPageState extends State<TourismSpotPage> {
-  final List<String> _categories = [
-    'Semua',
-    'Taman Budaya & Bersejarah',
-    'Pantai & Pesisir',
-    'Pusat Seni & Belanja',
-    'Wisata Alam',
-    'Kafe & Resto',
-  ];
-  String _selectedCategory = 'Semua';
-
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        context.read<TourismSpotNotifier>().loadTourismSpots(refresh: true);
-      } catch (e) {
-        debugPrint("Error loading tourism spots on init: $e");
-      }
+      context.read<TourismSpotNotifier>().loadMoreItems();
     });
 
     _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    // Calculate scroll percentage
+    double scrollPercentage = 0;
+    if (_scrollController.position.maxScrollExtent > 0) {
+      scrollPercentage =
+          (_scrollController.position.pixels /
+              _scrollController.position.maxScrollExtent) *
+          100;
+
+      // Print debug information about scrolling percentage
+      print('Scrolling percentage: ${scrollPercentage.toStringAsFixed(2)}%');
+    }
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
+      print('Reached 80% threshold, loading more items...');
+      context.read<TourismSpotNotifier>().loadMoreItems();
+    }
+  }
+
+  bool _onScrollNotification(ScrollNotification scrollInfo) {
+    if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent * 0.8) {
+      context.read<TourismSpotNotifier>().loadMoreItems();
+      return true;
+    }
+    return false;
   }
 
   @override
@@ -52,160 +66,176 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
     super.dispose();
   }
 
-  void _scrollListener() {
-    // Kurangi threshold untuk memuat lebih awal
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 100) {
-      final notifier = context.read<TourismSpotNotifier>();
-      // Hanya cek apakah sedang loading atau tidak, hapus kondisi hasMoreData
-      if (!notifier.isLoading && !notifier.isLoadingMore) {
-        notifier.loadTourismSpots();
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      behavior: HitTestBehavior.translucent,
-      child: Scaffold(
-        body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              await context.read<TourismSpotNotifier>().loadTourismSpots(
-                refresh: true,
-              );
-            },
-            child: CustomScrollView(
-              controller: _scrollController,
-              slivers: [
-                SliverToBoxAdapter(child: AppHeader(title: 'Temukan wisata')),
+    return SafeArea(
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Scaffold(
+          body: Consumer<TourismSpotNotifier>(
+            builder: (context, state, _) {
+              return NotificationListener<ScrollNotification>(
+                onNotification: _onScrollNotification,
+                child: RefreshIndicator(
+                  onRefresh: state.refreshData,
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: AppHeader(title: 'Temukan wisata'),
+                      ),
 
-                // SliverToBoxAdapter untuk search bar
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: _buildSearchAndFilter(),
-                  ),
-                ),
-
-                // SliverToBoxAdapter untuk kategori
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 13.0),
-                    child: TourCategoryChips(
-                      categories: _categories,
-                      selectedCategory: _selectedCategory,
-                      onCategorySelected: (category) {
-                        setState(() {
-                          _selectedCategory = category;
-                        });
-                        // Panggil filter kategori di notifier saat kategori berubah
-                        context.read<TourismSpotNotifier>().filterByCategory(
-                          category,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-
-                // SliverPadding untuk memberikan jarak
-                const SliverPadding(padding: EdgeInsets.only(top: 20.0)),
-
-                // Konten utama menggunakan Consumer
-                Consumer<TourismSpotNotifier>(
-                  builder: (context, notifier, child) {
-                    // notifier.isLoading
-                    if (notifier.isLoading) {
-                      return const SliverFillRemaining(
-                        child: TourismSpotShimmerLoading(),
-                      );
-                    }
-                    // Handle error state
-                    if (notifier.hasError) {
-                      final error = notifier.error as Failure;
-                      return SliverFillRemaining(
+                      // SliverToBoxAdapter untuk search bar
+                      SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ErrorMessageViewer(
-                            error: error,
-                            reload: () => context
-                                .read<TourismSpotNotifier>()
-                                .loadTourismSpots(),
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: _buildSearchAndFilter(
+                            (query) => state.searchQuery = query,
                           ),
                         ),
-                      );
-                    }
+                      ),
 
-                    if (!notifier.hasData) {
-                      return SliverFillRemaining(
-                        child: _buildEmptyState(
-                          context,
-                          'Pencarian tidak ditemukan!',
-                          'Coba cari wisata lain, yuk?',
-                          'assets/illustrations/curiosity-search-cuate.svg',
+                      // SliverToBoxAdapter untuk kategori
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 13.0),
+                          child: TourCategoryChips(
+                            categories: state.categories,
+                            selectedCategory: state.selectedCategory,
+                            onCategorySelected: (category) =>
+                                state.category = category,
+                          ),
                         ),
-                      );
-                    }
+                      ),
 
-                    // Gunakan data langsung dari notifier tanpa filter lokal
-                    // Karena filter kategori sudah dihandle di notifier
-                    final spots = notifier.tourismSpots;
+                      // SliverPadding untuk memberikan jarak
+                      const SliverPadding(padding: EdgeInsets.only(top: 20.0)),
 
-                    return SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            child: GridView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 12,
-                                    mainAxisSpacing: 16,
-                                    childAspectRatio: 0.9,
-                                  ),
-                              itemCount:
-                                  spots.length +
-                                  (notifier.isLoadingMore ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                if (index < spots.length) {
-                                  final spot = spots[index];
-                                  return DestinationCard(
-                                    tourismSpot: spot,
-                                    onTap: () {
-                                      context.push(
-                                        Routing.tourismSpotPreview.fullPath
-                                            .replaceFirst(
-                                              ':id',
-                                              spot.id.toString(),
-                                            ),
-                                      );
-                                    },
-                                  );
-                                }
-                                // Tampilkan shimmer loading di akhir list
-                                return const ShimmerCard();
-                              },
+                      // Konten utama menggunakan Consumer
+                      if (state.error != null && state.isEmpty)
+                        SliverFillRemaining(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ErrorMessageViewer(
+                              error: state.error as Failure,
+                              reload: () => context
+                                  .read<TourismSpotNotifier>()
+                                  .refreshData(),
                             ),
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                        )
+                      else if (state.isEmpty && state.isLoading)
+                        const SliverFillRemaining(
+                          child: TourismSpotShimmerLoading(),
+                        )
+                      else if (state.isEmpty && !state.isLoading)
+                        SliverFillRemaining(
+                          child: _buildEmptyState(
+                            context,
+                            'Pencarian tidak ditemukan!',
+                            'Coba cari wisata lain, yuk?',
+                            'assets/illustrations/curiosity-search-cuate.svg',
+                          ),
+                        )
+                      else
+                        SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          sliver: SliverGrid(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 14,
+                                  mainAxisSpacing: 22,
+                                  childAspectRatio: 0.9506,
+                                ),
+                            delegate: SliverChildBuilderDelegate((
+                              context,
+                              index,
+                            ) {
+                              if (state.tourismSpots.isEmpty ||
+                                  index >= state.tourismSpots.length) {
+                                return const SizedBox.shrink();
+                              }
+                              final spot = state.tourismSpots[index];
+                              return DestinationCard(
+                                tourismSpot: spot,
+                                onTap: () {
+                                  context.push(
+                                    Routing.tourismSpotPreview.fullPath
+                                        .replaceFirst(
+                                          ':id',
+                                          spot.id.toString(),
+                                        ),
+                                  );
+                                },
+                              );
+                            }, childCount: state.tourismSpots.length),
+                          ),
+                        ),
+
+                      if (state.error != null ||
+                          (state.hasMoreData && state.isLoading))
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: state.error != null
+                                ? Column(
+                                    children: [
+                                      const Icon(
+                                        Icons.error_outline,
+                                        color: Colors.red,
+                                        size: 32,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      const Text('Error loading more items'),
+                                      const SizedBox(height: 8),
+                                      ElevatedButton.icon(
+                                        onPressed: () {
+                                          state.clearError();
+                                          state.loadMoreItems();
+                                        },
+                                        icon: const Icon(
+                                          Icons.refresh,
+                                          size: 18,
+                                        ),
+                                        label: const Text('Retry'),
+                                        style: ElevatedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                            vertical: 8,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Column(
+                                    children: [
+                                      const CircularProgressIndicator(),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Loading more items...',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSearchAndFilter() {
+  Widget _buildSearchAndFilter(Function(String query) onType) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -221,9 +251,7 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                 );
                 return TextField(
                   controller: controller,
-                  onChanged: (query) {
-                    context.read<TourismSpotNotifier>().search(query);
-                  },
+                  onChanged: onType,
                   decoration: InputDecoration(
                     hintText: 'Cari destinasi wisata...',
                     prefixIcon: Icon(
@@ -238,11 +266,12 @@ class _TourismSpotPageState extends State<TourismSpotPage> {
                             ),
                             onPressed: () {
                               controller.clear();
-                              context.read<TourismSpotNotifier>().search('');
+                              onType.call('');
                             },
                           )
                         : null,
                   ),
+                  onSubmitted: onType,
                 );
               },
             ),
